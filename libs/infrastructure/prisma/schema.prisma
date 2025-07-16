@@ -8,6 +8,7 @@
 enum AppUserRole  {
   user
   super_admin
+  organization
 }
 enum AuthProvider {
   local
@@ -28,13 +29,14 @@ model User {
   name      String
   email     String   @unique
   password  String?
-  orgId     String?
+  orgId     String?  @db.ObjectId
   role      AppUserRole     // user || super_admin
   isOwner   Boolean  @default(false)
   isVerified Boolean @default(false)
   isBlocked Boolean  @default(false)
   authProvider AuthProvider?
   
+   organization  Organization? @relation(fields: [orgId], references: [id])
 }
 
 model Organization {
@@ -42,5 +44,7 @@ model Organization {
   name           String
   ownerId        String
   subscriptionId String?
-  isPremium      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User User[]
 }

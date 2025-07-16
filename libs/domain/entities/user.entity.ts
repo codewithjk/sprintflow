@@ -4,7 +4,7 @@ export interface UserProps {
   name: string;
   email: string;
   password?: string |null;
-  role: "user" | "super_admin";
+  role: "user" | "super_admin" |"organization";
   isOwner: boolean;
   isBlocked: boolean;
   orgId?: string | null;
@@ -28,6 +28,9 @@ export class User {
   }
   get role() {
     return this.props.role;
+  }
+  get orgId() {
+    return this.props.orgId
   }
   // internal use
   getAuthProvider() {

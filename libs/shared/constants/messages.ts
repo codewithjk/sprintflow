@@ -36,9 +36,15 @@ export const Messages = {
   // Validation
   MISSING_FIELDS: 'Required fields are missing',
   INVALID_EMAIL_FORMAT: 'Email format is invalid',
+  INVALID_PARAMS: "Invalid parameters",
+  
 
   // Organization
   ORG_NOT_FOUND: 'Organization not found',
+  ORG_CREATED: 'Organization created',
+  ORG_DELETED: 'Organization delete',
+  ORG_UPDATED: 'Organization updated',
+  ORG_FOUND : 'Organization found',
 
   // Authorization
   FORBIDDEN: 'You are not authorized to perform this action',

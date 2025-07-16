@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>You're Invited to <%= orgName %></title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f6f8fa;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+    .header {
+      text-align: center;
+      padding-bottom: 20px;
+    }
+    .button {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 12px 24px;
+      background-color: #007bff;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .footer {
+      margin-top: 40px;
+      font-size: 12px;
+      text-align: center;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>Welcome to <%= orgName %>!</h2>
+    </div>
+
+    <p>Hi <strong><%= name %></strong>,</p>
+
+    <p>You’ve been invited to join <strong><%= orgName %></strong>. This organization uses our platform to manage their team and tools, and you’ve been selected to be a part of it.</p>
+
+    <p>Click the button below to accept the invitation and get started:</p>
+
+    <div style="text-align: center;">
+      <a href="<%= url %>" class="button">Join <%= orgName %></a>
+    </div>
+
+    <p>If you were not expecting this email, you can safely ignore it.</p>
+
+    <div class="footer">
+      &copy; <%= new Date().getFullYear() %> <%= orgName %>. All rights reserved.
+    </div>
+  </div>
+</body>
+</html>

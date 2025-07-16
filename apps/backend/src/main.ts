@@ -1,5 +1,6 @@
 import express from 'express';
 import authRoute from './routes/auth.routes'
+import orgRoute from './routes/org.routes'
 import { errorMiddleware } from './middlewares/error-handler.middleware';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -9,8 +10,11 @@ const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 
 const app = express();
 
+const allowedOrigin  = process.env.WEB_URL as string;
+
+ 
 app.use(cors({
-  origin: ['http://localhost:3000'],
+  origin: [allowedOrigin],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }));
@@ -24,6 +28,7 @@ app.use(cookieParser());
 
 
 app.use('/api/auth', authRoute);
+app.use('/api/org', orgRoute);
 
 
 // error handling middleware.

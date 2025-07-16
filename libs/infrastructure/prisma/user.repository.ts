@@ -11,6 +11,10 @@ export class PrismaUserRepository implements IUserRepository {
     const user = await prisma.user.create({ data });
     return new User(user);
   }
+  async update(id: string, data: Partial<User>) {
+      const org = await prisma.user.update({ where: { id }, data });
+      return new User(org);
+  }
 
   async findByEmail(email: string): Promise<User | null> {
     const user = await prisma.user.findUnique({ where: { email } });
