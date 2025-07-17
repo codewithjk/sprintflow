@@ -16,6 +16,7 @@ import { JWT_TOKEN_SECRET } from '../../../../libs/shared/constants/env-constant
 import { setCookie } from '../utils/cookies/setCookie';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { ACCESS_TOKEN_EXPIRATION } from '../../../../libs/shared/constants/time-constants';
+import { PrismaOrganizationRepository } from '../../../../libs/infrastructure/prisma/org.repository';
 
 
 export const signupController = async (req: Request, res: Response, next: NextFunction) => {
@@ -89,6 +90,8 @@ export const loginUserController = async (req: Request, res: Response, next: Nex
 
 // refresh token
 export const refreshTokenController = async (req: Request, res: Response, next: NextFunction) => {
+
+  console.log("refreshing .................................................")
   try {
     const refreshToken = req.cookies.refresh_token;
     if (!refreshToken) {
@@ -96,6 +99,7 @@ export const refreshTokenController = async (req: Request, res: Response, next: 
     }
     const jwtService = new JwtService(JWT_TOKEN_SECRET);
     const userRepository = new PrismaUserRepository();
+    const orgRepository = new PrismaOrganizationRepository();
 
     const decoded = jwtService.verify(refreshToken)
     if (!decoded || !decoded.id || !decoded.role) {
@@ -103,15 +107,23 @@ export const refreshTokenController = async (req: Request, res: Response, next: 
     }
     let account;
     if (decoded.role === "user") {
-      account = await userRepository.findById(decoded.id)
+      account = await userRepository.findById(decoded.id);
+    }
+    if (decoded.role === "organization") {
+      account = await orgRepository.findById(decoded.id);
+    }
+    if (decoded.role === "super_admin") {
+      account = await userRepository.findById(decoded.id);
+      if (!account?.isAdmin()) return new UnauthorizedError(Messages.USER_NOT_FOUND);
+      
 
     }
-    //todo : other roles here
+    //todo : other roles here 
 
     if (!account) {
-      return new UnauthorizedError(Messages.USER_NOT_FOUND)
+      return new UnauthorizedError(Messages.USER_NOT_FOUND);
     }
-    const accessToken = jwtService.sign({ email: account.email, id: account.id, role: account.role }, ACCESS_TOKEN_EXPIRATION);
+    const accessToken = jwtService.sign({ email: account.email, id: account.id, role: decoded.role }, ACCESS_TOKEN_EXPIRATION);
 
     setCookie(res, "access_token", accessToken);
     return res.status(200).json({ success: true })

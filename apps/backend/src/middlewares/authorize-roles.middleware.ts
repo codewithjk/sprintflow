@@ -4,9 +4,8 @@ import { Messages } from "../../../../libs/shared/constants/messages"
 
 
 export const authorizeRoles = (...allowedRoles: string[]) => {
-    console.log("authorize roles ",allowedRoles)
     return (req :Request, res :Response, next : NextFunction) => {
-        if (!allowedRoles.includes(req.user.role)) {
+        if (!allowedRoles.includes(req.role)) {
             return res.status(HttpStatus.FORBIDDEN).json({message:Messages.FORBIDDEN})
         }
         return next();

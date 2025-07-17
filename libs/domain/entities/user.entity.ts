@@ -4,7 +4,7 @@ export interface UserProps {
   name: string;
   email: string;
   password?: string |null;
-  role: "user" | "super_admin" |"organization";
+  role: "user" | "super_admin" ;
   isOwner: boolean;
   isBlocked: boolean;
   orgId?: string | null;
@@ -41,6 +41,9 @@ export class User {
       return null
     }
     return this.props.password;
+  }
+  isAdmin() {
+    return this.props.role === "super_admin";
   }
 
 

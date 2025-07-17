@@ -8,6 +8,8 @@
 enum AppUserRole  {
   user
   super_admin
+}
+enum AppOrganizationRole {
   organization
 }
 enum AuthProvider {
@@ -40,11 +42,24 @@ model User {
 }
 
 model Organization {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  name           String
-  ownerId        String
-  subscriptionId String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  User User[]
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  name             String   @unique
+  email            String   @unique
+  password     String
+  authProvider     String   @default("local")
+  description      String?
+  logoUrl          String?
+  website          String?
+  industry         String?
+  location         String?
+  phoneNumber      String?
+  inviteCode       String?  // for invites
+  role             AppOrganizationRole
+  plan             String   @default("free")
+  subscriptionId   String?
+  settings         Json?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  members          User[]   
 }

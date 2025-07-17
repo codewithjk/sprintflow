@@ -44,7 +44,9 @@ export const Messages = {
   ORG_CREATED: 'Organization created',
   ORG_DELETED: 'Organization delete',
   ORG_UPDATED: 'Organization updated',
-  ORG_FOUND : 'Organization found',
+  ORG_FOUND: 'Organization found',
+  ORG_VERIFIED: 'Organization verified',
+  ORG_ALREADY_EXISTS: 'Organization already exists',
 
   // Authorization
   FORBIDDEN: 'You are not authorized to perform this action',

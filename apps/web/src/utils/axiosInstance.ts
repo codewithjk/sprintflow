@@ -2,11 +2,11 @@
 import axios from "axios"
 import { SERVER_URL } from "../app/constants/env.constant";
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8080/api',
+    baseURL: SERVER_URL,
     withCredentials: true
 }
 );
-console.log(SERVER_URL)
+
 
 let isRefreshing = false;
 let refreshSubscribers: (() => void)[] = [];
@@ -50,7 +50,7 @@ axiosInstance.interceptors.response.use(
             originalRequest._retry = true;
             isRefreshing = true;
             try {
-                await axios.post(`${SERVER_URL}/auth/refresh`, {}, { withCredentials: true });
+                await axios.post(`${SERVER_URL}auth/refresh`, {}, { withCredentials: true });
                 isRefreshing = false;
                 onRefreshSuccess();
                 return axiosInstance(originalRequest);

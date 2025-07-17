@@ -1,7 +1,6 @@
 export enum AppUserRole {
   USER = "user" ,
   SUPER_ADMIN = "super_admin",
-  ORGANIZATION = "organization"
 }
 
 export interface SignupDTO {

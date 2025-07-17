@@ -4,6 +4,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "npx nx run-many --target=serve --all",
+    "web": "npx nx run-many --target=dev --all --projects=web --port=3000",
+    "backend": "npx nx run-many --target=serve --projects=backend ",
     "prisma:generate": "npx prisma generate --schema=libs/infrastructure/prisma/schema.prisma",
     "prisma:push": "npx prisma db push --schema=libs/infrastructure/prisma/schema.prisma"
   },
@@ -20,13 +22,16 @@
     "express": "^4.21.2",
     "ioredis": "^5.6.1",
     "jsonwebtoken": "^9.0.2",
+    "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.525.0",
     "nodemailer": "^7.0.5",
     "prisma": "^6.11.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-redux": "^9.2.0",
-    "react-router-dom": "6.29.0"
+    "react-router-dom": "6.29.0",
+    "react-toastify": "^11.0.5",
+    "redux-persist": "^6.0.0"
   },
   "devDependencies": {
     "@nx/esbuild": "20.8.2",
@@ -48,6 +53,7 @@
     "@types/express": "^4.17.21",
     "@types/jest": "^29.5.12",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/lodash.debounce": "^4.0.9",
     "@types/node": "^20.0.0",
     "@types/nodemailer": "^6.4.17",
     "@types/react": "19.0.0",

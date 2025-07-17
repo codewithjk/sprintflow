@@ -1,4 +1,4 @@
-
+//authSlice.ts
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { authAPI } from './authAPI';
 import { LoginDTO } from '../../../../../../libs/shared/types/src';
@@ -10,14 +10,29 @@ const initialState : AuthState = {
   error: null,
 };
 
-export const loginThunk = createAsyncThunk('auth/login', async (payload:LoginDTO , thunkAPI) => {
-  try {
-    const res = await authAPI.login(payload);
-    return res.data.user;
-  } catch (err: any) {
-    return thunkAPI.rejectWithValue(err.response.data.message);
+export const loginThunk = createAsyncThunk(
+  'auth/login',
+  async ({ role, ...payload }: LoginDTO & { role: 'user' | 'super_admin' | 'organization' }, thunkAPI) => {
+    try {
+      let res;
+      if (role === 'user') {
+        res = await authAPI.loginUser(payload);
+        return res.data.user;
+      }
+      else if (role === 'super_admin') {
+        res = await authAPI.loginAdmin(payload);
+        return res.data.admin;
+      }
+      else {
+        res = await authAPI.loginOrg(payload);
+        return res.data.org;
+      }
+      
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue(err.response.data.message);
+    }
   }
-});
+);
 
 
 

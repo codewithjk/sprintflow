@@ -1,15 +1,21 @@
+//authApi
 
+import { CreateOrganizationDTO, LoginDTO, SignupDTO } from '../../../../../../libs/shared/types/src';
 import axios from '../../../utils/axiosInstance';
 
+
+
+
 export const authAPI = {
-  signup: (data: { email: string; name: string; password: string }) =>
-    axios.post('/auth/signup', data),
+  signupUser: (data: SignupDTO) => axios.post('/auth/signup', data),
+  signupOrganization: (data: SignupDTO) => axios.post('/auth/org/signup', data),
 
-  verifyOtp: (data: { email: string; otp: string }) =>
-    axios.post('/auth/verify', data),
+  loginUser: (data: LoginDTO) => axios.post('/auth/login', data),
+  loginAdmin: (data: LoginDTO) => axios.post('/auth/admin/login', data),
+  loginOrg: (data: LoginDTO) => axios.post('/auth/org/login', data),
 
-  login: (data: { email: string; password: string }) =>
-    axios.post('/auth/login', data),
+  verifyOtp: (data: { email: string; otp: string }) => axios.post('/auth/verify', data),
+  verifyOrg : (formdata : CreateOrganizationDTO,otp:string) =>axios.post('/auth/org/verify',{...formdata,otp}),
 
   logout: () => axios.post('/auth/logout'),
 };

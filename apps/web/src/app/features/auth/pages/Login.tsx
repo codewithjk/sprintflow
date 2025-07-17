@@ -1,18 +1,24 @@
 import { useState } from "react";
 import { useAuth } from "../useAuth";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import GoogleSignInButton from "../../../components/ui/GoogleSignInButton";
+import GoogleSignInButton from "../../../components/ui/buttons/GoogleSignInButton";
+import { toast } from "react-toastify";
+
 
 
 export const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
-  const [serverError, setServerError] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
+  
 
-  const { login, isLoading } = useAuth();
+  const { user,login, isLoading } = useAuth ();
+
+  //routing 
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/home";
 
   const validate = () => {
     const newErrors: typeof errors = {};
@@ -39,16 +45,24 @@ export const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setServerError('');
 
     if (!validate()) return;
 
     try {
       await login(form);
-      navigate('/home', { replace: true });
-    } catch {
-      setServerError('Invalid credentials');
-      // toast.error('Invalid credentials');
+      // navigate('/home', { replace: true });
+      // navigate(from,{replace:true})
+      if (user.role === "super_admin") {
+    navigate("/admin/dashboard");
+  } else if (user.role === "organization") {
+    navigate("/org/dashboard");
+  } else if (user.orgId) {
+    navigate(`/org/${user.orgId}`);
+  } else {
+    navigate("/home");
+  }
+    } catch(error :any) {
+      toast.error('Invalid credentials');
     }
   };
   return (
@@ -62,7 +76,7 @@ export const Login = () => {
       <div className="w-full flex justify-center">
         <div className="md:w-[480px] p-8 bg-white shadow rounded-lg">
           <h3 className="text-3xl font-semibold text-center mb-2">
-            Login to Maarket
+            Login to Sprint Flow
           </h3>
           <p className="text-center text-gray-500 mb-4">
             Don't have an account?{' '}
@@ -135,10 +149,6 @@ export const Login = () => {
             >
               {isLoading ? 'Logging in...' : 'Login'}
             </button>
-
-            {serverError && (
-              <p className="text-red-500 text-sm mt-2">{serverError}</p>
-            )}
           </form>
         </div>
       </div>
