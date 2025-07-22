@@ -9,8 +9,8 @@ export function useAuth() {
   const dispatch = useAppDispatch();
   const auth = useAppSelector((state: RootState) => state.auth);
 
-  const login = async (data: LoginDTO & { role: 'user' | 'super_admin' | 'organization' }) => {
-    await dispatch(loginThunk(data));
+  const login = async (data: LoginDTO , role: 'user' | 'super_admin' | 'organization' ) => {
+    await dispatch(loginThunk({...data,role}));
   };
 
   const signup = async (data: SignupDTO & { role: 'user' | 'super_admin' | 'organization' }) => {
@@ -27,10 +27,10 @@ export function useAuth() {
     return authAPI.verifyOrg(data,otp)
   }
 
-  const logoutUser = async () => {
+  const logOut = async () => {
     await authAPI.logout();
     dispatch(logout());
   };
-
-  return { ...auth, login, signup, verifyOtp, logoutUser,verifyOrganization };
+ 
+  return { ...auth, login, signup, verifyOtp, logOut,verifyOrganization,  };
 }

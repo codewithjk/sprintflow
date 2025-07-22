@@ -1,9 +1,12 @@
 import express from 'express';
 import authRoute from './routes/auth.routes'
 import orgRoute from './routes/org.routes'
+import taskRoute from './routes/task.routes'
+import projectRoute from './routes/project.routes'
 import { errorMiddleware } from './middlewares/error-handler.middleware';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import isAuthenticated from './middlewares/is-authenticated.middleware';
 
 const host = process.env.HOST ?? 'localhost';
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
@@ -20,15 +23,18 @@ app.use(cors({
 }));
 
 // todo : delete this route later
-app.get('/', (req, res) => {
-    res.send({ 'message': 'Hello API'});
-});
+
 app.use(express.json());
 app.use(cookieParser());
 
 
 app.use('/api/auth', authRoute);
+
+app.use(isAuthenticated);
+
 app.use('/api/org', orgRoute);
+app.use('/api/project', projectRoute);
+app.use('/api/task', taskRoute);
 
 
 // error handling middleware.

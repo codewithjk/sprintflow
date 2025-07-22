@@ -35,7 +35,7 @@ export const OrganizationLogin = () => {
     if (!validate()) return;
 
     try {
-      await login({ ...form, role: "ORGANIZATION" });
+      await login(form,"organization");
       toast.success("Logged in as organization");
       navigate("/org/dashboard");
     } catch (err: any) {

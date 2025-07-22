@@ -4,7 +4,7 @@ export interface CreateOrganizationDTO {
   name: string;
   email: string;
   password: string; // raw password to be hashed inside service
-  description?: string;
+  description?: string ;
   logoUrl?: string;
   website?: string;
   industry?: string;

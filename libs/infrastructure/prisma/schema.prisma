@@ -37,16 +37,17 @@ model User {
   isVerified Boolean @default(false)
   isBlocked Boolean  @default(false)
   authProvider AuthProvider?
-  
-   organization  Organization? @relation(fields: [orgId], references: [id])
+  organization  Organization? @relation(fields: [orgId], references: [id])
+  assignedTasks Task[]
+  attachments   Attachment[]
+  comments      Comment[]
 }
 
 model Organization {
   id               String    @id @default(auto()) @map("_id") @db.ObjectId
   name             String   @unique
   email            String   @unique
-  password     String
-  authProvider     String   @default("local")
+  password         String
   description      String?
   logoUrl          String?
   website          String?
@@ -61,5 +62,61 @@ model Organization {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  members          User[]   
+  members          User[]
+  tasks    Task[]
+  projects Project[]
+}
+
+model Project {
+  id           String          @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  description  String
+  startDate    DateTime?
+  endDate      DateTime?
+  orgId        String @db.ObjectId
+  tasks        Task[]
+  organization          Organization             @relation(fields: [orgId], references: [id])
+}
+
+model Task {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  title          String
+  description    String
+  status         String?
+  priority       String?
+  tags           String?
+  startDate      DateTime
+  endDate        DateTime
+  points         Int?
+  projectId      String @db.ObjectId
+  assignedUserId String @db.ObjectId
+  authorId String @db.ObjectId
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  project         Project          @relation(fields: [projectId], references: [id])
+  assignee        User?            @relation( fields: [assignedUserId], references: [id])
+  author          Organization             @relation(fields: [authorId], references: [id])
+  attachments     Attachment[]
+  comments        Comment[]
+}
+
+model Attachment {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  fileURL      String
+  fileName     String?
+  taskId       String @db.ObjectId
+  orgId        String @db.ObjectId
+  task         Task @relation(fields: [taskId], references: [id])
+  uploadedBy   User @relation(fields: [orgId], references: [id])
+}
+
+model Comment {
+  id     String    @id @default(auto()) @map("_id") @db.ObjectId
+  text   String
+  taskId String @db.ObjectId
+  userId String @db.ObjectId
+
+  task   Task @relation(fields: [taskId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
 }

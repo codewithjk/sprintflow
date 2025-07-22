@@ -24,7 +24,8 @@ const isAuthenticated = async (req: any, res: Response, next: NextFunction) => {
             return res.status(HttpStatus.UNAUTHORIZED).json({ message: Messages.JWT_TOKEN_INVALID })
         }
         if (decoded.role === "organization") {
-            const org = orgRepository.findById(decoded.id);
+            const org = await orgRepository.findById(decoded.id);
+            if (!org) return res.status(HttpStatus.UNAUTHORIZED).json({ message: Messages.ORG_NOT_FOUND });
             req.organization = org; 
         }
         if (decoded.role === "user") {
@@ -37,6 +38,7 @@ const isAuthenticated = async (req: any, res: Response, next: NextFunction) => {
             if (!admin) return res.status(HttpStatus.UNAUTHORIZED).json({ message: Messages.USER_NOT_FOUND });
             req.admin = admin.toDTO();
         }
+        console.log(decoded)
         req.role = decoded.role;
         return next();
     } catch (error) {

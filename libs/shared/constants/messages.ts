@@ -48,6 +48,22 @@ export const Messages = {
   ORG_VERIFIED: 'Organization verified',
   ORG_ALREADY_EXISTS: 'Organization already exists',
 
-  // Authorization
+  //project
+  PROJECT_NOT_FOUND: 'Project not found',
+  PROJECT_CREATED: 'Project created',
+  PROJECT_DELETED: 'Project delete',
+  PROJECT_UPDATED: 'Project updated',
+  PROJECT_FOUND: 'Project found',
+  PROJECT_ALREADY_EXISTS: 'Project already exists',
+
+  //task
+  TASK_NOT_FOUND: 'Task not found',
+  TASK_CREATED: 'Task created',
+  TASK_DELETED: 'Task delete',
+  TASK_UPDATED: 'Task updated',
+  TASK_FOUND: 'Task found',
+  TASK_ALREADY_EXISTS: 'Task already exists',
+
+  //Authorization
   FORBIDDEN: 'You are not authorized to perform this action',
 };

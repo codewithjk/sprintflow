@@ -1,5 +1,6 @@
 
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import globalReducer from './globalSlice' 
 import authReducer from '../features/auth/authSlice';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'
@@ -11,6 +12,7 @@ const persistConfig = {
 }
 
 const rootReducer = combineReducers({
+  global:globalReducer,
   auth: authReducer,
   //todo : add other reducer here
 });

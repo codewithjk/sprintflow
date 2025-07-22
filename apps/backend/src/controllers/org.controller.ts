@@ -156,8 +156,6 @@ export const getOrganizationController = async (req: Request, res: Response, nex
     }
 }
 
-
-
 export const searchOrganizationsController = async (
   req: Request,
   res: Response,

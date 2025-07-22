@@ -4,6 +4,7 @@ import { getUserController } from '../controllers/user.controller';
 import isAuthenticated from '../middlewares/is-authenticated.middleware';
 import { authorizeRoles } from '../middlewares/authorize-roles.middleware';
 import { createOrganizationController, loginOrgController, verifyOrgController } from '../controllers/org.controller';
+import { Roles } from '../types';
 
 const router = Router();
 router.post('/signup', signupController);
@@ -14,5 +15,5 @@ router.post('/org/signup', createOrganizationController);
 router.post('/org/login',loginOrgController)
 router.post('/org/verify', verifyOrgController);
 
-router.get('/get-user',isAuthenticated,authorizeRoles("user","organization"), getUserController)
+router.get('/get-user',isAuthenticated,authorizeRoles(Roles.user), getUserController)
 export default router;

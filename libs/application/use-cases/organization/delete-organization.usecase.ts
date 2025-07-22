@@ -3,6 +3,7 @@ import {  NotFoundError } from "../../../shared/errors/app-error";
 import { IOrganizationRepository } from "../../interfaces/org-repository.interface";
 import { IUserRepository } from "../../interfaces/user-repository.interface";
 
+//todo : update deleting logic according to new organization creation rules
 export class DeleteOrganizationUseCase {
   constructor(
     private readonly orgRepo: IOrganizationRepository,

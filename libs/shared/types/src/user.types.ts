@@ -32,6 +32,15 @@ export interface CreateUserDTO {
   orgId?: string | null;
 }
 
+export interface User{
+  id:string
+  name:string
+  email:string
+  orgId:string
+  role: string
+  profileUrl?:string
+}
+
 
 export interface JwtPayload{
   email: string;

@@ -2,7 +2,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import{ Login} from '../features/auth/pages/Login';
 import {Signup} from '../features/auth/pages/Signup';
-import {VerifyOtp} from '../features/auth/pages/VerifyOtp';
 import Home from "../pages/home"
 import { ProtectedRoute } from './ProtectedRoute';
 import { useAuth } from '../features/auth/useAuth';
@@ -10,6 +9,7 @@ import UnauthorizedPage from '../pages/UnauthorizedPage';
 import OrgDashboard from '../features/organization/pages/dashboard';
 import { OrganizationLogin } from '../features/auth/pages/OrgLoginPage';
 import { OrganizationSignup } from '../features/auth/pages/OrgSignupPage';
+import DashboardWrapper from '../components/layout/dashdoardWrapper';
 
 const AppRouter = () => {
   const { user } = useAuth();
@@ -33,15 +33,12 @@ const AppRouter = () => {
         path="/org/signup"
         element={!user ? <OrganizationSignup/> : <Navigate to="/org/dashboard" replace />}
       />
-      <Route
-        path="/verify"
-        element={!user ? <VerifyOtp /> : <Navigate to="/home" replace />}
-      />
+   
 
       {/* user  protected */}
       <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
         {/* add here protected routes */}
-        <Route path='/home' element={ <Home/>}/>
+        <Route path='/home' element={ <DashboardWrapper><Home/></DashboardWrapper> }/>
       </Route>
 
       <Route element={<ProtectedRoute allowedRoles={["organization"]} />}>

@@ -35,7 +35,7 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "../../packages/**/*.ts",
-    "../../libs/**/*.ts",
+    "../../libs/**/*.ts", "../../libs/shared/types/express/index.d.ts",
     
 
   ]

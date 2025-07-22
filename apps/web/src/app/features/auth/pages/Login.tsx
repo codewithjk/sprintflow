@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 
 export const Login = () => {
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ email: '', password: '' ,role:"user" });
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [passwordVisible, setPasswordVisible] = useState(false);
   
@@ -49,20 +49,11 @@ export const Login = () => {
     if (!validate()) return;
 
     try {
-      await login(form);
-      // navigate('/home', { replace: true });
-      // navigate(from,{replace:true})
-      if (user.role === "super_admin") {
-    navigate("/admin/dashboard");
-  } else if (user.role === "organization") {
-    navigate("/org/dashboard");
-  } else if (user.orgId) {
-    navigate(`/org/${user.orgId}`);
-  } else {
-    navigate("/home");
-  }
+      await login(form, "user");
+      toast.success("Login successful");
+      navigate("/home", { replace: true });
     } catch(error :any) {
-      toast.error('Invalid credentials');
+      toast.error(error?.response?.data?.message || "Login failed");
     }
   };
   return (
