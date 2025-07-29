@@ -1,11 +1,11 @@
-"use client";
-
 import React, { useEffect } from "react";
 
 
 import { useAppSelector } from "../../store/hooks";
 import Navbar from "../ui/navbar";
 import Sidebar from "../ui/sidebar";
+import { useAuth } from "../../features/auth/useAuth";
+import { useProject } from "../../features/project/useProject";
 
 
 
@@ -14,15 +14,18 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const isSidebarCollapsed = useAppSelector(
     (state) => state.global.isSidebarCollapsed,
   );
-  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+
+   const { user } = useAuth();
+  const { getAllProjects } = useProject();
 
   useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
+    if (user?.role === "user") {
+      getAllProjects({ orgId: user.orgId });
+    }else
+    if (user?.role === "organization") {
+      getAllProjects({ orgId: user.id });
     }
-  });
+  }, [user]);
 
   return (
     <div className="flex min-h-screen w-full bg-gray-50 text-gray-900">
@@ -41,11 +44,9 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 
 const DashboardWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
-    // <StoreProvider>
-    //   <AuthProvider>
+
         <DashboardLayout>{children}</DashboardLayout>
-    //   </AuthProvider>
-    // </StoreProvider>
+
   );
 };
 

@@ -13,6 +13,7 @@ import {
   Layers3,
   LockIcon,
   LucideIcon,
+  MailIcon,
   Search,
   Settings,
   ShieldAlert,
@@ -30,91 +31,20 @@ import { setIsSidebarCollapsed } from "../../../store/globalSlice";
 import { Link, useLocation } from "react-router-dom";
 import Image from "../images";
 import { User as UserType } from "../../../../../../../libs/shared/types/src";
+import { useProject } from "../../../features/project/useProject";
 
 const Sidebar = () => {
   const [showProjects, setShowProjects] = useState(true);
   const [showPriority, setShowPriority] = useState(true);
 
-  // const { data: projects } = useGetProjectsQuery();
-  //todo : fetch projects
-  const projects = [
-  {
-    "id": 1,
-    "name": "Apollo",
-    "description": "A space exploration project.",
-    "startDate": "2023-01-01T00:00:00Z",
-    "endDate": "2023-12-31T00:00:00Z"
-  },
-  {
-    "id": 2,
-    "name": "Beacon",
-    "description": "Developing advanced navigation systems.",
-    "startDate": "2023-02-01T00:00:00Z",
-    "endDate": "2023-10-15T00:00:00Z"
-  },
-  {
-    "id": 3,
-    "name": "Catalyst",
-    "description": "A project to boost renewable energy use.",
-    "startDate": "2023-03-05T00:00:00Z",
-    "endDate": "2024-03-05T00:00:00Z"
-  },
-  {
-    "id": 4,
-    "name": "Delta",
-    "description": "Delta project for new software development techniques.",
-    "startDate": "2023-01-20T00:00:00Z",
-    "endDate": "2023-09-20T00:00:00Z"
-  },
-  {
-    "id": 5,
-    "name": "Echo",
-    "description": "Echo project focused on AI advancements.",
-    "startDate": "2023-04-15T00:00:00Z",
-    "endDate": "2023-11-30T00:00:00Z"
-  },
-  {
-    "id": 6,
-    "name": "Foxtrot",
-    "description": "Exploring cutting-edge biotechnology.",
-    "startDate": "2023-02-25T00:00:00Z",
-    "endDate": "2023-08-25T00:00:00Z"
-  },
-  {
-    "id": 7,
-    "name": "Golf",
-    "description": "Development of new golf equipment using AI.",
-    "startDate": "2023-05-10T00:00:00Z",
-    "endDate": "2023-12-10T00:00:00Z"
-  },
-  {
-    "id": 8,
-    "name": "Hotel",
-    "description": "Hotel management system overhaul.",
-    "startDate": "2023-03-01T00:00:00Z",
-    "endDate": "2024-01-01T00:00:00Z"
-  },
-  {
-    "id": 9,
-    "name": "India",
-    "description": "Telecommunication infrastructure upgrade.",
-    "startDate": "2023-06-01T00:00:00Z",
-    "endDate": "2023-12-01T00:00:00Z"
-  },
-  {
-    "id": 10,
-    "name": "Juliet",
-    "description": "Initiative to enhance cyber-security measures.",
-    "startDate": "2023-07-01T00:00:00Z",
-    "endDate": "2024-02-01T00:00:00Z"
-  }
-];
   const dispatch = useAppDispatch();
   const isSidebarCollapsed = useAppSelector(
     (state) => state.global.isSidebarCollapsed,
   );
 
-    const { user, logOut } = useAuth();
+  const { user, logOut } = useAuth();
+  const { projects, } = useProject(); 
+  
   const handleSignOut = async () => {
     try {
       await logOut();
@@ -131,15 +61,49 @@ const Sidebar = () => {
     ${isSidebarCollapsed ? "w-0 hidden" : "w-64"}
   `;
 
-  console.log("side bar " , user)
+  const sidebarLinksByRole = {
+    super_admin: [
+      { icon: Home, label: "Home", href: "/admin-dashboard" },
+      { icon: Users, label: "Organizations", href: "/organizations" },
+      { icon: Settings, label: "Settings", href: "/settings" },
+    ],
+    organization: [
+      { icon: Home, label: "Home", href: "/org/dashboard" },
+      { icon: Briefcase, label: "Projects", href: "/org/projects" },
+      { icon: Users, label: "Teams", href: "/org/teams" },
+      { icon: User, label: "Members", href: "/org/members" },
+      { icon: Settings, label: "Settings", href: "/org/settings" },
+    ],
+    user: [
+      { icon: Home, label: "Home", href: "/dashboard" },
+      { icon: Briefcase, label: "Timeline", href: "/timeline" },
+      { icon: Search, label: "Search", href: "/search" },
+      { icon: Settings, label: "Settings", href: "/settings" },
+    ],
+  };
+  const role = user.role as keyof typeof sidebarLinksByRole;
+  const sidebarLinks = sidebarLinksByRole[role] || [];
+
+  const priorities = [
+  { label: 'Urgent', href: '/priority/urgent', icon: AlertCircle },
+  { label: 'High', href: '/priority/high', icon: ShieldAlert },
+  { label: 'Medium', href: '/priority/medium', icon: AlertTriangle },
+  { label: 'Low', href: '/priority/low', icon: AlertOctagon },
+  { label: 'Backlog', href: '/priority/backlog', icon: Layers3 },
+];
+
+
+
+
 
   return (
     <div className={sidebarClassNames}>
       <div className="flex h-[100%] w-full flex-col justify-start">
         {/* TOP LOGO */}
         <div className="z-50 flex min-h-[56px] w-64 items-center justify-between bg-white px-6 pt-3 dark:bg-black">
-          <div className="text-xl font-bold text-gray-800 dark:text-white">
-            EDLIST
+          <div >
+            <span className="text-xl font-bold text-gray-800 dark:text-white">SPRINT</span>
+            <span className="text-xl font-bold text-blue-800 dark:text-blue-500"> FLOW</span> 
           </div>
           {isSidebarCollapsed ? null : (
             <button
@@ -154,15 +118,20 @@ const Sidebar = () => {
         </div>
         {/* TEAM */}
         <div className="flex items-center gap-5 border-y-[1.5px] border-gray-200 px-8 py-4 dark:border-gray-700">
-          <img
-            src="https://pm-s3-images.s3.us-east-2.amazonaws.com/logo.png"
-            alt="Logo"
-            width={40}
-            height={40}
-          />
+        {!!currentUserDetails?.profileUrl ? (
+                         <Image
+                src={`https://pm-s3-images.s3.us-east-2.amazonaws.com/${currentUserDetails?.profileUrl}`}
+                alt={currentUserDetails?.name || "User Profile Picture"}
+                width={100}
+                height={50}
+                className="h-full rounded-full object-cover"
+              />
+            ) : (
+              <User className="h-6 w-6 cursor-pointer self-center rounded-full dark:text-white" />
+            )}
           <div>
             <h3 className="text-md font-bold tracking-wide dark:text-gray-200">
-              EDROH TEAM
+              {user.name}
             </h3>
             <div className="mt-1 flex items-start gap-2">
               <LockIcon className="mt-[0.1rem] h-3 w-3 text-gray-500 dark:text-gray-400" />
@@ -171,14 +140,9 @@ const Sidebar = () => {
           </div>
         </div>
         {/* NAVBAR LINKS */}
-        <nav className="z-10 w-full">
-          <SidebarLink icon={Home} label="Home" href="/" />
-          <SidebarLink icon={Briefcase} label="Timeline" href="/timeline" />
-          <SidebarLink icon={Search} label="Search" href="/search" />
-          <SidebarLink icon={Settings} label="Settings" href="/settings" />
-          <SidebarLink icon={User} label="Users" href="/users" />
-          <SidebarLink icon={Users} label="Teams" href="/teams" />
-        </nav>
+          {sidebarLinks.map(({ icon: Icon, label, href }) => (
+        <SidebarLink key={href} icon={Icon} label={label} href={href} />
+      ))}
 
         {/* PROJECTS LINKS */}
         <button
@@ -217,28 +181,10 @@ const Sidebar = () => {
         </button>
         {showPriority && (
           <>
-            <SidebarLink
-              icon={AlertCircle}
-              label="Urgent"
-              href="/priority/urgent"
-            />
-            <SidebarLink
-              icon={ShieldAlert}
-              label="High"
-              href="/priority/high"
-            />
-            <SidebarLink
-              icon={AlertTriangle}
-              label="Medium"
-              href="/priority/medium"
-            />
-            <SidebarLink icon={AlertOctagon} label="Low" href="/priority/low" />
-            <SidebarLink
-              icon={Layers3}
-              label="Backlog"
-              href="/priority/backlog"
-            />
-          </>
+  {priorities.map(({ label, href, icon }, index) => (
+    <SidebarLink key={index} icon={icon} label={label} href={href} />
+  ))}
+</>
         )}
       </div>
       <div className="z-10 mt-32 flex w-full flex-col items-center gap-4 bg-white px-8 py-4 dark:bg-black md:hidden">

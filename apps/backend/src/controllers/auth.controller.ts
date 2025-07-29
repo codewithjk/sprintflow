@@ -13,7 +13,7 @@ import { UnauthorizedError, ValidationError } from '../../../../libs/shared/erro
 import { LoginUseCase } from '../../../../libs/application/use-cases/auth/login.usecase';
 import { JwtService } from '../../../../libs/infrastructure/jwt/jwt.service';
 import { JWT_TOKEN_SECRET } from '../../../../libs/shared/constants/env-constants';
-import { setCookie } from '../utils/cookies/setCookie';
+import { clearCookie, setCookie } from '../utils/cookies/setCookie';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { ACCESS_TOKEN_EXPIRATION } from '../../../../libs/shared/constants/time-constants';
 import { PrismaOrganizationRepository } from '../../../../libs/infrastructure/prisma/org.repository';
@@ -41,11 +41,11 @@ export const signupController = async (req: Request, res: Response, next: NextFu
 //Verify OTP for user registration
 export const verifyUserController = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, otp, password, name } = req.body;
-    if (!email || !otp || !password || !name) {
+    const { email, otp, password, name,orgId } = req.body;
+    if (!email || !otp || !password || !name || !orgId) {
       return next(new ValidationError("Missing required fields!"));
     }
-    const data = { email, otp, password, name }
+    const data = { email, otp, password, name,orgId }
     const userRepository = new PrismaUserRepository();
     const otpService = new OtpService()
     const passwordService = new BcryptPasswordService()
@@ -133,4 +133,20 @@ export const refreshTokenController = async (req: Request, res: Response, next: 
 }
 
 
+export const logoutUserController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    clearCookie(res, 'refresh_token');
+    clearCookie(res, 'access_token');
 
+    res.status(HttpStatus.OK).json({
+      message: Messages.LOGOUT_SUCCESS,
+      status: 'success',
+    });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -9,5 +9,6 @@ export interface IProjectRepository {
   findById(id: string): Promise<Project | null>;
   searchProjects(search: string,orgId:string, skip: number, take: number): Promise<{ projects: Partial<Project>[]; total: number; page: number; pageSize: number; }>;
   findExistingProject(name: string, orgId: string): Promise<Project | null>;
+  find(filter : Partial<Project>, skip: number, take: number) : Promise<{ projects: Partial<Project>[]; total: number; page: number; pageSize: number; }>;
 
 }

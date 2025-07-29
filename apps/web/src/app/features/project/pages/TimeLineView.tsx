@@ -1,8 +1,10 @@
-import { useAppSelector } from "@/app/redux";
-import { useGetTasksQuery } from "@/state/api";
+
+
 import { DisplayOption, Gantt, ViewMode } from "gantt-task-react";
 import "gantt-task-react/dist/index.css";
 import React, { useMemo, useState } from "react";
+import { useAppSelector } from "../../../store/hooks";
+import { useTasks } from "../../task/useTask";
 
 type Props = {
   id: string;
@@ -13,12 +15,9 @@ type TaskTypeItems = "task" | "milestone" | "project";
 
 const Timeline = ({ id, setIsModalNewTaskOpen }: Props) => {
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
-  const {
-    data: tasks,
-    error,
-    isLoading,
-  } = useGetTasksQuery({ projectId: Number(id) });
-
+ 
+  const { tasks, fetchLoading, fetchError } = useTasks();
+  console.log(tasks)
   const [displayOptions, setDisplayOptions] = useState<DisplayOption>({
     viewMode: ViewMode.Month,
     locale: "en-US",
@@ -28,7 +27,7 @@ const Timeline = ({ id, setIsModalNewTaskOpen }: Props) => {
     return (
       tasks?.map((task) => ({
         start: new Date(task.startDate as string),
-        end: new Date(task.dueDate as string),
+        end: new Date(task.endDate as string),
         name: task.title,
         id: `Task-${task.id}`,
         type: "task" as TaskTypeItems,
@@ -47,9 +46,9 @@ const Timeline = ({ id, setIsModalNewTaskOpen }: Props) => {
     }));
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error || !tasks) return <div>An error occurred while fetching tasks</div>;
-
+  if (fetchLoading) return <div>Loading...</div>;
+  if (fetchError || !tasks?.length) return <div>An error occurred while fetching tasks</div>;
+  console.log(tasks)
   return (
     <div className="px-4 xl:px-6">
       <div className="flex flex-wrap items-center justify-between gap-2 py-5">

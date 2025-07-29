@@ -5,7 +5,7 @@ export interface OrgProps {
   password: string;
   role: string; 
   description?: string | null;
-  logoUrl?: string | null;
+  profileUrl?: string | null;
   website?: string | null;
   industry?: string | null;
   location?: string | null;
@@ -91,7 +91,7 @@ export class Organization {
       name: this.props.name,
       email: this.props.email,
       description: this.props.description,
-      logoUrl: this.props.logoUrl,
+      profileUrl: this.props.profileUrl,
       website: this.props.website,
       industry: this.props.industry,
       location: this.props.location,

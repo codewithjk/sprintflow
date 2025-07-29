@@ -5,7 +5,7 @@ import {
   getTaskController,
   updateTaskController,
   deleteTaskController,
-  searchTasksController,
+  getAllTasksController,
 } from '../controllers/task.controller';
 import isAuthenticated from '../middlewares/is-authenticated.middleware';
 
@@ -13,9 +13,13 @@ const router = Router();
 router.use(isAuthenticated);
 
 router.post('/', createTaskController);
-router.get('/', searchTasksController); // with filters
+router.get('/', getAllTasksController); // with filters
+
 router.get('/:id', getTaskController);
 router.put('/:id', updateTaskController);
 router.delete('/:id', deleteTaskController);
+
+// router.get('/org/:orgId', getTasksByOrgController); // all tasks under an org
+// router.get('/project/:projectId', getTasksByProjectController);
 
 export default router;

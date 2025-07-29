@@ -4,10 +4,11 @@ import { authAPI } from './authAPI';
 import { LoginDTO } from '../../../../../../libs/shared/types/src';
 import { AuthState } from '../../types/state.type';
 
-const initialState : AuthState = {
+const initialState: AuthState = {
   user: null,
   isLoading: false,
   error: null,
+  invitation: null,
 };
 
 export const loginThunk = createAsyncThunk(
@@ -27,12 +28,24 @@ export const loginThunk = createAsyncThunk(
         res = await authAPI.loginOrg(payload);
         return res.data.org;
       }
-      
+
     } catch (err: any) {
       return thunkAPI.rejectWithValue(err.response.data.message);
     }
   }
 );
+
+export const verifyInvitationThunk = createAsyncThunk(
+  'verify/invitation',
+  async (token: string, thunkAPI) => {
+    try {
+      const res = await authAPI.verifyInvitation({ token });
+      return res.data.invitation;
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue(err.response.data.message);
+    }
+  }
+)
 
 
 
@@ -43,6 +56,7 @@ export const authSlice = createSlice({
   reducers: {
     logout: (state) => {
       state.user = null;
+      state.invitation = null;
     },
     setUser: (state, action) => {
       state.user = action.payload;
@@ -61,7 +75,18 @@ export const authSlice = createSlice({
       .addCase(loginThunk.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
-      });
+      })
+      .addCase(verifyInvitationThunk.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      }).addCase(verifyInvitationThunk.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.invitation = action.payload;
+      })
+      .addCase(verifyInvitationThunk.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
   }
 });
 

@@ -10,7 +10,7 @@ export const OrganizationSignup = () => {
     email: "",
     password: "",
     description: "",
-    logoUrl: "",
+    profileUrl: "",
     website: "",
     industry: "",
     location: "",
@@ -59,7 +59,7 @@ export const OrganizationSignup = () => {
     if (!validate()) return;
 
     try {
-      await signup(form);
+      await signup({...form,role:"organization"});
       setShowOtp(true);
       toast.success("OTP sent to your email");
       startTimer();
@@ -86,14 +86,14 @@ export const OrganizationSignup = () => {
 
   const handleVerifyOtp = async () => {
     try {
-      await verifyOrganization(form, otp.join(""));
+      await verifyOrganization({...form,role:"organization"}, otp.join(""));
       toast.success("Organization account verified!");
       setForm({
         name: "",
         email: "",
         password: "",
         description: "",
-        logoUrl: "",
+        profileUrl: "",
         website: "",
         industry: "",
         location: "",
@@ -109,7 +109,7 @@ export const OrganizationSignup = () => {
 
   const handleResendOtp = async () => {
     try {
-      await signup(form);
+      await signup({...form,role:"organization"});
       setTimer(60);
       setCanResend(false);
       startTimer();

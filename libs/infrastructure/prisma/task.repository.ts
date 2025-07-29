@@ -1,14 +1,31 @@
 
 
 import prisma from './client';
-import { Task } from '../../domain/entities/task.entity';
+import { Task, TaskProps } from '../../domain/entities/task.entity';
 import { ITaskRepository } from '../../application/interfaces/task-repository.interface';
+import { Prisma } from '@prisma/client';
 
 
 export class PrismaTaskRepository implements ITaskRepository {
-    async create(task: Task): Promise<Task> {
-        const data = task.toDTO();
-        const created = await prisma.task.create({ data });
+    private mapTaskInput(input: TaskProps): Prisma.TaskCreateInput {
+        return {
+            title: input.title,
+            description: input.description,
+            startDate: input.startDate,
+            endDate: input.endDate,
+            tags: input.tags,
+            status: input.status,
+            priority: input.priority,
+            project: { connect: { id: input.projectId } },
+            assignee: { connect: { id: input.assignedUserId } },
+            author: { connect: { id: input.orgId } },
+        };
+    }
+
+    async create(task: TaskProps): Promise<Task> {
+        console.log(task)
+        const mappedTaskInput = this.mapTaskInput(task);
+        const created = await prisma.task.create({ data: mappedTaskInput });
         return new Task({ ...created });
     }
 
@@ -17,10 +34,10 @@ export class PrismaTaskRepository implements ITaskRepository {
         return task ? new Task({ ...task }) : null;
     }
 
-    async update(id:string ,task: Task): Promise<Task> {
+    async update(id: string, task: Partial<TaskProps>): Promise<Task> {
         const updated = await prisma.task.update({
-            where: { id: task.id },
-            data: task.toDTO(),
+            where: { id: id },
+            data: task,
         });
         return new Task({ ...updated });
     }
@@ -29,12 +46,12 @@ export class PrismaTaskRepository implements ITaskRepository {
         await prisma.task.delete({ where: { id } });
     }
 
-    async findExistingTask(name: string,orgId:string) {
-    const task = await prisma.task.findFirst({ where: { title:name,authorId: orgId } });
-    return task ? new Task(task) : null;
-  }
+    async findExistingTask(name: string, orgId: string) {
+        const task = await prisma.task.findFirst({ where: { title: name, orgId: orgId } });
+        return task ? new Task(task) : null;
+    }
 
-    async search(search: string, authorId: string, skip: number, take: number) {
+    async search(search: string, orgId: string, skip: number, take: number) {
         const [tasks, total] = await Promise.all([
             prisma.task.findMany({
                 where: {
@@ -42,7 +59,7 @@ export class PrismaTaskRepository implements ITaskRepository {
                         contains: search,
                         mode: 'insensitive',
                     },
-                    authorId,
+                    orgId,
                 },
                 skip,
                 take,
@@ -53,8 +70,62 @@ export class PrismaTaskRepository implements ITaskRepository {
                         contains: search,
                         mode: 'insensitive',
                     },
-                   authorId
+                    orgId
                 },
+            }),
+        ]);
+
+        return {
+            tasks,
+            total,
+            page: Math.floor(skip / take) + 1,
+            pageSize: take,
+        };
+    }
+    async find(filter: Partial<TaskProps>, skip: number, take: number) {
+        const { title, ...rest } = filter;
+
+        const where: Prisma.TaskWhereInput = {
+            ...rest,
+            ...(title && typeof title === 'string'
+                ? {
+                    title: {
+                        contains: title,
+                        mode: 'insensitive',
+                    },
+                }
+                : {}),
+        };
+        const [tasks, total] = await Promise.all([
+            prisma.task.findMany({
+                where,
+                skip,
+                take,
+                include: {
+                    assignee: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                        },
+                    },
+                    author: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                        },
+                    },
+                    project: {
+                        select: {
+                            id: true,
+                            name: true,
+                        },
+                    },
+                },
+            }),
+            prisma.task.count({
+                where,
             }),
         ]);
 

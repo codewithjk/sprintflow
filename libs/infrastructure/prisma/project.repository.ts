@@ -1,6 +1,7 @@
 
 
 
+import { Prisma } from '@prisma/client';
 import { IProjectRepository } from '../../application/interfaces/project-repository.interface';
 import { Project } from '../../domain/entities/project.entity';
 import { CreateProjectDTO } from '../../shared/types/src';
@@ -62,5 +63,38 @@ export class PrismaProjectRepository implements IProjectRepository {
       pageSize: take,
     };
   }
+
+  async find(filter: Partial<Project>, skip: number, take: number) {
+        const { name, ...rest } = filter;
+
+        const where: Prisma.ProjectWhereInput = {
+            ...rest,
+            ...(name && typeof name === 'string'
+                ? {
+                    name: {
+                        contains: name,
+                        mode: 'insensitive',
+                    },
+                }
+                : {}),
+        };
+        const [projects, total] = await Promise.all([
+            prisma.project.findMany({
+                where,
+                skip,
+                take,
+            }),
+            prisma.project.count({
+                where,
+            }),
+        ]);
+
+        return {
+            projects,
+            total,
+            page: Math.floor(skip / take) + 1,
+            pageSize: take,
+        };
+    }
 
 }

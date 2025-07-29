@@ -10,6 +10,7 @@ import { UpdateProjectUseCase } from "../../../../libs/application/use-cases/pro
 import { DeleteProjectUseCase } from "../../../../libs/application/use-cases/project/delete-project.usecase";
 import { GetProjectUseCase } from "../../../../libs/application/use-cases/project/get-project.usecase";
 import { SearchProjectsUseCase } from "../../../../libs/application/use-cases/project/search-project.usecase";
+import { GetAllProjectsUseCase } from "../../../../libs/application/use-cases/project/get-all-project.usecase";
 
 export const createProjectController = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -25,7 +26,6 @@ export const createProjectController = async (req: Request, res: Response, next:
             description,
         }
         const projectRepo = new PrismaProjectRepository();
-
         const useCase = new CreateProjectUseCase(projectRepo);
         const newProject = await useCase.execute(data);
         res.status(HttpStatus.CREATED).json({ message: Messages.PROJECT_CREATED, project: newProject })
@@ -84,8 +84,8 @@ export const getProjectController = async (req: Request, res: Response, next: Ne
         const id: string = idParam;
         const projectRepo = new PrismaProjectRepository();
         const useCase = new GetProjectUseCase(projectRepo);
-        const org = await useCase.execute(id);
-        res.status(HttpStatus.OK).json({ message: Messages.PROJECT_FOUND, org })
+        const project = await useCase.execute(id);
+        res.status(HttpStatus.OK).json({ message: Messages.PROJECT_FOUND, project })
     } catch (error) {
         next(error)
     }
@@ -117,3 +117,21 @@ export const searchProjectsController = async (
         next(error);
     }
 };
+
+
+export const getAllProjectController = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+          const { page = 1, limit = 10 ,...rawFilters} = req.query;
+     const projectRepo = new PrismaProjectRepository();
+          const useCase = new GetAllProjectsUseCase(projectRepo);
+          const result = await useCase.execute(
+            rawFilters,
+            Number(page),
+            Number(limit)
+          );
+          res.status(HttpStatus.OK).json(result)
+    
+        } catch (err) {
+          next(err);
+        }
+}

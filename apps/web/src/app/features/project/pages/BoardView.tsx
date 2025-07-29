@@ -1,12 +1,17 @@
-import { useGetTasksQuery, useUpdateTaskStatusMutation } from "@/state/api";
+
 
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
 import { EllipsisVertical, MessageSquareMore, Plus } from "lucide-react";
-import { format } from "date-fns";
+import {  format } from "date-fns";
 import Image from "../../../components/ui/images";
-import { Task } from "../../../../../../../libs/shared/types/src";
+import { useTasks } from "../../task/useTask";
+import { Task as taskType } from "../../../types/state.type";
+import { toast } from "react-toastify";
+
+
+
 
 
 type BoardProps = {
@@ -17,19 +22,21 @@ type BoardProps = {
 const taskStatus = ["To Do", "Work In Progress", "Under Review", "Completed"];
 
 const BoardView = ({ id, setIsModalNewTaskOpen }: BoardProps) => {
-  const {
-    data: tasks,
-    isLoading,
-    error,
-  } = useGetTasksQuery({ projectId: Number(id) });
-  const [updateTaskStatus] = useUpdateTaskStatusMutation();
 
-  const moveTask = (taskId: number, toStatus: string) => {
-    updateTaskStatus({ taskId, status: toStatus });
+  const { tasks, fetchError, fetchLoading, updateTask } = useTasks();
+
+  
+
+  const moveTask = (taskId: string, toStatus: string) => {
+    try {
+      updateTask( taskId,{ status: toStatus });
+    } catch (error:any) {
+      toast.error(error.message || "Failed to updated task")
+    }
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>An error occurred while fetching tasks</div>;
+  if (fetchLoading) return <div>Loading...</div>;
+  if (fetchError) return <div>An error occurred while fetching tasks</div>;
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -50,8 +57,8 @@ const BoardView = ({ id, setIsModalNewTaskOpen }: BoardProps) => {
 
 type TaskColumnProps = {
   status: string;
-  tasks: Task[];
-  moveTask: (taskId: number, toStatus: string) => void;
+  tasks: taskType[];
+  moveTask: (taskId: string, toStatus: string) => void;
   setIsModalNewTaskOpen: (isOpen: boolean) => void;
 };
 
@@ -63,14 +70,14 @@ const TaskColumn = ({
 }: TaskColumnProps) => {
   const [{ isOver }, drop] = useDrop(() => ({
     accept: "task",
-    drop: (item: { id: number }) => moveTask(item.id, status),
+    drop: (item: { id: string }) => moveTask(item.id, status),
     collect: (monitor: any) => ({
       isOver: !!monitor.isOver(),
     }),
   }));
 
   const tasksCount = tasks.filter((task) => task.status === status).length;
-
+  console.log(tasksCount);
   const statusColor: any = {
     "To Do": "#2563EB",
     "Work In Progress": "#059669",
@@ -124,7 +131,7 @@ const TaskColumn = ({
 };
 
 type TaskProps = {
-  task: Task;
+  task: taskType;
 };
 
 const Task = ({ task }: TaskProps) => {
@@ -141,13 +148,13 @@ const Task = ({ task }: TaskProps) => {
   const formattedStartDate = task.startDate
     ? format(new Date(task.startDate), "P")
     : "";
-  const formattedDueDate = task.dueDate
-    ? format(new Date(task.dueDate), "P")
+  const formattedDueDate = task.endDate
+    ? format(new Date(task.endDate), "P")
     : "";
 
   const numberOfComments = (task.comments && task.comments.length) || 0;
 
-  const PriorityTag = ({ priority }: { priority: TaskType["priority"] }) => (
+  const PriorityTag = ({ priority }: { priority: taskType["priority"] }) => (
     <div
       className={`rounded-full px-2 py-1 text-xs font-semibold ${
         priority === "Urgent"
@@ -227,9 +234,9 @@ const Task = ({ task }: TaskProps) => {
           <div className="flex -space-x-[6px] overflow-hidden">
             {task.assignee && (
               <Image
-                key={task.assignee.userId}
-                src={`https://pm-s3-images.s3.us-east-2.amazonaws.com/${task.assignee.profilePictureUrl!}`}
-                alt={task.assignee.username}
+                key={task.assignee.id}
+                src={`https://pm-s3-images.s3.us-east-2.amazonaws.com/${task.assignee.profileUrl!}`}
+                alt={task.assignee.name}
                 width={30}
                 height={30}
                 className="h-8 w-8 rounded-full border-2 border-white object-cover dark:border-dark-secondary"
@@ -237,9 +244,9 @@ const Task = ({ task }: TaskProps) => {
             )}
             {task.author && (
               <Image
-                key={task.author.userId}
-                src={`https://pm-s3-images.s3.us-east-2.amazonaws.com/${task.author.profilePictureUrl!}`}
-                alt={task.author.username}
+                key={task.author.id}
+                src={`https://pm-s3-images.s3.us-east-2.amazonaws.com/${task.author.profileUrl!}`}
+                alt={task.author.name}
                 width={30}
                 height={30}
                 className="h-8 w-8 rounded-full border-2 border-white object-cover dark:border-dark-secondary"

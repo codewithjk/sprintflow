@@ -1,7 +1,8 @@
 
 import { format } from "date-fns";
 import Image from "../images";
-import { Task } from "../../../../../../../libs/shared/types/src";
+import { Task } from "../../../types/state.type";
+
 
 
 
@@ -53,7 +54,7 @@ const TaskCard = ({ task }: Props) => {
       </p>
       <p>
         <strong>Due Date:</strong>{" "}
-        {task.dueDate ? format(new Date(task.dueDate), "P") : "Not set"}
+        {task.endDate ? format(new Date(task.endDate), "P") : "Not set"}
       </p>
       {/* <p>
         <strong>Author:</strong>{" "}

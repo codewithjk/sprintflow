@@ -29,6 +29,7 @@ export class VerifyUserUseCase {
             isVerified: true,
             isOwner: false,
             role: 'user',
+            orgId: data.orgId
         });
         return user.toDTO();
     }

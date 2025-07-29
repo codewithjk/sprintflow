@@ -5,12 +5,12 @@ export interface TaskProps {
   status?: string |null;
   priority?: string |null;
   tags?: string | null;
-  startDate: Date;
-  endDate: Date;
+  startDate: Date |string;
+  endDate: Date |string;
   points?: number | null;
   projectId: string;
   assignedUserId: string;
-  authorId: string;
+  orgId: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -24,8 +24,14 @@ export class Task {
   get title() {
     return this.props.title;
   }
+  get orgId() {
+    return this.props.orgId;
+  }
+  get projectId() {
+    return this.props.projectId
+  }
     ownedBy(organizationId: string) {
-        return organizationId === this.props.authorId;
+        return organizationId === this.props.orgId;
     }
 
   toDTO() {

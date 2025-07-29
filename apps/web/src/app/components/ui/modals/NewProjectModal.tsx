@@ -1,8 +1,8 @@
-
-import { useCreateProjectMutation } from "@/state/api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { formatISO } from "date-fns";
 import Modal from "./Modal";
+import { useProject } from "../../../features/project/useProject";
+import { toast } from "react-toastify";
 
 type Props = {
   isOpen: boolean;
@@ -10,7 +10,7 @@ type Props = {
 };
 
 const NewProjectModal = ({ isOpen, onClose }: Props) => {
-  const [createProject, { isLoading }] = useCreateProjectMutation();
+  const { createProject, isLoading, createError } = useProject();
   const [projectName, setProjectName] = useState("");
   const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -26,12 +26,27 @@ const NewProjectModal = ({ isOpen, onClose }: Props) => {
       representation: "complete",
     });
 
-    await createProject({
-      name: projectName,
-      description,
-      startDate: formattedStartDate,
-      endDate: formattedEndDate,
-    });
+    try {
+      await createProject({
+        name: projectName,
+        description,
+        startDate: formattedStartDate,
+        endDate: formattedEndDate,
+      });
+
+      toast.success("Project created successfully!");
+      onClose();
+      resetForm();
+    } catch (err: any) {
+      toast.error(err || "Failed to create project.");
+    }
+  };
+
+  const resetForm = () => {
+    setProjectName("");
+    setDescription("");
+    setStartDate("");
+    setEndDate("");
   };
 
   const isFormValid = () => {

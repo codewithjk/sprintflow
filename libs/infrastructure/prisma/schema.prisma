@@ -31,7 +31,8 @@ model User {
   name      String
   email     String   @unique
   password  String?
-  orgId     String?  @db.ObjectId
+  profileUrl String?
+  orgId     String  @db.ObjectId
   role      AppUserRole     // user || super_admin
   isOwner   Boolean  @default(false)
   isVerified Boolean @default(false)
@@ -49,7 +50,7 @@ model Organization {
   email            String   @unique
   password         String
   description      String?
-  logoUrl          String?
+  profileUrl       String?
   website          String?
   industry         String?
   location         String?
@@ -90,13 +91,13 @@ model Task {
   points         Int?
   projectId      String @db.ObjectId
   assignedUserId String @db.ObjectId
-  authorId String @db.ObjectId
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  orgId          String @db.ObjectId
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   project         Project          @relation(fields: [projectId], references: [id])
   assignee        User?            @relation( fields: [assignedUserId], references: [id])
-  author          Organization             @relation(fields: [authorId], references: [id])
+  author          Organization             @relation(fields: [orgId], references: [id])
   attachments     Attachment[]
   comments        Comment[]
 }

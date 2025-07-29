@@ -6,8 +6,8 @@ import GoogleSignInButton from "../../../components/ui/buttons/GoogleSignInButto
 import { Link, useNavigate } from "react-router-dom";
 import { OrganizationSelector } from "../../../components/ui/inputs/OrganizationSelector";
 
-export const Signup = () => {
-  const [form, setForm] = useState({ name: "", email: "", password: "" ,orgId :""});
+export const UserRegistrationPage = () => {
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [otp, setOtp] = useState(["", "", "", ""]);
@@ -17,9 +17,13 @@ export const Signup = () => {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
 
+  //todo : pass orgId with form data, get it from redux state
+
   const [selectedOrgId, setSelectedOrgId] = useState("");
 
-  const { signup, verifyOtp, } = useAuth();
+  const { signup, verifyOtp, invitation, } = useAuth();
+  console.log(invitation)
+if(!invitation)return <> no invitation</>
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -34,9 +38,9 @@ export const Signup = () => {
     } else if (form.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters";
     }
-    if (!form.orgId) {
-    newErrors.orgId = "Please select an organization";
-  }
+  //   if (!form.orgId) {
+  //   newErrors.orgId = "Please select an organization";
+  // }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -46,15 +50,14 @@ export const Signup = () => {
     if (!validateForm()) return;
 
     try {
-      await signup(form);
+      await signup({...form,role:"user"});
       setShowOtp(true);
       setCanResend(false);
       setTimer(60);
       startTimer();
       toast.success("OTP sent to your email");
     } catch (err: any) {
-      console.log(err)
-      toast.error(err?.response?.data?.message || "Signup failed");
+      toast.error(err?.response?.data?.message || "Registration failed");
     }
   };
 
@@ -89,10 +92,10 @@ export const Signup = () => {
 
   const handleVerifyOtp = async () => {
     try {
-      await verifyOtp({ ...form, otp: otp.join("") });
+      await verifyOtp({ ...form, otp: otp.join(""),orgId:invitation?.orgId });
       toast.success("Account verified!");
 
-      setForm({ name: "", email: "", password: "" ,orgId :""});
+      setForm({ name: "", email: "", password: "" });
       navigate('/login', { replace: true });
       
     } catch (err: any) {
@@ -103,7 +106,7 @@ export const Signup = () => {
 
   const handleResendOtp = async () => {
     try {
-      await signup(form);
+      await signup({...form,role:"user"});
       setTimer(60);
       setCanResend(false);
       startTimer();
@@ -115,27 +118,27 @@ export const Signup = () => {
 
   return (
     <div className="w-full py-10 min-h-[85vh] bg-[#f1f1f1]">
-      <h2 className="text-4xl font-Poppins font-semibold text-black text-center ">Signup</h2>
+      <h2 className="text-4xl font-Poppins font-semibold text-black text-center ">Registration</h2>
       <p className="text-center text-lg font-medium py-3 text-[#00000099]">
-          Home . Signup
+          Home . Register
       </p>
       <div className="w-full flex justify-center">
         <div className="md:w-[480px] p-8 bg-white shadow rounded-lg">
           <h3 className="text-3xl font-semibold text-center md-2">
-              Signup to Maarket
+              Register with SprintFlow
             </h3>
-            <p className="text-center text-gray-500 mb-4">
+            {/* <p className="text-center text-gray-500 mb-4">
               Already have an account?
               <Link to={"/login"} className="text-blue-500">
                 Log in
               </Link>
-            </p>
-            <GoogleSignInButton />
-            <div className="flex items-center my-5 text-gray-400 text-sm">
+            </p> */}
+            {/* <GoogleSignInButton /> */}
+            {/* <div className="flex items-center my-5 text-gray-400 text-sm">
               <div className="flex-1 border-t border-gray-300" />
               <span className="px-3">or sign up with email</span>
               <div className="flex-1 border-t border-gray-300" />
-          </div>
+          </div> */}
            {!showOtp ? (
         <form onSubmit={handleFormSubmit}>
           <label className="block mb-1">Name</label>
@@ -174,7 +177,7 @@ export const Signup = () => {
             <p className="text-red-500 text-sm">{errors.password}</p>
               )}
               
-      <label className="block mb-1">Organization</label>
+      {/* <label className="block mb-1">Organization</label>
               <OrganizationSelector
   value={selectedOrgId}
   onChange={(id) => {
@@ -184,12 +187,12 @@ export const Signup = () => {
 />
 {errors.orgId && (
   <p className="text-red-500 text-sm mt-1">{errors.orgId}</p>
-)}
+)} */}
           <button
             type="submit"
             className="w-full bg-black text-white py-2 rounded mt-3"
           >
-            Signup
+            Register
               </button>
 
         </form>

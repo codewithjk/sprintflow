@@ -7,8 +7,9 @@ export interface UserProps {
   role: "user" | "super_admin" ;
   isOwner: boolean;
   isBlocked: boolean;
-  orgId?: string | null;
+  orgId: string;
   oAuthId?: string;
+  profileUrl?: string;
   authProvider: 'local' | 'google' | 'github' | null;
 }
 

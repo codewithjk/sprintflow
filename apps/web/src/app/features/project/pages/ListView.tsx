@@ -1,8 +1,8 @@
 
-import {  useGetTasksQuery } from "@/state/api";
-import Header from "../../../components/ui/header";
-import { Task } from "../../../../../../../libs/shared/types/src";
+
 import TaskCard from "../../../components/ui/cards/TaskCard";
+import { Task } from "../../../types/state.type";
+import { useTasks } from "../../task/useTask";
 
 
 type Props = {
@@ -11,33 +11,20 @@ type Props = {
 };
 
 const ListView = ({ id, setIsModalNewTaskOpen }: Props) => {
-  const {
-    data: tasks,
-    error,
-    isLoading,
-  } = useGetTasksQuery({ projectId: Number(id) });
+  const { tasks, fetchLoading, fetchError } = useTasks();
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>An error occurred while fetching tasks</div>;
+  if (fetchLoading) return <div>Loading...</div>;
+  if (fetchError) return <div>An error occurred while fetching tasks</div>;
 
   return (
     <div className="px-4 pb-8 xl:px-6">
       <div className="pt-5">
-        <Header
-          name="List"
-          buttonComponent={
-            <button
-              className="flex items-center rounded bg-blue-primary px-3 py-2 text-white hover:bg-blue-600"
-              onClick={() => setIsModalNewTaskOpen(true)}
-            >
-              Add Task
-            </button>
-          }
-          isSmallText
-        />
+    
       </div>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-        {tasks?.map((task: Task) => <TaskCard key={task.id} task={task} />)}
+        {tasks?.map((task: Task) => (
+          <TaskCard key={task.id} task={task} />
+        ))}
       </div>
     </div>
   );

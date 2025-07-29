@@ -17,7 +17,8 @@ export const Messages = {
   USER_NOT_FOUND: 'User not found',
   USER_CREATED: 'User created successfully',
   USER_VERIFIED: 'User verified successfully',
-  LOGIN_SUCCESS:'Logged in successfully',
+  LOGIN_SUCCESS: 'Logged in successfully',
+  LOGOUT_SUCCESS:"Log out success",
   
   USER_ALREADY_EXISTS: 'User already exists',
   INVALID_EMAIL: 'Invalid email',
@@ -37,6 +38,11 @@ export const Messages = {
   MISSING_FIELDS: 'Required fields are missing',
   INVALID_EMAIL_FORMAT: 'Email format is invalid',
   INVALID_PARAMS: "Invalid parameters",
+
+  // invitation
+  INVITATION_EXPIRED: "Invitation expired. Please contact the Organization",
+  INVITATION_SENT: "Invitation sent",
+  INVITATION_ALREADY_USED:"Invitation is already used",
   
 
   // Organization
@@ -47,6 +53,7 @@ export const Messages = {
   ORG_FOUND: 'Organization found',
   ORG_VERIFIED: 'Organization verified',
   ORG_ALREADY_EXISTS: 'Organization already exists',
+  ORG_JOIN_SUCCESS: "Successfully joined organization",
 
   //project
   PROJECT_NOT_FOUND: 'Project not found',

@@ -16,14 +16,14 @@ export enum Priority{
 }
 
 export interface Task {
-  id: number;
+  id: string;
   title: string;
   description?: string;
   status?: Status;
   priority?: Priority;
   tags?: string;
   startDate?: string;
-  dueDate?: string;
+  endDate?: string;
   points?: number;
   projectId: number;
   authorUserId?: number;

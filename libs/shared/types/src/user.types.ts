@@ -18,6 +18,7 @@ export interface VerificationDTO{
   email: string;
   password: string;
   otp: string;
+  orgId: string;
 }
 
 
@@ -29,7 +30,7 @@ export interface CreateUserDTO {
   isOwner?: boolean;
   isVerified: boolean;
   isBlocked?: boolean;
-  orgId?: string | null;
+  orgId: string;
 }
 
 export interface User{

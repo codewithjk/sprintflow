@@ -1,5 +1,5 @@
 //useAuth.ts
-import { loginThunk, logout } from './authSlice';
+import { loginThunk, logout, verifyInvitationThunk } from './authSlice';
 import { authAPI } from './authAPI';
 import { RootState } from '../../store/store';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -13,13 +13,17 @@ export function useAuth() {
     await dispatch(loginThunk({...data,role}));
   };
 
+  const verifyInvitation =async (token: string) => {
+    await dispatch(verifyInvitationThunk(token));
+  }
+
   const signup = async (data: SignupDTO & { role: 'user' | 'super_admin' | 'organization' }) => {
     const { role, ...rest } = data;
     if (role === 'user') return authAPI.signupUser(rest);
     return authAPI.signupOrganization(rest);
   };
 
-  const verifyOtp = async (data: { email: string; otp: string }) => {
+  const verifyOtp = async (data: { email: string; otp: string,name:string,password:string,orgId:string }) => {
     return authAPI.verifyOtp(data);
   };
 
@@ -32,5 +36,5 @@ export function useAuth() {
     dispatch(logout());
   };
  
-  return { ...auth, login, signup, verifyOtp, logOut,verifyOrganization,  };
+  return { ...auth, login, signup, verifyOtp, logOut,verifyOrganization, verifyInvitation };
 }

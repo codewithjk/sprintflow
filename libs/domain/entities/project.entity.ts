@@ -4,8 +4,8 @@ export interface ProjectProps {
     name: string;
     orgId: string;
     description: string;
-    startDate?: Date | null;
-    endDate?: Date | null;
+    startDate?: Date |string| null ;
+    endDate?: Date | string|null;
     createdAt?: Date | null;
     updatedAt?: Date | null;
 }

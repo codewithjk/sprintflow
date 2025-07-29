@@ -1,5 +1,6 @@
 
 
+import { Prisma } from '@prisma/client';
 import { IUserRepository } from '../../application/interfaces/user-repository.interface';
 import { User } from '../../domain/entities/user.entity';
 import { CreateUserDTO } from '../../shared/types/src';
@@ -24,4 +25,36 @@ export class PrismaUserRepository implements IUserRepository {
     const user = await prisma.user.findUnique({ where: { id } });
     return user? new User(user) : null;
   }
+  async find(filter: Partial<User>, skip: number, take: number) {
+        const { name, ...rest } = filter;
+
+        const where: Prisma.UserWhereInput = {
+            ...rest,
+            ...(name && typeof name === 'string'
+                ? {
+                    name: {
+                        contains: name,
+                        mode: 'insensitive',
+                    },
+                }
+                : {}),
+        };
+        const [users, total] = await Promise.all([
+            prisma.user.findMany({
+                where,
+                skip,
+                take,
+            }),
+            prisma.user.count({
+                where,
+            }),
+        ]);
+
+        return {
+            users: users.map(user => new User(user).toDTO()),
+            total,
+            page: Math.floor(skip / take) + 1,
+            pageSize: take,
+        };
+    }
 }

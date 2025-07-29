@@ -1,11 +1,13 @@
 
 
 
-import { useGetTasksQuery } from "@/state/api";
+
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Header from "../../../components/ui/header";
 import { dataGridClassNames, dataGridSxStyles } from "../../../../utils/dataGridStyles";
 import { useAppSelector } from "../../../store/hooks";
+import { useTasks } from "../../task/useTask";
+
 
 
 type Props = {
@@ -70,30 +72,17 @@ const columns: GridColDef[] = [
 
 const TableView = ({ id, setIsModalNewTaskOpen }: Props) => {
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
-  const {
-    data: tasks,
-    error,
-    isLoading,
-  } = useGetTasksQuery({ projectId: Number(id) });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error || !tasks) return <div>An error occurred while fetching tasks</div>;
+  const { tasks,  fetchLoading , fetchError } = useTasks();
+  
+
+  if (fetchLoading) return <div>Loading...</div>;
+  if (fetchError || !tasks) return <div>An error occurred while fetching tasks</div>;
 
   return (
     <div className="h-[540px] w-full px-4 pb-8 xl:px-6">
       <div className="pt-5">
-        <Header
-          name="Table"
-          buttonComponent={
-            <button
-              className="flex items-center rounded bg-blue-primary px-3 py-2 text-white hover:bg-blue-600"
-              onClick={() => setIsModalNewTaskOpen(true)}
-            >
-              Add Task
-            </button>
-          }
-          isSmallText
-        />
+      
       </div>
       <DataGrid
         rows={tasks || []}

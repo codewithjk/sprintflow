@@ -1,7 +1,7 @@
 // features/auth/components/OrganizationSelector.tsx
 
 import { useState } from 'react';
-import { useOrganizations } from '../../../features/auth/useOrganization';
+import { useOrganizations } from '../../../features/organization/useOrganization';
 
 export function OrganizationSelector({
   value,

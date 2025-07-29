@@ -11,3 +11,12 @@ export const setCookie = (res:Response, name:string, token:string) => {
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day in milliseconds
     });
 }
+
+
+export const clearCookie = (res: Response, name: string) => {
+  res.clearCookie(name, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'lax',
+  });
+};
