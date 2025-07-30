@@ -1,9 +1,12 @@
 // components/PricingCard.jsx
 import { CheckIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../../features/auth/useAuth";
+
 
 
 export const PricingCard = ({ plan }) => {
+  const { user } = useAuth();
   return (
     <div
       className={`rounded-lg border p-6 shadow-md transition duration-300 ${
@@ -30,7 +33,7 @@ export const PricingCard = ({ plan }) => {
 
       <div className="mt-4">
          <Link
-      to={plan.paymentLink}
+      to={plan.paymentLink+`?prefilled_email=${user?.email}&orgId=${user?.id}`}
       target="_blank"
       className="block w-full text-center py-2 px-4 rounded bg-purple-600 hover:bg-purple-700 text-white font-medium transition"
     >

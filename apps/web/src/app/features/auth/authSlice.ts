@@ -3,6 +3,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { authAPI } from './authAPI';
 import { LoginDTO } from '../../../../../../libs/shared/types/src';
 import { AuthState } from '../../types/state.type';
+import { orgAPI } from '../organization/orgAPI';
 
 const initialState: AuthState = {
   user: null,
@@ -45,7 +46,33 @@ export const verifyInvitationThunk = createAsyncThunk(
       return thunkAPI.rejectWithValue(err.response.data.message);
     }
   }
-)
+);
+
+export const refreshAuthThunk = createAsyncThunk(
+  'auth/refreshAuth',
+  async ({ id, role }: { id: string, role: 'user' | 'super_admin' | 'organization' }, thunkAPI) => {
+
+    try {
+      let res;
+      //todo : clean or add this for other role's also
+      // if (role === 'user') {
+      //   res = await authAPI.loginUser(payload);
+      //   return res.data.user;
+      // }
+      // else if (role === 'super_admin') {
+      //   res = await authAPI.loginAdmin(payload);
+      //   return res.data.admin;
+      // }
+      // else
+        if (role === "organization") {
+        res = await orgAPI.getOrgById(id)
+        return res.data.org;
+      }
+
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue(err.response.data.message);
+    }
+  });
 
 
 
@@ -84,6 +111,17 @@ export const authSlice = createSlice({
         state.invitation = action.payload;
       })
       .addCase(verifyInvitationThunk.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+    .addCase(refreshAuthThunk.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      }).addCase(refreshAuthThunk.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+      })
+      .addCase(refreshAuthThunk.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       })

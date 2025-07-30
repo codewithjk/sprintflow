@@ -19,6 +19,7 @@ import { UserRegistrationPage } from '../features/auth/pages/UserRegistrationPag
 import { PlansPage } from '../features/organization/pages/plansPage';
 import { useAppSelector } from '../store/hooks';
 import { useEffect } from 'react';
+import { SettingsPage } from '../features/organization/pages/settingsPage';
 
 const AppRouter = () => {
   const { user } = useAuth();
@@ -55,10 +56,7 @@ const AppRouter = () => {
         element={!user ? <OrganizationSignup/> : <Navigate to="/org/dashboard" replace />}
       />
 
-      <Route
-        path="/org/plans"
-        element={user? <PlansPage/> : <Navigate to="/" replace />}
-      />
+     
 
    
 
@@ -86,6 +84,8 @@ const AppRouter = () => {
       <Route element={<ProtectedRoute allowedRoles={["organization"]} />}>
         <Route path="/org/dashboard" element={<DashboardWrapper><OrgDashboard /></DashboardWrapper>} />
         <Route path="/org/members" element={<DashboardWrapper><MembersPage /></DashboardWrapper>} />
+        <Route path="/org/settings" element={<DashboardWrapper><SettingsPage /></DashboardWrapper>} />
+         <Route path="/org/plans" element={user? <PlansPage/> : <Navigate to="/" replace />}/>
       </Route>
 
 
@@ -94,7 +94,8 @@ const AppRouter = () => {
       {/* Error */}
       <Route path='/unauthorized' element={<UnauthorizedPage/>}/>
 
-
+      
+      <Route path='/*' element={<div className='text-red-600'> 404 </div>}/>
     </Routes>
   );
 };

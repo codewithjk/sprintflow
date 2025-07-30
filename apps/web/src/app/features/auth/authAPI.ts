@@ -1,6 +1,4 @@
-//authApi
 
-import { verify } from 'crypto';
 import { CreateOrganizationDTO, LoginDTO, SignupDTO } from '../../../../../../libs/shared/types/src';
 import axios from '../../../utils/axiosInstance';
 

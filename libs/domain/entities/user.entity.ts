@@ -9,7 +9,7 @@ export interface UserProps {
   isBlocked: boolean;
   orgId: string;
   oAuthId?: string;
-  profileUrl?: string;
+  profileUrl?: string |null;
   authProvider: 'local' | 'google' | 'github' | null;
 }
 

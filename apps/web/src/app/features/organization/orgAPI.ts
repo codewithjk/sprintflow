@@ -9,6 +9,6 @@ export const orgAPI = {
         axios.post('/org/invite', { email, name }),
     getAllMembers: (params: { page: number, limit: number }) => 
         axios.get('/org/members', { params }),
-    
-
+    getOrgById: (id:string) =>
+        axios.get(`/org/${id}`),
 };

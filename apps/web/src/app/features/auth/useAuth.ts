@@ -1,5 +1,5 @@
 //useAuth.ts
-import { loginThunk, logout, verifyInvitationThunk } from './authSlice';
+import { loginThunk, logout, verifyInvitationThunk,refreshAuthThunk } from './authSlice';
 import { authAPI } from './authAPI';
 import { RootState } from '../../store/store';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -35,6 +35,10 @@ export function useAuth() {
     await authAPI.logout();
     dispatch(logout());
   };
+
+  const refreshAuth = async ({ id, role }: { id: string, role: 'user' | 'super_admin' | 'organization'  }) => {
+    await dispatch(refreshAuthThunk({id,role}))
+  }
  
-  return { ...auth, login, signup, verifyOtp, logOut,verifyOrganization, verifyInvitation };
+  return { ...auth, login, signup, verifyOtp, logOut,verifyOrganization, verifyInvitation, refreshAuth };
 }

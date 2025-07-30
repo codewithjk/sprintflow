@@ -13,6 +13,15 @@ export interface CreateOrganizationDTO {
   role:"organization"
 }
 
+export interface stripePlanDTO{
+  email: string | null | undefined,
+      subscriptionId :string,
+      plan :string,
+      startDate: Date,
+      endDate :Date,
+      period:string,
+}
+
 
 export type InvitationData = {
   token: string;

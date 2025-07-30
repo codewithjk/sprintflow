@@ -1,8 +1,8 @@
 
-
+import React, { useMemo, useState } from "react";
 import { DisplayOption, Gantt, ViewMode } from "gantt-task-react";
 import "gantt-task-react/dist/index.css";
-import React, { useMemo, useState } from "react";
+
 import { useAppSelector } from "../../../store/hooks";
 import { useTasks } from "../../task/useTask";
 

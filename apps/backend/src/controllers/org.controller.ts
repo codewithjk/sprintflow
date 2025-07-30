@@ -23,7 +23,7 @@ import { OrgLoginUseCase } from "../../../../libs/application/use-cases/organiza
 import { InviteUserUseCase } from "../../../../libs/application/use-cases/organization/invite-user.usecase";
 import { InvitationService } from "../../../../libs/infrastructure/redis/invitation.service";
 import { GetInvitationUseCase } from "../../../../libs/application/use-cases/organization/get-invitation.usecase";
-import { GetAllUsersUseCase } from "../../../../libs/application/use-cases/user/get-all-projects.usecase";
+import { GetAllUsersUseCase } from "../../../../libs/application/use-cases/user/get-all-users.usecase";
 
 
 

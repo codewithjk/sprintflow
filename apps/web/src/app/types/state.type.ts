@@ -10,7 +10,7 @@ export interface Invitation {
 
 //redux initial states
 export interface AuthState {
-  user: User | null;
+  user: User | Organization |null ;
   isLoading: boolean;
   error: string | null;
   invitation: Invitation | null;

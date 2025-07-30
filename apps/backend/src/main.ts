@@ -3,6 +3,7 @@ import authRoute from './routes/auth.routes'
 import orgRoute from './routes/org.routes'
 import taskRoute from './routes/task.routes'
 import projectRoute from './routes/project.routes'
+import webhookRoute from './routes/webhook.routes'
 import { errorMiddleware } from './middlewares/error-handler.middleware';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -22,19 +23,22 @@ app.use(cors({
   credentials: true,
 }));
 
-// todo : delete this route later
+
+//webhook routes with raw body
+app.use('/api/webhook', webhookRoute);
 
 app.use(express.json());
 app.use(cookieParser());
 
-
 app.use('/api/auth', authRoute);
 
+// authenticated routes
 app.use(isAuthenticated);
-
 app.use('/api/org', orgRoute);
 app.use('/api/project', projectRoute);
 app.use('/api/task', taskRoute);
+
+
 
 
 // error handling middleware.

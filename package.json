@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "npx nx run-many --target=serve --all",
     "web": "npx nx run-many --target=dev --all --projects=web --port=3000",
+    "web:build": "npx nx build web",
     "backend": "npx nx run-many --target=serve --projects=backend ",
     "prisma:generate": "npx prisma generate --schema=libs/infrastructure/prisma/schema.prisma",
     "prisma:push": "npx prisma db push --schema=libs/infrastructure/prisma/schema.prisma"
@@ -44,7 +45,8 @@
     "react-toastify": "^11.0.5",
     "recharts": "^3.1.0",
     "redux-persist": "^6.0.0",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "stripe": "^18.3.0"
   },
   "devDependencies": {
     "@nx/esbuild": "20.8.2",
@@ -83,6 +85,7 @@
     "jsdom": "~22.1.0",
     "nx": "20.8.2",
     "postcss": "8.4.38",
+    "rollup-plugin-visualizer": "^6.0.3",
     "tailwindcss": "3.4.3",
     "ts-jest": "^29.1.0",
     "ts-node": "10.9.1",
