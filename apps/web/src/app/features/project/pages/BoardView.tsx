@@ -82,7 +82,7 @@ const TaskColumn = ({
     "To Do": "#2563EB",
     "Work In Progress": "#059669",
     "Under Review": "#D97706",
-    Completed: "#000000",
+    "Completed": "#000000",
   };
 
   return (

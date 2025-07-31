@@ -4,6 +4,7 @@ import orgRoute from './routes/org.routes'
 import taskRoute from './routes/task.routes'
 import projectRoute from './routes/project.routes'
 import webhookRoute from './routes/webhook.routes'
+import meetingRoute from './routes/meeting.routes'
 import { errorMiddleware } from './middlewares/error-handler.middleware';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -37,6 +38,7 @@ app.use(isAuthenticated);
 app.use('/api/org', orgRoute);
 app.use('/api/project', projectRoute);
 app.use('/api/task', taskRoute);
+app.use('/api/meeting',meetingRoute)
 
 
 

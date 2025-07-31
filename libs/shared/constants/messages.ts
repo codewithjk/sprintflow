@@ -71,6 +71,14 @@ export const Messages = {
   TASK_FOUND: 'Task found',
   TASK_ALREADY_EXISTS: 'Task already exists',
 
+  //meeting
+   MEETING_NOT_FOUND: 'Meeting not found',
+  MEETING_CREATED: 'Meeting created',
+  MEETING_DELETED: 'Meeting delete',
+  MEETING_UPDATED: 'Meeting updated',
+  MEETING_FOUND: 'Meeting found',
+
+
   //Authorization
   FORBIDDEN: 'You are not authorized to perform this action',
 };

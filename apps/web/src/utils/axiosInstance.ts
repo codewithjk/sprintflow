@@ -1,6 +1,10 @@
 
-import axios from "axios"
+import axios from "axios";
+
+
 import { SERVER_URL } from "../app/constants/env.constant";
+import { store } from "../app/store/store";
+import { logout } from "../app/features/auth/authSlice";
 const axiosInstance = axios.create({
     baseURL: SERVER_URL,
     withCredentials: true
@@ -13,8 +17,16 @@ let refreshSubscribers: (() => void)[] = [];
 
 //handle logout and prevent infinite loops
 const handleLogout = () => {
-    if (window.location.pathname !== "/login") {
-        window.location.href = "/login"
+    
+    const role = store.getState().auth.user?.role; //todo: clear project and tasks also
+    store.dispatch(logout())
+    // if (window.location.pathname !== "/login") {
+    //     window.location.href = "/login"
+    // }
+    if (role === 'organization') {
+        window.location.href = '/org/login';
+    } else {
+        window.location.href = '/login';
     }
 };
 
@@ -59,12 +71,12 @@ axiosInstance.interceptors.response.use(
                 refreshSubscribers = [];
                 handleLogout();
                 return Promise.reject(error)
-                
+
             }
         }
         return Promise.reject(error)
     }
-    
+
 )
 
 export default axiosInstance;

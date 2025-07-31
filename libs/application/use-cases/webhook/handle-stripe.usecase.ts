@@ -32,20 +32,22 @@ export class HandleStripeWebhookUseCase {
 
       case 'customer.subscription.deleted': {
         const subscription = event.data.object;
-        await this.orgRepository.update(subscription.id, {
-            plan: 'free',
-            //todo:
-        //   startDate: null,
-        //   endDate: null,
-        //   period: null,
-        });
+        const res = await this.orgRepository.find({ subscriptionId: subscription.id }, 0, 1);
+        const orgId = res.orgs[0]?.id;
+        console.log(orgId, res)
+        if (orgId) await this.orgRepository.update(orgId, { plan: "free" });
         break;
       }
 
       case 'invoice.payment_succeeded': {
+        console.log(event.data.object)
         // await this.stripeService.handleInvoice(event.data.object);
         break;
       }
+      case 'customer.subscription.updated': {
+        console.log("updated = ",event)
+        break;
+        }
 
       default:
         console.log(`Unhandled event type: ${event.type}`);

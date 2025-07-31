@@ -1,7 +1,7 @@
 // src/routes/AppRouter.tsx
 import { Routes, Route, Navigate } from 'react-router-dom';
 import{ Login} from '../features/auth/pages/Login';
-import Home from "../pages/home"
+
 import { ProtectedRoute } from './ProtectedRoute';
 import { useAuth } from '../features/auth/useAuth';
 import UnauthorizedPage from '../pages/UnauthorizedPage';
@@ -20,6 +20,7 @@ import { PlansPage } from '../features/organization/pages/plansPage';
 import { useAppSelector } from '../store/hooks';
 import { useEffect } from 'react';
 import { SettingsPage } from '../features/organization/pages/settingsPage';
+import { HomePage } from '../pages/home';
 
 const AppRouter = () => {
   const { user } = useAuth();
@@ -49,7 +50,7 @@ const AppRouter = () => {
       />
       <Route
         path="/org/login"
-        element={!user ?<OrganizationLogin/>: <Navigate to="/org/dashboard" replace />}
+        element={!user  ?<OrganizationLogin/>: <Navigate to="/org/dashboard" replace />}
       />
       <Route
         path="/org/signup"
@@ -63,7 +64,7 @@ const AppRouter = () => {
       {/* user  protected */}
       <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
         {/* add here protected routes */}
-        <Route path='/home' element={ <DashboardWrapper><Home/></DashboardWrapper> }/>
+        <Route path='/home' element={ <DashboardWrapper><HomePage/></DashboardWrapper> }/>
       </Route>
 
 

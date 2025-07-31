@@ -9,6 +9,7 @@ import TaskCard from "../../../components/ui/cards/TaskCard";
 import { useAuth } from "../../auth/useAuth";
 import { useTasks } from "../useTask";
 import { dataGridClassNames, dataGridSxStyles } from "../../../../utils/dataGridStyles";
+import { format } from "date-fns";
 
 
 
@@ -51,11 +52,13 @@ const columns: GridColDef[] = [
     field: "startDate",
     headerName: "Start Date",
     width: 130,
+     valueFormatter: (params) => format(new Date(params), "dd MMM yyyy"),
   },
   {
     field: "endDate",
     headerName: "Due Date",
     width: 130,
+     valueFormatter: (params) => format(new Date(params), "dd MMM yyyy"),
   },
   {
     field: "author",

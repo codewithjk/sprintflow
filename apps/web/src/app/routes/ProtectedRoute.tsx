@@ -1,4 +1,3 @@
-// src/routes/ProtectedRoute.tsx
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../features/auth/useAuth";
 import { useRole } from "../hooks/useRole";
@@ -15,16 +14,18 @@ export const ProtectedRoute = ({
   const location = useLocation();
   const pathname = location.pathname;
 
-  //sync org with backend in every refresh. for plan update
   useEffect(() => {
     const sync = async () => {
-      if (user) {
-        await refreshAuth({
-          id: user.id,
-          role: user.role as "user" | "super_admin" | "organization",
-        });
+      try {
+        if (user && user.role === "organization") {
+          await refreshAuth({
+            id: user.id,
+            role: user.role as "user" | "super_admin" | "organization",
+          });
+        }
+      } finally {
+        setIsRefreshing(false);
       }
-      setIsRefreshing(false);
     };
     sync();
   }, []);
@@ -33,22 +34,25 @@ export const ProtectedRoute = ({
     return <div className="text:white">...Loading</div>;
   }
 
-  console.log(isOrganization, user?.plan, pathname);
-  //check payment
-  if (isOrganization && user?.plan === "free") {
+  // ✅ Plan-based access control handled during render
+  if (isOrganization && user?.plan === "free" && pathname !== "/org/plans") {
     return (
-      <Navigate to="/org/plans" state={{ from: location.pathname }} replace />
+      <Navigate to="/org/plans" state={{ from: pathname }} replace />
     );
-  } else if (pathname === "/org/plans") {
-    console.log("dfasdfasd");
+  }
+
+  if (isOrganization && user?.plan !== "free" && pathname === "/org/plans") {
     return <Navigate to="/org/dashboard" replace />;
   }
 
-  return allowedRoles.includes(role) ? (
-    <Outlet />
-  ) : user ? (
-    <Navigate to="/unauthorized" state={{ from: location.pathname }} replace />
+  // ✅ Role-based route protection
+  if (allowedRoles.includes(role)) {
+    return <Outlet />;
+  }
+
+  return user ? (
+    <Navigate to="/unauthorized" state={{ from: pathname }} replace />
   ) : (
-    <Navigate to="/login" state={{ from: location.pathname }} replace />
+    <Navigate to="/login" state={{ from: pathname }} replace />
   );
 };

@@ -39,7 +39,8 @@ export const OrganizationLogin = () => {
       toast.success("Logged in as organization");
       navigate("/org/dashboard");
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Login failed");
+      console.log(err)
+      toast.error(err || "Login failed");
     }
   };
 

@@ -7,6 +7,7 @@ import Header from "../../../components/ui/header";
 import { dataGridClassNames, dataGridSxStyles } from "../../../../utils/dataGridStyles";
 import { useAppSelector } from "../../../store/hooks";
 import { useTasks } from "../../task/useTask";
+import { format } from "date-fns";
 
 
 
@@ -50,11 +51,13 @@ const columns: GridColDef[] = [
     field: "startDate",
     headerName: "Start Date",
     width: 130,
+     valueFormatter: (params) => format(new Date(params), "dd MMM yyyy"),
   },
   {
-    field: "dueDate",
+    field: "endDate",
     headerName: "Due Date",
     width: 130,
+     valueFormatter: (params) => format(new Date(params), "dd MMM yyyy"),
   },
   {
     field: "author",

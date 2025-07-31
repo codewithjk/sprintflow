@@ -1,6 +1,6 @@
 import { Messages } from "../../../shared/constants/messages";
 import { ACCESS_TOKEN_EXPIRATION, REFRESH_TOKEN_EXPIRATION } from "../../../shared/constants/time-constants";
-import { NotFoundError, UnauthorizedError } from "../../../shared/errors/app-error";
+import { NotFoundError, ValidationError } from "../../../shared/errors/app-error";
 import { LoginDTO } from "../../../shared/types/src";
 import { IJwtService } from "../../interfaces/jwt-service.interface";
 import { IOrganizationRepository } from "../../interfaces/org-repository.interface";
@@ -19,7 +19,7 @@ export class OrgLoginUseCase {
       
 
         const isPasswordValid = await this.passwordService.compare(password, org.getPassword());
-        if (!isPasswordValid) throw new UnauthorizedError(Messages.INVALID_PASSWORD);
+        if (!isPasswordValid) throw new ValidationError(Messages.INVALID_PASSWORD);
 
         const accessToken = this.jwtService.sign({ email: org.email, id: org.id, role},ACCESS_TOKEN_EXPIRATION);
         const refreshToken = this.jwtService.sign({ email: org.email, id: org.id, role}, REFRESH_TOKEN_EXPIRATION);

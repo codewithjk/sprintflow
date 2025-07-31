@@ -22,18 +22,19 @@ import { useTasks } from "../../task/useTask";
 import { useEffect } from "react";
 import { useProject } from "../../project/useProject";
 import { useAuth } from "../../auth/useAuth";
+import { format } from "date-fns";
 
 
 const taskColumns: GridColDef[] = [
   { field: "title", headerName: "Title", width: 200 },
   { field: "status", headerName: "Status", width: 150 },
-  { field: "priority", headerName: "Priority", width: 150 },
-  { field: "dueDate", headerName: "Due Date", width: 150 },
+  { field: "priority", headerName: "Priority", width: 150, valueFormatter: (params) => format(new Date(params), "dd MMM yyyy"), },
+  { field: "dueDate", headerName: "Due Date", width: 150 , valueFormatter: (params) => format(new Date(params), "dd MMM yyyy"),},
 ];
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
-const HomePage = () => {
+const DashBoard = () => {
   
   const { tasks, fetchLoading: tasksLoading, fetchError : taskFetchError, fetchTasks } = useTasks();
   const { projects, isLoading:projectLoading,fetchError : projectError,getAllProjects} = useProject();
@@ -161,4 +162,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default DashBoard;

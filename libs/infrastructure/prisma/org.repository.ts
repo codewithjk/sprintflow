@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { IOrganizationRepository } from '../../application/interfaces/org-repository.interface';
 import { Organization } from '../../domain/entities/organization.entity';
 import { CreateOrganizationDTO } from '../../shared/types/src/org.types';
@@ -60,5 +61,39 @@ export class PrismaOrganizationRepository implements IOrganizationRepository {
       pageSize: take,
     };
   }
+  async find(filter: Partial<Organization>, skip: number, take: number) {
+  const { name, ...rest } = filter;
+
+  const where: Prisma.OrganizationWhereInput = {
+    ...rest,
+    ...(name && typeof name === 'string'
+      ? {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
+        }
+      : {}),
+  };
+
+  const [orgs, total] = await Promise.all([
+    prisma.organization.findMany({
+      where,
+      skip,
+      take,
+    }),
+    prisma.organization.count({
+      where,
+    }),
+  ]);
+
+  return {
+    orgs:orgs.map(org => new Organization(org).toDTO()),
+    total,
+    page: Math.floor(skip / take) + 1,
+    pageSize: take,
+  };
+}
+
 
 }

@@ -52,8 +52,8 @@ export const Login = () => {
       await login(form, "user");
       toast.success("Login successful");
       navigate("/home", { replace: true });
-    } catch(error :any) {
-      toast.error(error?.response?.data?.message || "Login failed");
+    } catch (error: any) {
+      toast.error(error || "Login failed");
     }
   };
   return (

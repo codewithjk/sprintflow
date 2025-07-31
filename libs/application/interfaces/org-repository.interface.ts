@@ -9,4 +9,5 @@ export interface IOrganizationRepository {
   findByEmail(email: string): Promise<Organization | null>;
   searchOrganizations(search: string, skip: number, take: number): Promise<{ orgs: Partial<Organization>[]; total: number; page: number; pageSize: number; }>;
   findByName(name: string): Promise<Organization | null>;
+  find(filter : Partial<Organization>, skip: number, take: number) : Promise<{ orgs: Partial<Organization>[]; total: number; page: number; pageSize: number; }>;
 }

@@ -75,7 +75,7 @@ const Sidebar = () => {
       { icon: Settings, label: "Settings", href: "/org/settings" },
     ],
     user: [
-      { icon: Home, label: "Home", href: "/dashboard" },
+      { icon: Home, label: "Home", href: "/home" },
       { icon: Briefcase, label: "Timeline", href: "/timeline" },
       { icon: Search, label: "Search", href: "/search" },
       { icon: Settings, label: "Settings", href: "/settings" },

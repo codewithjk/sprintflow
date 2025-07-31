@@ -49,6 +49,10 @@ export class Organization {
     return this.props.updatedAt;
   }
 
+  get subscriptionId() {
+    return this.props.subscriptionId;
+  }
+
   // === Business Logic ===
 
   rename(newName: string) {

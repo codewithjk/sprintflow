@@ -10,7 +10,7 @@ export function useAuth() {
   const auth = useAppSelector((state: RootState) => state.auth);
 
   const login = async (data: LoginDTO , role: 'user' | 'super_admin' | 'organization' ) => {
-    await dispatch(loginThunk({...data,role}));
+    await dispatch(loginThunk({...data,role})).unwrap();
   };
 
   const verifyInvitation =async (token: string) => {
@@ -36,9 +36,14 @@ export function useAuth() {
     dispatch(logout());
   };
 
+  const logOutOrganization = async () => {
+    //todo : make a api call 
+    dispatch(logout());
+  }
+
   const refreshAuth = async ({ id, role }: { id: string, role: 'user' | 'super_admin' | 'organization'  }) => {
     await dispatch(refreshAuthThunk({id,role}))
   }
  
-  return { ...auth, login, signup, verifyOtp, logOut,verifyOrganization, verifyInvitation, refreshAuth };
+  return { ...auth, login, signup, verifyOtp, logOut,verifyOrganization, verifyInvitation, refreshAuth,logOutOrganization };
 }

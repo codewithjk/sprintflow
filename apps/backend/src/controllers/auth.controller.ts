@@ -94,14 +94,17 @@ export const refreshTokenController = async (req: Request, res: Response, next: 
   console.log("refreshing .................................................")
   try {
     const refreshToken = req.cookies.refresh_token;
-    if (!refreshToken) {
-      return new ValidationError(Messages.JWT_TOKEN_MISSING)
+    console.log(refreshToken)
+    if (!refreshToken || refreshToken === undefined) {
+      console.log("hello")
+      throw new ValidationError(Messages.JWT_TOKEN_MISSING)
     }
     const jwtService = new JwtService(JWT_TOKEN_SECRET);
     const userRepository = new PrismaUserRepository();
     const orgRepository = new PrismaOrganizationRepository();
 
-    const decoded = jwtService.verify(refreshToken)
+    const decoded = jwtService.verify(refreshToken);
+    console.log(decoded);
     if (!decoded || !decoded.id || !decoded.role) {
       return new JsonWebTokenError(Messages.JWT_TOKEN_MALFORMED);
     }
@@ -126,8 +129,9 @@ export const refreshTokenController = async (req: Request, res: Response, next: 
     const accessToken = jwtService.sign({ email: account.email, id: account.id, role: decoded.role }, ACCESS_TOKEN_EXPIRATION);
 
     setCookie(res, "access_token", accessToken);
-    return res.status(200).json({ success: true })
+    return res.status(HttpStatus.OK).json({ success: true })
   } catch (error) {
+    console.log(error)
     return next(error);
   }
 }
