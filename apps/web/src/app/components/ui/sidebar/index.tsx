@@ -13,12 +13,12 @@ import {
   Layers3,
   LockIcon,
   LucideIcon,
-  MailIcon,
   Search,
   Settings,
   ShieldAlert,
   User,
   Users,
+  Video,
   X,
 } from "lucide-react";
 
@@ -73,12 +73,15 @@ const Sidebar = () => {
       { icon: Users, label: "Teams", href: "/org/teams" },
       { icon: User, label: "Members", href: "/org/members" },
       { icon: Settings, label: "Settings", href: "/org/settings" },
+      { icon: Video, label: "Meetings", href: "/org/meetings" },
+
     ],
     user: [
       { icon: Home, label: "Home", href: "/home" },
       { icon: Briefcase, label: "Timeline", href: "/timeline" },
       { icon: Search, label: "Search", href: "/search" },
       { icon: Settings, label: "Settings", href: "/settings" },
+      { icon: Video, label: "Meetings", href: "/meetings" },
     ],
   };
   const role = user.role as keyof typeof sidebarLinksByRole;

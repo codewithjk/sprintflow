@@ -14,7 +14,9 @@ export const createMeetingController = async (req: Request, res: Response, next:
     try {
         const { name, subject, startTime, endTime } = req.body;
         const orgId = req.organization.id;
-        if (!name || !orgId || !subject || startTime || endTime) throw new ValidationError(Messages.MISSING_FIELDS);
+
+        console.log(orgId,req.body)
+        if (!name || !orgId || !subject || !startTime || !endTime) throw new ValidationError(Messages.MISSING_FIELDS);
 
         const meetingRepo = new PrismaMeetingRepository();
         const useCase = new CreateMeetingUseCase(meetingRepo);
@@ -48,6 +50,7 @@ export const updateMeetingController = async (req: Request, res: Response, next:
         const meetingRepo = new PrismaMeetingRepository();
         const useCase = new UpdateMeetingUseCase(meetingRepo);
         const meeting = await useCase.execute(idParam, orgId, body);
+
         res.status(HttpStatus.OK).json({ message: Messages.MEETING_UPDATED, meeting });
     } catch (error) {
 

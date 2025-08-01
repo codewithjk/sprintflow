@@ -12,6 +12,6 @@ export class CreateMeetingUseCase {
   async execute(data: CreateMeetingDTO) {
     const roomId = generateRoomId();
       const meeting = { ...data, roomId };
-    return await this.meetingRepo.create(meeting);
+    return (await this.meetingRepo.create(meeting)).toDTO();
   }
 }

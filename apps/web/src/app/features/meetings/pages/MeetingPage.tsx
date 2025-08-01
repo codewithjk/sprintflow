@@ -1,0 +1,196 @@
+import {
+  DataGrid,
+  GridColDef,
+  GridRenderCellParams,
+  GridToolbarContainer,
+  GridToolbarExport,
+  GridToolbarFilterButton,
+} from "@mui/x-data-grid";
+import { Edit2, PlusSquare, Trash2 } from "lucide-react";
+import Header from "../../../components/ui/header";
+import { useAppSelector } from "../../../store/hooks";
+import { useEffect, useState } from "react";
+import { useMeeting } from "../useMeeting";
+import NewMeetingModal from "../../../components/ui/modals/NewMeetingModal";
+import {
+  dataGridClassNames,
+  dataGridSxStyles,
+} from "../../../../utils/dataGridStyles";
+import { format } from "date-fns";
+import { MeetingProps } from "../../../../../../../libs/domain/entities/meeting.entity";
+import { useAuth } from "../../auth/useAuth";
+import moment from "moment/moment";
+import MeetingScreen from "./MeetingScreen";
+
+export const MeetingPage = () => {
+  const { meetings, fetchError, fetchLoading, createMeeting, fetchMeetings } =
+    useMeeting();
+  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  const [isModalNewMeetingOpen, setIsModalNewMeetingOpen] = useState(false);
+  const [roomId , setRoomId] = useState(null)
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user?.role === "user") {
+      fetchMeetings({ orgId: user?.orgId, page: 1, limit: 10 });
+    }else
+    if (user?.role === "organization") {
+      fetchMeetings({ orgId: user?.id, page: 1, limit: 10 });
+    }
+  }, []);
+
+  if (fetchLoading) return <div>Loading...</div>;
+  if (fetchError)
+    return <div className="text-white">Error fetching meetings</div>;
+
+  const handleNewMeetingCreation = async (data: Partial<MeetingProps>) => {
+    await createMeeting(data);
+  };
+
+
+  const handleCloseMeeting = () => {
+    setRoomId(null)
+  };
+
+  const columns: GridColDef[] = [
+    { field: "id", headerName: "ID", width: 100 },
+    { field: "name", headerName: "Meeting Name", flex: 1 },
+    {
+      field: "startTime",
+      headerName: "Start Time",
+      width: 150,
+      valueFormatter: (params) => format(new Date(params), "dd MMM yyyy"),
+    },
+    {
+      field: "endTime",
+      headerName: "End Time",
+      width: 150,
+      valueFormatter: (params) => format(new Date(params), "dd MMM yyyy"),
+    },
+    {
+      field: "joins",
+      headerName: "Join",
+      width: 300,
+      sortable: false,
+      renderCell: (params) => {
+        const startTime = new Date(params.row.startTime);
+        const endTime = new Date(params.row.endTime);
+        const current = new Date();
+
+        const beforeMeetingStart = startTime > current;
+        const afterMeetingEnd = endTime < current;
+        const canJoinMeeting = endTime > current && current > startTime;
+
+        return (
+          <div >
+            {canJoinMeeting && (
+              <button
+                onClick={() => setRoomId(params.row.roomId)}
+                className="rounded bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
+              >
+                Join now
+              </button>
+            )}
+
+            {afterMeetingEnd && (
+              <span className="text-red-500 text-xs">
+                Meeting ended {moment(params.row.endTime).fromNow()}
+              </span>
+            )}
+
+            {beforeMeetingStart && (
+              <span className="text-gray-500 text-xs">
+                Starts {moment(params.row.startTime).fromNow()}
+              </span>
+            )}
+          </div>
+        );
+      },
+    },
+    ...(user?.role === "organization"
+      ? [
+          {
+            field: "actions",
+            headerName: "Actions",
+            width: 150,
+            sortable: false,
+            renderCell: (params: GridRenderCellParams) => (
+              <div >
+                <button
+                  onClick={() => handleEdit(params.row)}
+                  className="rounded bg-yellow-500 px-2 py-1 text-sm text-white hover:bg-yellow-600 mr-2"
+                >
+                  <Edit2 size={16} />
+                </button>
+                <button
+                  onClick={() => handleDelete(params.row.id)}
+                  className="rounded bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            ),
+          },
+        ]
+      : []),
+  ];
+
+  return (
+    <div>
+      {/* header */}
+      <div className="px-4 xl:px-6">
+        <NewMeetingModal
+          onSubmit={handleNewMeetingCreation}
+          isOpen={isModalNewMeetingOpen}
+          onClose={() => setIsModalNewMeetingOpen(false)}
+        />
+
+        <div className="pb-6 pt-6 lg:pb-4 lg:pt-8">
+          <Header
+            name="Meetings"
+            buttonComponent={
+             (user && user.role === "organization"? <button
+                className="flex items-center rounded-md bg-blue-primary px-3 py-2 text-white hover:bg-blue-600"
+                onClick={() => setIsModalNewMeetingOpen(true)}
+              >
+                <PlusSquare className="mr-2 h-5 w-5" /> New Meeting
+              </button> : null)
+            }
+          />
+        </div>
+      </div>
+
+      <div style={{ height: 650, width: "100%" }}>
+        <DataGrid
+          rows={meetings || []}
+          columns={columns}
+          getRowId={(row) => row.id}
+          pagination
+          slots={{
+            toolbar: CustomToolbar,
+          }}
+          className={dataGridClassNames}
+          sx={dataGridSxStyles(isDarkMode)}
+        />
+      </div>
+       {roomId && <MeetingScreen roomId={roomId} onClose={handleCloseMeeting} />}
+    </div>
+  );
+};
+
+const CustomToolbar = () => (
+  <GridToolbarContainer className="toolbar flex gap-2">
+    <GridToolbarFilterButton />
+    <GridToolbarExport />
+  </GridToolbarContainer>
+);
+
+const handleEdit = (meeting: any) => {
+  console.log("Edit meeting:", meeting);
+  // Open edit modal or navigate to edit page
+};
+
+const handleDelete = (meetingId: string) => {
+  console.log("Delete meeting:", meetingId);
+  // Show confirmation and trigger deletion logic
+};

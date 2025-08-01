@@ -13,6 +13,6 @@ export class UpdateMeetingUseCase {
   async execute(id: string, orgId: string, data: MeetingProps) {
     const meeting = await this.meetingRepo.findById(id);
     if (!meeting?.ownedBy(orgId)) throw new ForbiddenError(Messages.FORBIDDEN);
-    return await this.meetingRepo.update(id, data)
+    return (await this.meetingRepo.update(id, data)).toDTO();
   }
 }

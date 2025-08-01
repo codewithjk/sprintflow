@@ -21,6 +21,7 @@ import { useAppSelector } from '../store/hooks';
 import { useEffect } from 'react';
 import { SettingsPage } from '../features/organization/pages/settingsPage';
 import { HomePage } from '../pages/home';
+import { MeetingPage } from '../features/meetings/pages/MeetingPage';
 
 const AppRouter = () => {
   const { user } = useAuth();
@@ -79,14 +80,20 @@ const AppRouter = () => {
         
         {/* Project */}
         <Route path="/projects/:id" element={<DashboardWrapper><ProjectViewPage /></DashboardWrapper>} />
-        <Route path="/org/projects/" element={<DashboardWrapper><ProjectListPage/></DashboardWrapper>} />
+        <Route path="/org/projects/" element={<DashboardWrapper><ProjectListPage /></DashboardWrapper>} />
+        
+        {/* Meeting */}
+        <Route path="/meetings/" element={<DashboardWrapper><MeetingPage /></DashboardWrapper>} />
+
       </Route>
 
       <Route element={<ProtectedRoute allowedRoles={["organization"]} />}>
         <Route path="/org/dashboard" element={<DashboardWrapper><OrgDashboard /></DashboardWrapper>} />
         <Route path="/org/members" element={<DashboardWrapper><MembersPage /></DashboardWrapper>} />
         <Route path="/org/settings" element={<DashboardWrapper><SettingsPage /></DashboardWrapper>} />
-         <Route path="/org/plans" element={user? <PlansPage/> : <Navigate to="/" replace />}/>
+        <Route path="/org/plans" element={user ? <PlansPage /> : <Navigate to="/" replace />} />
+        <Route path="/org/meetings/" element={<DashboardWrapper><MeetingPage /></DashboardWrapper>} />
+        
       </Route>
 
 
