@@ -1,4 +1,4 @@
-// components/PricingCard.jsx
+
 import { CheckIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../../features/auth/useAuth";

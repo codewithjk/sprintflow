@@ -6,7 +6,7 @@ import {
   GridToolbarExport,
   GridToolbarFilterButton,
 } from "@mui/x-data-grid";
-import { Edit2, PlusSquare, Trash2 } from "lucide-react";
+import { PlusSquare, Trash2 } from "lucide-react";
 import Header from "../../../components/ui/header";
 import { useAppSelector } from "../../../store/hooks";
 import { useEffect, useState } from "react";
@@ -21,20 +21,30 @@ import { MeetingProps } from "../../../../../../../libs/domain/entities/meeting.
 import { useAuth } from "../../auth/useAuth";
 import moment from "moment/moment";
 import MeetingScreen from "./MeetingScreen";
+import { toast } from "react-toastify";
+import ConfirmationDialog from "../../../components/ui/popup/ConformationDialog";
 
 export const MeetingPage = () => {
-  const { meetings, fetchError, fetchLoading, createMeeting, fetchMeetings } =
-    useMeeting();
+  const {
+    meetings,
+    fetchError,
+    fetchLoading,
+    createMeeting,
+    fetchMeetings,
+    deleteMeeting,
+  } = useMeeting();
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
   const [isModalNewMeetingOpen, setIsModalNewMeetingOpen] = useState(false);
-  const [roomId , setRoomId] = useState(null)
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [meetingToDelete, setMeetingToDelete] = useState<string | null>(null);
+
+  const [roomId, setRoomId] = useState(null);
   const { user } = useAuth();
 
   useEffect(() => {
     if (user?.role === "user") {
       fetchMeetings({ orgId: user?.orgId, page: 1, limit: 10 });
-    }else
-    if (user?.role === "organization") {
+    } else if (user?.role === "organization") {
       fetchMeetings({ orgId: user?.id, page: 1, limit: 10 });
     }
   }, []);
@@ -47,13 +57,34 @@ export const MeetingPage = () => {
     await createMeeting(data);
   };
 
-
   const handleCloseMeeting = () => {
-    setRoomId(null)
+    setRoomId(null);
+  };
+
+  const handleDelete = (meetingId: string) => {
+    setMeetingToDelete(meetingId);
+    setDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!meetingToDelete) return;
+
+    try {
+      const res = await deleteMeeting(meetingToDelete);
+      if (res.success) {
+        toast.success("Meeting deleted successfully!");
+      } else {
+        toast.error(res.message || "Failed to delete meeting");
+      }
+    } catch (error) {
+      toast.error("Unable to delete! Try again.");
+    } finally {
+      setDialogOpen(false);
+      setMeetingToDelete(null);
+    }
   };
 
   const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", width: 100 },
     { field: "name", headerName: "Meeting Name", flex: 1 },
     {
       field: "startTime",
@@ -82,7 +113,7 @@ export const MeetingPage = () => {
         const canJoinMeeting = endTime > current && current > startTime;
 
         return (
-          <div >
+          <div>
             {canJoinMeeting && (
               <button
                 onClick={() => setRoomId(params.row.roomId)}
@@ -115,13 +146,7 @@ export const MeetingPage = () => {
             width: 150,
             sortable: false,
             renderCell: (params: GridRenderCellParams) => (
-              <div >
-                <button
-                  onClick={() => handleEdit(params.row)}
-                  className="rounded bg-yellow-500 px-2 py-1 text-sm text-white hover:bg-yellow-600 mr-2"
-                >
-                  <Edit2 size={16} />
-                </button>
+              <div>
                 <button
                   onClick={() => handleDelete(params.row.id)}
                   className="rounded bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
@@ -145,16 +170,29 @@ export const MeetingPage = () => {
           onClose={() => setIsModalNewMeetingOpen(false)}
         />
 
+        <ConfirmationDialog
+          isOpen={isDialogOpen}
+          title="Delete this meeting?"
+          description="Are you sure you want to permanently delete this meeting? This action cannot be undone."
+          onCancel={() => {
+            setDialogOpen(false);
+            setMeetingToDelete(null);
+          }}
+          onConfirm={confirmDelete}
+        />
+
         <div className="pb-6 pt-6 lg:pb-4 lg:pt-8">
           <Header
             name="Meetings"
             buttonComponent={
-             (user && user.role === "organization"? <button
-                className="flex items-center rounded-md bg-blue-primary px-3 py-2 text-white hover:bg-blue-600"
-                onClick={() => setIsModalNewMeetingOpen(true)}
-              >
-                <PlusSquare className="mr-2 h-5 w-5" /> New Meeting
-              </button> : null)
+              user && user.role === "organization" ? (
+                <button
+                  className="flex items-center rounded-md bg-blue-primary px-3 py-2 text-white hover:bg-blue-600"
+                  onClick={() => setIsModalNewMeetingOpen(true)}
+                >
+                  <PlusSquare className="mr-2 h-5 w-5" /> New Meeting
+                </button>
+              ) : null
             }
           />
         </div>
@@ -173,7 +211,7 @@ export const MeetingPage = () => {
           sx={dataGridSxStyles(isDarkMode)}
         />
       </div>
-       {roomId && <MeetingScreen roomId={roomId} onClose={handleCloseMeeting} />}
+      {roomId && <MeetingScreen roomId={roomId} onClose={handleCloseMeeting} />}
     </div>
   );
 };
@@ -184,13 +222,3 @@ const CustomToolbar = () => (
     <GridToolbarExport />
   </GridToolbarContainer>
 );
-
-const handleEdit = (meeting: any) => {
-  console.log("Edit meeting:", meeting);
-  // Open edit modal or navigate to edit page
-};
-
-const handleDelete = (meetingId: string) => {
-  console.log("Delete meeting:", meetingId);
-  // Show confirmation and trigger deletion logic
-};

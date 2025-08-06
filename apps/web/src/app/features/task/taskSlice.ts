@@ -21,7 +21,6 @@ const initialState: TaskState = {
 export const fetchTasksThunk = createAsyncThunk("task/fetch", async (filter: Partial<TaskProps> & { page: number, limit: number }, thunkAPI) => {
     try {
         const res = await taskAPI.searchTasks(filter);
-        console.log(res.data.tasks)
         return res.data.tasks;
     } catch (error: any) {
         return thunkAPI.rejectWithValue(error.response.data.message)

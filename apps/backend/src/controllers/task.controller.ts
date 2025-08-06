@@ -43,10 +43,13 @@ export const getTaskController = async (req: Request, res: Response, next: NextF
 };
 
 export const updateTaskController = async (req: Request, res: Response, next: NextFunction) => {
+  console.log("dkjfa")
   try {
     const idParam = req.params.id;
     const body = req.body;
-    const orgId = req.organization.id;
+    const orgId = req.organization?.id;
+    const userId = req.user?.id;
+    const updaterId = orgId ?? userId;
     if (typeof idParam !== 'string') {
       throw new ValidationError(Messages.INVALID_PARAMS);
     }
@@ -57,7 +60,8 @@ export const updateTaskController = async (req: Request, res: Response, next: Ne
     const data: Partial<TaskProps> = body;
     const id: string = idParam;
     const useCase = new UpdateTaskUseCase(taskRepo);
-    const task = await useCase.execute({ id, data, orgId });
+    const task = await useCase.execute({ id, data, updaterId });
+    console.log(task)
     res.status(HttpStatus.OK).json({ message: Messages.TASK_UPDATED, task });
   } catch (err) {
     next(err);

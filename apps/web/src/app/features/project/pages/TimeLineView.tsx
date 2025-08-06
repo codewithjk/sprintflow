@@ -5,6 +5,7 @@ import "gantt-task-react/dist/index.css";
 
 import { useAppSelector } from "../../../store/hooks";
 import { useTasks } from "../../task/useTask";
+import { useAuth } from "../../auth/useAuth";
 
 type Props = {
   id: string;
@@ -15,6 +16,7 @@ type TaskTypeItems = "task" | "milestone" | "project";
 
 const Timeline = ({ id, setIsModalNewTaskOpen }: Props) => {
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  const { user } = useAuth();
  
   const { tasks, fetchLoading, fetchError } = useTasks();
   console.log(tasks)
@@ -79,14 +81,14 @@ const Timeline = ({ id, setIsModalNewTaskOpen }: Props) => {
             barBackgroundSelectedColor={isDarkMode ? "#000" : "#9ba1a6"}
           />
         </div>
-        <div className="px-4 pb-5 pt-1">
+       {user?.role === "organization" && ( <div className="px-4 pb-5 pt-1">
           <button
             className="flex items-center rounded bg-blue-primary px-3 py-2 text-white hover:bg-blue-600"
             onClick={() => setIsModalNewTaskOpen(true)}
           >
             Add New Task
           </button>
-        </div>
+        </div>)}
       </div>
     </div>
   );

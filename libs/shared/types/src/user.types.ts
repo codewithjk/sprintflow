@@ -39,7 +39,8 @@ export interface User{
   email:string
   orgId:string
   role: string
-  profileUrl?:string
+  profileUrl?: string | null
+  phoneNumber?: string | null
 }
 
 

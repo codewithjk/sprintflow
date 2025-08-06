@@ -81,7 +81,7 @@ export const PriorityPage = ({ priority }: Props) => {
     const { user: currentUser } = useAuth();
     
   const { tasks, fetchLoading, fetchError, fetchTasks } = useTasks();
-  console.log(tasks)
+
     
     //fetching tasks for user or organization
     useEffect(() => {
@@ -99,6 +99,8 @@ export const PriorityPage = ({ priority }: Props) => {
     (task: Task) => task.priority === priority,
   );
 
+  console.log(filteredTasks?.length)
+
   if (fetchError || !tasks) return <div>Error fetching tasks</div>;
 
   return (
@@ -110,12 +112,12 @@ export const PriorityPage = ({ priority }: Props) => {
       <Header
         name="Priority Page"
         buttonComponent={
-          <button
+          currentUser?.role === "organization"?(<button
             className="mr-3 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
             onClick={() => setIsModalNewTaskOpen(true)}
           >
             Add Task
-          </button>
+          </button>):null
         }
       />
       <div className="mb-4 flex justify-start">
@@ -130,7 +132,7 @@ export const PriorityPage = ({ priority }: Props) => {
         <button
           className={`px-4 py-2 ${
             view === "table" ? "bg-gray-300" : "bg-white"
-          } rounded-l`}
+          } rounded-r`}
           onClick={() => setView("table")}
         >
           Table
@@ -138,13 +140,25 @@ export const PriorityPage = ({ priority }: Props) => {
       </div>
       {fetchLoading ? (
         <div>Loading tasks...</div>
-      ) : view === "list" ? (
+      )
+      : filteredTasks && filteredTasks.length === 0? (
+        <div className="flex h-[70vh] w-full items-center justify-center">
+  <p className="select-none text-6xl font-extrabold tracking-wide text-gray-500/50 dark:text-gray-300/30 text-center">
+    NO TASKS
+  </p>
+</div>
+
+
+        )
+          
+            : view === "list" ? (
         <div className="grid grid-cols-1 gap-4">
           {filteredTasks?.map((task: Task) => (
             <TaskCard key={task.id} task={task} />
           ))}
         </div>
-      ) : (
+        ) 
+          : (
         view === "table" &&
         filteredTasks && (
           <div className="z-0 w-full">

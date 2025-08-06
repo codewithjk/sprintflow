@@ -1,4 +1,5 @@
 
+import { UserProps } from '../../../../../../libs/domain/entities/user.entity';
 import { CreateOrganizationDTO, LoginDTO, SignupDTO } from '../../../../../../libs/shared/types/src';
 import axios from '../../../utils/axiosInstance';
 
@@ -16,7 +17,10 @@ export const authAPI = {
   verifyOtp: (data: { email: string; otp: string }) => axios.post('/auth/verify', data),
   verifyOrg: (formdata: CreateOrganizationDTO, otp: string) => axios.post('/auth/org/verify', { ...formdata, otp }),
   
-  verifyInvitation:(data:{token:string})=>axios.post('/auth/verify/invitation',data),
+  verifyInvitation: (data: { token: string }) => axios.post('/auth/verify/invitation', data),
+  
+
+  
 
   logout: () => axios.post('/auth/logout'),
 };

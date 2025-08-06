@@ -19,9 +19,17 @@ import { UserRegistrationPage } from '../features/auth/pages/UserRegistrationPag
 import { PlansPage } from '../features/organization/pages/plansPage';
 import { useAppSelector } from '../store/hooks';
 import { useEffect } from 'react';
-import { SettingsPage } from '../features/organization/pages/settingsPage';
+import { OrgSettingsPage } from '../features/organization/pages/OrgsettingsPage';
 import { HomePage } from '../pages/home';
 import { MeetingPage } from '../features/meetings/pages/MeetingPage';
+import { AdminPanel } from '../features/admin/pages/adminPanel';
+import { AdminLogin } from '../features/auth/pages/AdminLoginPage';
+import {NotFoundPage }from '../pages/NotFoundPage';
+import { UsersListPage } from '../features/admin/pages/usersList';
+import { OrganizationsListPage } from '../features/admin/pages/OrganizationListPage';
+import { ChatPage } from '../features/chat/pages/ChatPage';
+import { TimeLinePage } from '../pages/TimelinePage';
+import { UserSettingsPage } from '../pages/UserSettings';
 
 const AppRouter = () => {
   const { user } = useAuth();
@@ -58,14 +66,19 @@ const AppRouter = () => {
         element={!user ? <OrganizationSignup/> : <Navigate to="/org/dashboard" replace />}
       />
 
-     
-
-   
+      <Route
+        path="/admin/login"
+        element={!user  ?<AdminLogin/>: <Navigate to="/admin/dashboard" replace />}
+      />
 
       {/* user  protected */}
       <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
-        {/* add here protected routes */}
-        <Route path='/home' element={ <DashboardWrapper><HomePage/></DashboardWrapper> }/>
+
+        <Route path='/home' element={<DashboardWrapper><HomePage /></DashboardWrapper>} />
+        <Route path="/chat/" element={<DashboardWrapper><ChatPage /></DashboardWrapper>} />
+        <Route path="/timeline/" element={<DashboardWrapper><TimeLinePage/></DashboardWrapper>} />
+        <Route path="/settings/" element={<DashboardWrapper><UserSettingsPage/></DashboardWrapper>} />
+        
       </Route>
 
 
@@ -78,21 +91,31 @@ const AppRouter = () => {
         <Route path="/priority/low" element={<DashboardWrapper><PriorityPage priority={ Priority.Low} /></DashboardWrapper>} />
         <Route path="/priority/backlog" element={<DashboardWrapper><PriorityPage priority={Priority.Backlog } /></DashboardWrapper>} />
         
-        {/* Project */}
         <Route path="/projects/:id" element={<DashboardWrapper><ProjectViewPage /></DashboardWrapper>} />
         <Route path="/org/projects/" element={<DashboardWrapper><ProjectListPage /></DashboardWrapper>} />
-        
-        {/* Meeting */}
         <Route path="/meetings/" element={<DashboardWrapper><MeetingPage /></DashboardWrapper>} />
+
+        
 
       </Route>
 
       <Route element={<ProtectedRoute allowedRoles={["organization"]} />}>
         <Route path="/org/dashboard" element={<DashboardWrapper><OrgDashboard /></DashboardWrapper>} />
         <Route path="/org/members" element={<DashboardWrapper><MembersPage /></DashboardWrapper>} />
-        <Route path="/org/settings" element={<DashboardWrapper><SettingsPage /></DashboardWrapper>} />
+        <Route path="/org/settings" element={<DashboardWrapper><OrgSettingsPage /></DashboardWrapper>} />
         <Route path="/org/plans" element={user ? <PlansPage /> : <Navigate to="/" replace />} />
         <Route path="/org/meetings/" element={<DashboardWrapper><MeetingPage /></DashboardWrapper>} />
+        <Route path="/org/chat/" element={<DashboardWrapper><ChatPage /></DashboardWrapper>} />
+        
+      </Route>
+
+
+      <Route element={<ProtectedRoute allowedRoles={["super_admin"]} />}>
+        <Route path="/admin/dashboard" element={<DashboardWrapper><AdminPanel /></DashboardWrapper>} />
+        <Route path="/admin/organizations" element={<DashboardWrapper><OrganizationsListPage /></DashboardWrapper>} />
+        <Route path="/admin/users" element={<DashboardWrapper><UsersListPage /></DashboardWrapper>} />
+        <Route path="/admin/settings" element={<DashboardWrapper><UserSettingsPage /></DashboardWrapper>} />
+
         
       </Route>
 
@@ -103,7 +126,7 @@ const AppRouter = () => {
       <Route path='/unauthorized' element={<UnauthorizedPage/>}/>
 
       
-      <Route path='/*' element={<div className='text-red-600'> 404 </div>}/>
+      <Route path='*' element={<NotFoundPage/>}/>
     </Routes>
   );
 };

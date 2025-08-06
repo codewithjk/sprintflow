@@ -8,7 +8,6 @@ import { meetingAPI } from "./meetingAPI";
 
 export function useMeeting() {
 
-    // const { meetings, isLoading, createError, fetchError } = useAppSelector(state => state.meeting);
     const [createLoading, setCreateLoading] = useState<boolean>(false)
     const [fetchLoading, setFetchLoading] = useState<boolean>(false)
     const [createError, setCreateError] = useState<boolean>(false)
@@ -39,7 +38,16 @@ export function useMeeting() {
         }
 
     }
+    const deleteMeeting = async (meetingId: string) => {
+        try {
+            await meetingAPI.delete(meetingId);
+            setMeetings((prev) => prev.filter((m) => m.id !== meetingId));
+            return { success: true };
+        } catch (error: any) {
+            return { success: false, message: error?.response?.data?.message || "Failed to delete meeting" };
+        }
+    };
 
-    return { meetings, createLoading,fetchLoading, createError, fetchError,  fetchMeetings, createMeeting }
+    return { meetings, createLoading, fetchLoading, createError, fetchError, fetchMeetings, createMeeting, deleteMeeting }
 }
 

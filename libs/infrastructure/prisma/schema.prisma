@@ -32,6 +32,7 @@ model User {
   email     String   @unique
   password  String?
   profileUrl String?
+  phoneNumber String?
   orgId     String  @db.ObjectId
   role      AppUserRole     // user || super_admin
   isOwner   Boolean  @default(false)
@@ -42,6 +43,7 @@ model User {
   assignedTasks Task[]
   attachments   Attachment[]
   comments      Comment[]
+  chats Chat[]
 }
 
 model Organization {
@@ -67,6 +69,7 @@ model Organization {
   tasks    Task[]
   projects Project[]
   meetings Meeting[]
+  chats Chat[]
 }
 
 model Project {
@@ -135,4 +138,17 @@ model Meeting {
   updatedAt DateTime @updatedAt
 
   organization Organization @relation(fields: [orgId], references: [id])
+}
+
+model Chat {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  content     String
+  userId       String   @db.ObjectId
+ 
+  orgId       String @db.ObjectId
+ 
+  createdAt   DateTime @default(now())
+  
+ sender      User?      @relation(fields: [userId], references: [id] )
+   organization Organization? @relation(fields: [orgId], references: [id])
 }

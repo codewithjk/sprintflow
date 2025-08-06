@@ -1,3 +1,5 @@
+import { OrgProps } from '../../../../../../libs/domain/entities/organization.entity';
+import { UserProps } from '../../../../../../libs/domain/entities/user.entity';
 import axios from '../../../utils/axiosInstance';
 
 export const orgAPI = {
@@ -9,6 +11,7 @@ export const orgAPI = {
         axios.post('/org/invite', { email, name }),
     getAllMembers: (params: { page: number, limit: number }) => 
         axios.get('/org/members', { params }),
-    getOrgById: (id:string) =>
-        axios.get(`/org/${id}`),
+    getOrgById: (id:string) => axios.get(`/org/${id}`),
+    updateOrg: (id:string, data :Partial<OrgProps>) => axios.put(`/org/${id}`, data),
+    updateMember : (id:string,data : Partial<UserProps>)=>axios.put(`/org/members/${id}`,data),
 };

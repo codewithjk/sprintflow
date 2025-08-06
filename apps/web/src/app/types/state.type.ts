@@ -21,6 +21,10 @@ export interface ProjectState {
   isLoading: boolean;
   fetchError: string | null,
   createError: string | null,
+  updateError: string | null,
+  updateLoading: boolean,
+  deleteError: string | null,
+  deleteLoading: boolean,
 }
 export interface TaskState {
   tasks: Task[] | null;
@@ -36,7 +40,7 @@ export interface TaskState {
 
 
 export interface Project {
-  id: number;
+  id: string;
   name: string;
   description?: string;
   startDate?: string;

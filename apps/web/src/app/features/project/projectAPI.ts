@@ -8,4 +8,8 @@ export const projectAPI = {
         axios.get('/project/', { params }),
     getProjectById: (id: string) =>
         axios.get(`/project/${id}`),
+    updateProject: (id: string,data:Partial<Project>) =>
+        axios.put(`/project/${id}`, data),
+    deleteProject: (id: string) =>
+        axios.delete(`/project/${id}`),
 };

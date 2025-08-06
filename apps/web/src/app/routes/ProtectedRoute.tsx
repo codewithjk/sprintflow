@@ -34,7 +34,7 @@ export const ProtectedRoute = ({
     return <div className="text:white">...Loading</div>;
   }
 
-  // ✅ Plan-based access control handled during render
+  // Plan-based access control handled during render
   if (isOrganization && user?.plan === "free" && pathname !== "/org/plans") {
     return (
       <Navigate to="/org/plans" state={{ from: pathname }} replace />
@@ -45,7 +45,10 @@ export const ProtectedRoute = ({
     return <Navigate to="/org/dashboard" replace />;
   }
 
-  // ✅ Role-based route protection
+
+  console.log(role)
+
+  // Role-based route protection
   if (allowedRoles.includes(role)) {
     return <Outlet />;
   }

@@ -1,9 +1,12 @@
 //useAuth.ts
-import { loginThunk, logout, verifyInvitationThunk,refreshAuthThunk } from './authSlice';
+import { loginThunk, logout, verifyInvitationThunk,refreshAuthThunk, profileUpdateThunk } from './authSlice';
 import { authAPI } from './authAPI';
 import { RootState } from '../../store/store';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { CreateOrganizationDTO, LoginDTO, SignupDTO } from '../../../../../../libs/shared/types/src';
+import { UserProps } from '../../../../../../libs/domain/entities/user.entity';
+import { OrgProps } from '../../../../../../libs/domain/entities/organization.entity';
+import { orgAPI } from '../organization/orgAPI';
 
 export function useAuth() {
   const dispatch = useAppDispatch();
@@ -31,6 +34,10 @@ export function useAuth() {
     return authAPI.verifyOrg(data,otp)
   }
 
+  const profileUpdate = async (id:string,data: Partial<UserProps> | Partial <OrgProps>,role: 'user' | 'super_admin' | 'organization') => {
+     await dispatch(profileUpdateThunk({data,role,id})).unwrap();
+  }
+
   const logOut = async () => {
     await authAPI.logout();
     dispatch(logout());
@@ -45,5 +52,5 @@ export function useAuth() {
     await dispatch(refreshAuthThunk({id,role}))
   }
  
-  return { ...auth, login, signup, verifyOtp, logOut,verifyOrganization, verifyInvitation, refreshAuth,logOutOrganization };
+  return { ...auth, login, signup, verifyOtp, logOut,verifyOrganization, verifyInvitation, refreshAuth,logOutOrganization ,profileUpdate };
 }

@@ -1,18 +1,16 @@
-
-
-
-
 import {
   AlertCircle,
   AlertOctagon,
   AlertTriangle,
   Briefcase,
+  Building,
   ChevronDown,
   ChevronUp,
   Home,
   Layers3,
   LockIcon,
   LucideIcon,
+  MessagesSquareIcon,
   Search,
   Settings,
   ShieldAlert,
@@ -22,8 +20,7 @@ import {
   X,
 } from "lucide-react";
 
-
-import  { useState } from "react";
+import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { useAuth } from "../../../features/auth/useAuth";
 import { toast } from "react-toastify";
@@ -39,22 +36,22 @@ const Sidebar = () => {
 
   const dispatch = useAppDispatch();
   const isSidebarCollapsed = useAppSelector(
-    (state) => state.global.isSidebarCollapsed,
+    (state) => state.global.isSidebarCollapsed
   );
 
   const { user, logOut } = useAuth();
-  const { projects, } = useProject(); 
-  
+  const { projects } = useProject();
+
   const handleSignOut = async () => {
     try {
       await logOut();
     } catch (error) {
-        toast("unable to log out");
+      toast("unable to log out");
       console.error("Error signing out: ", error);
     }
   };
   if (!user) return null;
-    const currentUserDetails :UserType = user;
+  const currentUserDetails: UserType = user;
 
   const sidebarClassNames = `fixed flex flex-col h-[100%] justify-between shadow-xl
     transition-all duration-300 h-full z-40 dark:bg-black overflow-y-auto bg-white
@@ -63,50 +60,53 @@ const Sidebar = () => {
 
   const sidebarLinksByRole = {
     super_admin: [
-      { icon: Home, label: "Home", href: "/admin-dashboard" },
-      { icon: Users, label: "Organizations", href: "/organizations" },
-      { icon: Settings, label: "Settings", href: "/settings" },
+      { icon: Home, label: "Home", href: "/admin/dashboard" },
+      { icon: Building, label: "Organizations", href: "/admin/organizations" },
+      { icon: Users, label: "Users", href: "/admin/users" },
+      { icon: Settings, label: "Settings", href: "/admin/settings" },
     ],
     organization: [
       { icon: Home, label: "Home", href: "/org/dashboard" },
       { icon: Briefcase, label: "Projects", href: "/org/projects" },
-      { icon: Users, label: "Teams", href: "/org/teams" },
-      { icon: User, label: "Members", href: "/org/members" },
-      { icon: Settings, label: "Settings", href: "/org/settings" },
+      { icon: MessagesSquareIcon, label: "Chat", href: "/org/chat" },
       { icon: Video, label: "Meetings", href: "/org/meetings" },
-
+      { icon: Users, label: "Members", href: "/org/members" },
+      { icon: Settings, label: "Settings", href: "/org/settings" },
+      
     ],
     user: [
       { icon: Home, label: "Home", href: "/home" },
       { icon: Briefcase, label: "Timeline", href: "/timeline" },
-      { icon: Search, label: "Search", href: "/search" },
-      { icon: Settings, label: "Settings", href: "/settings" },
+      { icon: MessagesSquareIcon, label: "Chat", href: "/chat" },
       { icon: Video, label: "Meetings", href: "/meetings" },
+      { icon: Settings, label: "Settings", href: "/settings" },
+      
     ],
   };
   const role = user.role as keyof typeof sidebarLinksByRole;
   const sidebarLinks = sidebarLinksByRole[role] || [];
 
   const priorities = [
-  { label: 'Urgent', href: '/priority/urgent', icon: AlertCircle },
-  { label: 'High', href: '/priority/high', icon: ShieldAlert },
-  { label: 'Medium', href: '/priority/medium', icon: AlertTriangle },
-  { label: 'Low', href: '/priority/low', icon: AlertOctagon },
-  { label: 'Backlog', href: '/priority/backlog', icon: Layers3 },
-];
-
-
-
-
+    { label: "Urgent", href: "/priority/urgent", icon: AlertCircle },
+    { label: "High", href: "/priority/high", icon: ShieldAlert },
+    { label: "Medium", href: "/priority/medium", icon: AlertTriangle },
+    { label: "Low", href: "/priority/low", icon: AlertOctagon },
+    { label: "Backlog", href: "/priority/backlog", icon: Layers3 },
+  ];
 
   return (
     <div className={sidebarClassNames}>
       <div className="flex h-[100%] w-full flex-col justify-start">
         {/* TOP LOGO */}
         <div className="z-50 flex min-h-[56px] w-64 items-center justify-between bg-white px-6 pt-3 dark:bg-black">
-          <div >
-            <span className="text-xl font-bold text-gray-800 dark:text-white">SPRINT</span>
-            <span className="text-xl font-bold text-blue-800 dark:text-blue-500"> FLOW</span> 
+          <div>
+            <span className="text-xl font-bold text-gray-800 dark:text-white">
+              SPRINT
+            </span>
+            <span className="text-xl font-bold text-blue-800 dark:text-blue-500">
+              {" "}
+              FLOW
+            </span>
           </div>
           {isSidebarCollapsed ? null : (
             <button
@@ -121,17 +121,17 @@ const Sidebar = () => {
         </div>
         {/* TEAM */}
         <div className="flex items-center gap-5 border-y-[1.5px] border-gray-200 px-8 py-4 dark:border-gray-700">
-        {!!currentUserDetails?.profileUrl ? (
-                         <Image
-                src={`https://pm-s3-images.s3.us-east-2.amazonaws.com/${currentUserDetails?.profileUrl}`}
-                alt={currentUserDetails?.name || "User Profile Picture"}
-                width={100}
-                height={50}
-                className="h-full rounded-full object-cover"
-              />
-            ) : (
-              <User className="h-6 w-6 cursor-pointer self-center rounded-full dark:text-white" />
-            )}
+          {!!currentUserDetails?.profileUrl ? (
+            <Image
+              src={`https://pm-s3-images.s3.us-east-2.amazonaws.com/${currentUserDetails?.profileUrl}`}
+              alt={currentUserDetails?.name || "User Profile Picture"}
+              width={100}
+              height={50}
+              className="h-full rounded-full object-cover"
+            />
+          ) : (
+            <User className="h-6 w-6 cursor-pointer self-center rounded-full dark:text-white" />
+          )}
           <div>
             <h3 className="text-md font-bold tracking-wide dark:text-gray-200">
               {user.name}
@@ -143,9 +143,12 @@ const Sidebar = () => {
           </div>
         </div>
         {/* NAVBAR LINKS */}
-          {sidebarLinks.map(({ icon: Icon, label, href }) => (
-        <SidebarLink key={href} icon={Icon} label={label} href={href} />
-      ))}
+        {sidebarLinks.map(({ icon: Icon, label, href }) => (
+          <SidebarLink key={href} icon={Icon} label={label} href={href} />
+        ))}
+
+               {role !== "super_admin" && (
+  <>
 
         {/* PROJECTS LINKS */}
         <button
@@ -170,6 +173,7 @@ const Sidebar = () => {
             />
           ))}
 
+ 
         {/* PRIORITIES LINKS */}
         <button
           onClick={() => setShowPriority((prev) => !prev)}
@@ -184,17 +188,19 @@ const Sidebar = () => {
         </button>
         {showPriority && (
           <>
-  {priorities.map(({ label, href, icon }, index) => (
-    <SidebarLink key={index} icon={icon} label={label} href={href} />
-  ))}
-</>
-        )}
+            {priorities.map(({ label, href, icon }, index) => (
+              <SidebarLink key={index} icon={icon} label={label} href={href} />
+            ))}
+          </>
+            )}
+              </>
+)}
       </div>
       <div className="z-10 mt-32 flex w-full flex-col items-center gap-4 bg-white px-8 py-4 dark:bg-black md:hidden">
         <div className="flex w-full items-center">
           <div className="align-center flex h-9 w-9 justify-center">
             {!!currentUserDetails?.profileUrl ? (
-                         <Image
+              <Image
                 src={`https://pm-s3-images.s3.us-east-2.amazonaws.com/${currentUserDetails?.profileUrl}`}
                 alt={currentUserDetails?.name || "User Profile Picture"}
                 width={100}
@@ -227,8 +233,8 @@ interface SidebarLinkProps {
 }
 
 const SidebarLink = ({ href, icon: Icon, label }: SidebarLinkProps) => {
-    const location = useLocation();
-    const pathname = location.pathname;
+  const location = useLocation();
+  const pathname = location.pathname;
   const isActive =
     pathname === href || (pathname === "/" && href === "/dashboard");
 

@@ -3,11 +3,17 @@ import { useEffect, useState } from 'react';
 
 import debounce from 'lodash.debounce';
 import { orgAPI } from './orgAPI';
+import { setUser } from '../auth/authSlice';
+import { UserProps } from '../../../../../../libs/domain/entities/user.entity';
+import { OrgProps } from '../../../../../../libs/domain/entities/organization.entity';
+import { useDispatch } from 'react-redux';
 
 export function useOrganizations() {
   const [search, setSearch] = useState('');
   const [orgs, setOrgs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch()
+  
 
   const fetchOrgs = async (searchValue: string) => {
     setLoading(true);
@@ -20,6 +26,29 @@ export function useOrganizations() {
       setLoading(false);
     }
   };
+
+  const updateProfile = async ({ id, role ,data}: { id: string, role: 'user' | 'super_admin' | 'organization',data:Partial<UserProps> | Partial<OrgProps> }) => {
+  
+      try {
+        let res;
+  
+        if (role === 'user') {
+          res = await orgAPI.updateMember(id, data);
+         
+          dispatch(setUser(res.data.user))
+          return res.data.user;
+        }
+        else if (role === "organization") {
+          res = await orgAPI.updateOrg(id, data);
+
+          dispatch(setUser(res.data.org))
+          return res.data.org;
+        }
+  
+      } catch (err: any) {
+        throw new Error(err)
+      }
+    }
 
   const debouncedFetch = debounce(fetchOrgs, 400);
 
@@ -38,5 +67,6 @@ export function useOrganizations() {
     setSearch,
     orgs,
     loading,
+    updateProfile
   };
 }

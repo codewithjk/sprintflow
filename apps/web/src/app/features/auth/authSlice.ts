@@ -4,6 +4,8 @@ import { authAPI } from './authAPI';
 import { LoginDTO } from '../../../../../../libs/shared/types/src';
 import { AuthState } from '../../types/state.type';
 import { orgAPI } from '../organization/orgAPI';
+import { UserProps } from '../../../../../../libs/domain/entities/user.entity';
+import { OrgProps } from '../../../../../../libs/domain/entities/organization.entity';
 
 const initialState: AuthState = {
   user: null,
@@ -24,7 +26,8 @@ export const loginThunk = createAsyncThunk(
       }
       else if (role === 'super_admin') {
         res = await authAPI.loginAdmin(payload);
-        return res.data.admin;
+        console.log(res.data.user)
+        return res.data.user;
       }
       else {
         res = await authAPI.loginOrg(payload);
@@ -67,6 +70,27 @@ export const refreshAuthThunk = createAsyncThunk(
       // else
         if (role === "organization") {
         res = await orgAPI.getOrgById(id)
+        return res.data.org;
+      }
+
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue(err.response.data.message);
+    }
+  });
+
+  export const profileUpdateThunk = createAsyncThunk(
+  'profile/update',
+  async ({ id, role ,data}: { id: string, role: 'user' | 'super_admin' | 'organization',data:Partial<UserProps> | Partial<OrgProps> }, thunkAPI) => {
+
+    try {
+      let res;
+
+      if (role === 'user') {
+        res = await orgAPI.updateMember(id,data);
+        return res.data.user;
+      }
+      else if (role === "organization") {
+        res = await orgAPI.updateOrg(id,data)
         return res.data.org;
       }
 
@@ -123,6 +147,18 @@ export const authSlice = createSlice({
         state.user = action.payload;
       })
       .addCase(refreshAuthThunk.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+    .addCase(profileUpdateThunk.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(profileUpdateThunk.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+      })
+      .addCase(profileUpdateThunk.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       })

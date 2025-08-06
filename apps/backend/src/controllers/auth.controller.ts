@@ -137,7 +137,7 @@ export const refreshTokenController = async (req: Request, res: Response, next: 
 }
 
 
-export const logoutUserController = async (
+export const logoutController = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -154,3 +154,34 @@ export const logoutUserController = async (
     next(error);
   }
 };
+
+
+
+
+///admin
+
+export const loginAdminController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return next(new ValidationError(Messages.EMAIL_AND_PASSWORD_REQUIRED));
+    }
+    const userRepository = new PrismaUserRepository();
+    const passwordService = new BcryptPasswordService()
+    const jwtService = new JwtService(JWT_TOKEN_SECRET)
+
+    const useCase = new LoginUseCase(userRepository, passwordService, jwtService);
+    const data = await useCase.execute({ email, password }, "super_admin")
+
+    setCookie(res, "refresh_token", data.refreshToken);
+    setCookie(res, "access_token", data.accessToken);
+    res.status(HttpStatus.OK).json({
+      message: Messages.LOGIN_SUCCESS,
+      user: data.user,
+      status: "success"
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+

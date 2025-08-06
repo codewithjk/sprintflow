@@ -33,6 +33,9 @@ export class Task {
     ownedBy(organizationId: string) {
         return organizationId === this.props.orgId;
     }
+  assignedTO(userId: string) {
+    return userId === this.props.assignedUserId;
+  }
 
   toDTO() {
     return { ...this.props };

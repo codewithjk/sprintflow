@@ -3,12 +3,16 @@ import authRoute from './routes/auth.routes'
 import orgRoute from './routes/org.routes'
 import taskRoute from './routes/task.routes'
 import projectRoute from './routes/project.routes'
+import adminRoute from './routes/admin.routes'
 import webhookRoute from './routes/webhook.routes'
 import meetingRoute from './routes/meeting.routes'
 import { errorMiddleware } from './middlewares/error-handler.middleware';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import isAuthenticated from './middlewares/is-authenticated.middleware';
+import { Server } from 'socket.io';
+import { ChatSocketHandler } from './sockets/chat-socket.handler';
+import { createServer } from 'http';
 
 const host = process.env.HOST ?? 'localhost';
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
@@ -38,7 +42,8 @@ app.use(isAuthenticated);
 app.use('/api/org', orgRoute);
 app.use('/api/project', projectRoute);
 app.use('/api/task', taskRoute);
-app.use('/api/meeting',meetingRoute)
+app.use('/api/meeting', meetingRoute);
+app.use('/api/admin', adminRoute)
 
 
 
@@ -46,9 +51,20 @@ app.use('/api/meeting',meetingRoute)
 // error handling middleware.
 app.use(errorMiddleware);
 
-const server = app.listen(port, host, () => {
+const server = createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: allowedOrigin,
+    credentials: true,
+  },
+});
+new ChatSocketHandler(io)
+
+ server.listen(port, host, () => {
     console.log(`[ ready ] http://${host}:${port}`);
 });
+
+
 
 
 

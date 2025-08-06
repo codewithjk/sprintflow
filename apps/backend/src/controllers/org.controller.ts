@@ -24,6 +24,8 @@ import { InviteUserUseCase } from "../../../../libs/application/use-cases/organi
 import { InvitationService } from "../../../../libs/infrastructure/redis/invitation.service";
 import { GetInvitationUseCase } from "../../../../libs/application/use-cases/organization/get-invitation.usecase";
 import { GetAllUsersUseCase } from "../../../../libs/application/use-cases/user/get-all-users.usecase";
+import { UserProps } from "../../../../libs/domain/entities/user.entity";
+import { UpdateUserUseCase } from "../../../../libs/application/use-cases/user/update-user.usecase";
 
 
 
@@ -116,6 +118,28 @@ export const updateOrganizationController = async (req: Request, res: Response, 
     const useCase = new UpdateOrganizationUseCase(orgRepo);
     const org = await useCase.execute({ id, data })
     res.status(HttpStatus.OK).json({ message: Messages.ORG_UPDATED, org })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const updateMemberController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const idParam = req.params.id;
+    const body = req.body;
+    if (typeof idParam !== 'string') {
+      throw new ValidationError(Messages.INVALID_PARAMS);
+    }
+    //validate body
+    if ((body && Object.entries(body).length === 0) || !body) {
+      throw new ValidationError(Messages.MISSING_FIELDS);
+    }
+    const data: Partial<UserProps> = body;
+    const id: string = idParam;
+    const userRepo = new PrismaUserRepository();
+    const useCase = new UpdateUserUseCase(userRepo);
+    const user = await useCase.execute({ id, data });
+    res.status(HttpStatus.OK).json({ message: Messages.USER_UPDATED, user });
   } catch (error) {
     next(error)
   }

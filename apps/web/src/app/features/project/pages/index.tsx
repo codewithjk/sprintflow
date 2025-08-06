@@ -13,6 +13,7 @@ import { useTasks } from "../../task/useTask";
 import Header from "../../../components/ui/header";
 import { PlusSquare } from "lucide-react";
 import { useProject } from "../useProject";
+import { useAuth } from "../../auth/useAuth";
 
 export const ProjectViewPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -22,7 +23,8 @@ export const ProjectViewPage = () => {
   const [activeTab, setActiveTab] = useState("Board");
   const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
   const { fetchTasks } = useTasks();
-  console.log(id);
+  const { user } = useAuth();
+ 
   const { project, getProjectById } = useProject();
   useEffect(() => {
     fetchTasks({ projectId: id, page: 1, limit: 10 });
@@ -43,12 +45,12 @@ export const ProjectViewPage = () => {
           <Header
             name={project.name}
             buttonComponent={
-              <button
+            user && user.role === "organization"? (<button
                 className="flex items-center rounded-md bg-blue-primary px-3 py-2 text-white hover:bg-blue-600"
                 onClick={() => setIsModalNewTaskOpen(true)}
               >
                 <PlusSquare className="mr-2 h-5 w-5" /> New Tasks
-              </button>
+              </button>):null
             }
           />
         </div>

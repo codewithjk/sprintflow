@@ -10,6 +10,7 @@ export interface UserProps {
   orgId: string;
   oAuthId?: string;
   profileUrl?: string |null;
+  phoneNumber?: string |null;
   authProvider: 'local' | 'google' | 'github' | null;
 }
 

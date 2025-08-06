@@ -1,4 +1,5 @@
 export interface MeetingProps {
+    id: string;
     name: string;
     roomId: string;
     orgId: string;
@@ -12,6 +13,9 @@ export class Meeting {
         if (props.endTime <= props.startTime) {
             throw new Error("End time must be after start time.");
         }
+    }
+    get id() {
+        return this.props.id;
     }
 
     get roomId() {

@@ -17,6 +17,7 @@ export const Messages = {
   USER_NOT_FOUND: 'User not found',
   USER_CREATED: 'User created successfully',
   USER_VERIFIED: 'User verified successfully',
+  USER_UPDATED: 'User updated successfully',
   LOGIN_SUCCESS: 'Logged in successfully',
   LOGOUT_SUCCESS:"Log out success",
   
