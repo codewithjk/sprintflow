@@ -22,7 +22,7 @@ export class UpdateTaskUseCase {
         const isOwned = task.ownedBy(updaterId);
         //check if organization have the access to update 
          if (!isAssigned && !isOwned) {
-    throw new ForbiddenError(Messages.FORBIDDEN);
+    throw new ForbiddenError(Messages.TASK_UPDATE_NOT_ALLOWED);
   }
         // if (!task.ownedBy(orgId)) throw new ForbiddenError(Messages.FORBIDDEN);
         //todo : if any changes to be made to attachment under this task, do here.

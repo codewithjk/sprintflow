@@ -100,6 +100,7 @@ export const taskSlice = createSlice({
                 }
             })
             .addCase(updateTaskThunk.rejected, (state, action) => {
+                console.log(action)
                 state.updateLoading = false;
                 state.updateError = action.payload as string;
             })
@@ -108,6 +109,7 @@ export const taskSlice = createSlice({
                 state.deleteError = null;
             })
             .addCase(deleteTaskThunk.fulfilled, (state, action) => {
+                console.log(action)
                 state.deleteLoading = false;
                 if (state.tasks) {
                     state.tasks = state.tasks.filter(task => task.id !== action.payload);

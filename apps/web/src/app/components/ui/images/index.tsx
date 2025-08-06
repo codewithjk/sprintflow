@@ -15,9 +15,10 @@ const Image = ({
   effect = 'blur',
   ...rest
 }: ImageProps) => {
+  
   return (
     <LazyLoadImage
-      src={src}
+      src={`${src}`}
       alt={alt}
       width={width}
       height={height}
@@ -29,3 +30,12 @@ const Image = ({
 };
 
 export default Image;
+{/* <LazyLoadImage
+      src={`${src}`}
+      alt={alt}
+      width={width}
+      height={height}
+      className={className}
+      effect={effect}
+      {...rest}
+    /> */}

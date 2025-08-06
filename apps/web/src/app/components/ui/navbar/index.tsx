@@ -69,8 +69,8 @@ const Navbar = () => {
             <Moon className="h-6 w-6 cursor-pointer dark:text-white" />
           )}
         </button>
-        <Link
-          to="/settings"
+       { user.role !== "super_admin" &&(<Link
+          to={user.role === "user" ?"/settings":"/org/settings"}
           className={
             isDarkMode
               ? `h-min w-min rounded p-2 dark:hover:bg-gray-700`
@@ -78,17 +78,17 @@ const Navbar = () => {
           }
         >
           <Settings className="h-6 w-6 cursor-pointer dark:text-white" />
-        </Link>
+        </Link>)}
         <div className="ml-2 mr-5 hidden min-h-[2em] w-[0.1rem] bg-gray-200 md:inline-block"></div>
         <div className="hidden items-center justify-between md:flex">
           <div className="align-center flex h-9 w-9 justify-center">
             {!!currentUserDetails?.profileUrl ? (
                         <Image
-                src={`https://pm-s3-images.s3.us-east-2.amazonaws.com/${currentUserDetails?.profileUrl}`}
+                src={currentUserDetails?.profileUrl}
                 alt={currentUserDetails?.name || "User Profile Picture"}
-                width={100}
-                height={50}
-                className="h-full rounded-full object-cover"
+                width={30}
+                height={30}
+                className="h-full w-full rounded-full object-cover"
               />
             ) : (
               <User className="h-6 w-6 cursor-pointer self-center rounded-full dark:text-white" />

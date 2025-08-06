@@ -18,11 +18,11 @@ export function useTasks() {
     await dispatch(fetchTasksThunk(filters));
   };
   const createTask = async (data: Partial<TaskProps>) => {
-    await dispatch(createTaskThunk(data)).unwrap();
+   return await dispatch(createTaskThunk(data)).unwrap();
   };
 
   const updateTask = async (taskId: string, data: Partial<TaskProps>) => {
-    await dispatch(updateTaskThunk({ taskId, data })).unwrap();
+    return dispatch(updateTaskThunk({ taskId, data })).unwrap();
   };
 
   const removeTask = async (taskId: string) => {

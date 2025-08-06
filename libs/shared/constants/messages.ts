@@ -71,6 +71,7 @@ export const Messages = {
   TASK_UPDATED: 'Task updated',
   TASK_FOUND: 'Task found',
   TASK_ALREADY_EXISTS: 'Task already exists',
+  TASK_UPDATE_NOT_ALLOWED: 'This is not your task!',
 
   //meeting
    MEETING_NOT_FOUND: 'Meeting not found',

@@ -123,11 +123,11 @@ const Sidebar = () => {
         <div className="flex items-center gap-5 border-y-[1.5px] border-gray-200 px-8 py-4 dark:border-gray-700">
           {!!currentUserDetails?.profileUrl ? (
             <Image
-              src={`https://pm-s3-images.s3.us-east-2.amazonaws.com/${currentUserDetails?.profileUrl}`}
+              src={currentUserDetails?.profileUrl}
               alt={currentUserDetails?.name || "User Profile Picture"}
-              width={100}
+              width={50}
               height={50}
-              className="h-full rounded-full object-cover"
+              className="h-full w-full rounded-full object-cover"
             />
           ) : (
             <User className="h-6 w-6 cursor-pointer self-center rounded-full dark:text-white" />
@@ -201,11 +201,11 @@ const Sidebar = () => {
           <div className="align-center flex h-9 w-9 justify-center">
             {!!currentUserDetails?.profileUrl ? (
               <Image
-                src={`https://pm-s3-images.s3.us-east-2.amazonaws.com/${currentUserDetails?.profileUrl}`}
+                src={currentUserDetails?.profileUrl}
                 alt={currentUserDetails?.name || "User Profile Picture"}
-                width={100}
+                width={50}
                 height={50}
-                className="h-full rounded-full object-cover"
+                className="h-full w-full rounded-full object-cover"
               />
             ) : (
               <User className="h-6 w-6 cursor-pointer self-center rounded-full dark:text-white" />

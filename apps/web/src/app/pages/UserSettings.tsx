@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Moon, Sun, User } from "lucide-react";
+import { Camera, Moon, Sun, User } from "lucide-react";
 import axios from "axios";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { useAuth } from "../features/auth/useAuth";
@@ -7,6 +7,7 @@ import { setIsDarkMode } from "../store/globalSlice";
 import Header from "../components/ui/header";
 import { toast } from "react-toastify";
 import { useOrganizations } from "../features/organization/useOrganization";
+import Image from "../components/ui/images";
 
 export const UserSettingsPage = () => {
   const dispatch = useAppDispatch();
@@ -121,16 +122,21 @@ export const UserSettingsPage = () => {
 
         {/* Profile Image Upload */}
         <div className="flex items-center gap-4">
-          <label htmlFor="profileInput" className="w-20 h-20 rounded-full overflow-hidden border border-gray-300 dark:border-gray-600">
+          <label
+            htmlFor="imageInput"
+            className=" group relative top-0  w-20 h-20 rounded-full overflow-hidden border border-gray-300 dark:border-gray-600"
+          >
             {previewImage || profileData.profileUrl ? (
-              <img
-                src={
-                  previewImage ||
-                  `https://pm-s3-images.s3.us-east-2.amazonaws.com/${profileData.profileUrl}`
-                }
-                alt="Profile"
-                className="object-cover w-full h-full"
-              />
+              <>
+                <Image
+                  src={previewImage || profileData.profileUrl}
+                  alt="Profile"
+                  className="object-cover w-full h-full"
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Camera className="w-6 h-6 text-slate-100 dark:text-white  opacity-70" />
+                </div>
+              </>
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-gray-700">
                 <User className="w-8 h-8 text-gray-500" />

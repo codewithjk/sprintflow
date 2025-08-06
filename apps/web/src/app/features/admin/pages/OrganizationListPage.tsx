@@ -36,10 +36,10 @@ const columns: GridColDef[] = [
         <div className="h-9 w-9">
           {params.row.profileUrl ? (
             <Image
-              src={`https://pm-s3-images.s3.us-east-2.amazonaws.com/${params.row?.profileUrl}`}
+              src={params.row?.profileUrl}
               alt={params.row.name || "User Profile Picture"}
-              width={100}
-              height={50}
+              width={35}
+              height={35}
               className="h-full rounded-full object-cover"
             />
           ) : (

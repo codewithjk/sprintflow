@@ -107,6 +107,7 @@ export class PrismaTaskRepository implements ITaskRepository {
                             id: true,
                             name: true,
                             email: true,
+                            profileUrl:true,
                         },
                     },
                     author: {
@@ -114,6 +115,7 @@ export class PrismaTaskRepository implements ITaskRepository {
                             id: true,
                             name: true,
                             email: true,
+                            profileUrl:true,
                         },
                     },
                     project: {

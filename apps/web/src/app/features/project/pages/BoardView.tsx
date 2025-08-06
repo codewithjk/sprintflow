@@ -23,15 +23,15 @@ const taskStatus = ["To Do", "Work In Progress", "Under Review", "Completed"];
 
 const BoardView = ({ id, setIsModalNewTaskOpen }: BoardProps) => {
 
-  const { tasks, fetchError, fetchLoading, updateTask } = useTasks();
+  const { tasks, fetchError, fetchLoading, updateTask,updateError } = useTasks();
 
   
 
-  const moveTask = (taskId: string, toStatus: string) => {
+  const moveTask = async(taskId: string, toStatus: string) => {
     try {
-      updateTask( taskId,{ status: toStatus });
-    } catch (error:any) {
-      toast.error(error.message || "Failed to updated task")
+      await updateTask( taskId,{ status: toStatus });
+    } catch (error: any) {
+      toast.error(error || updateError || "Failed to updated task")
     }
   };
 
@@ -77,7 +77,7 @@ const TaskColumn = ({
   }));
 
   const tasksCount = tasks.filter((task) => task.status === status).length;
-  console.log(tasksCount);
+
   const statusColor: any = {
     "To Do": "#2563EB",
     "Work In Progress": "#059669",
@@ -142,6 +142,8 @@ const Task = ({ task }: TaskProps) => {
       isDragging: !!monitor.isDragging(),
     }),
   }));
+
+  console.log(task)
 
   const taskTagsSplit = task.tags ? task.tags.split(",") : [];
 
@@ -235,7 +237,7 @@ const Task = ({ task }: TaskProps) => {
             {task.assignee && (
               <Image
                 key={task.assignee.id}
-                src={`https://pm-s3-images.s3.us-east-2.amazonaws.com/${task.assignee.profileUrl!}`}
+                src={task.assignee.profileUrl!}
                 alt={task.assignee.name}
                 width={30}
                 height={30}
@@ -245,7 +247,7 @@ const Task = ({ task }: TaskProps) => {
             {task.author && (
               <Image
                 key={task.author.id}
-                src={`https://pm-s3-images.s3.us-east-2.amazonaws.com/${task.author.profileUrl!}`}
+                src={task.author.profileUrl!}
                 alt={task.author.name}
                 width={30}
                 height={30}

@@ -45,7 +45,7 @@ export default function MessageList({
               {!isOwnMessage && (
                 sender?.profileUrl ? (
                   <Image
-                    src={`https://pm-s3-images.s3.us-east-2.amazonaws.com/${sender.profileUrl}`}
+                    src={sender.profileUrl}
                     alt={sender?.name || "User"}
                     width={32}
                     height={32}

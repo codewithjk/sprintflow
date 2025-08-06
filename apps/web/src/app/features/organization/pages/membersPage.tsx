@@ -26,11 +26,9 @@ const CustomToolbar = () => (
 );
 
 const columns: GridColDef[] = [
-  { field: "id", headerName: "ID", width: 100 },
-  { field: "name", headerName: "Username", width: 150 },
-  {
+{
     field: "profileUrl",
-    headerName: "Profile Picture",
+    headerName: "Profile",
     width: 100,
     renderCell: (params) => (
     
@@ -38,11 +36,11 @@ const columns: GridColDef[] = [
         <div className="h-9 w-9">
            {params.row.profileUrl ? (
                         <Image
-                src={`https://pm-s3-images.s3.us-east-2.amazonaws.com/${params.row?.profileUrl}`}
+                src={params.row?.profileUrl}
                 alt={params.row.name || "User Profile Picture"}
-                width={100}
-                height={50}
-                className="h-full rounded-full object-cover"
+                width={35}
+                height={35}
+                className="h-full w-full rounded-full object-cover"
               />
             ) : (
               <User className="h-6 w-6 cursor-pointer self-center rounded-full dark:text-white" />
@@ -51,6 +49,10 @@ const columns: GridColDef[] = [
       </div>
     ),
   },
+  { field: "name", headerName: "Name", width: 150 },
+  { field: "email", headerName: "Email", width: 150 },
+  { field: "phoneNumber", headerName: "Phone", width: 150 },
+  
 ];
 
 export const MembersPage = () => {
