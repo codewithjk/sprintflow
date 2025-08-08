@@ -23,15 +23,12 @@ export function useChat(orgId: string, userId: string) {
             withCredentials: true,
             auth: { orgId, userId, role:user?.role },
         });
-        console.log(socket);
         socketRef.current = socket;
 
         socket.on("chat:init", (msgs: ChatMessage[]) => {
-            console.log(msgs)
             setMessages(msgs)
         });
         socket.on("chat:message", (msg: ChatMessage) => {
-            console.log(msg)
             setMessages((prev) => [...prev, msg])
         });
         socket.on("chat:older", (more: ChatMessage[]) => {
@@ -45,7 +42,6 @@ export function useChat(orgId: string, userId: string) {
 
         // track joining/leaving
         socket.on("chat:memberJoined", ({ userId: id }: { userId: string }) => {
-            console.log(userId);
             setOnlineMembers((prev) => [...new Set([...prev, id])]);
         });
         socket.on("chat:memberLeft", ({ userId: id }: { userId: string }) => {
@@ -56,7 +52,6 @@ export function useChat(orgId: string, userId: string) {
     }, [orgId, userId]);
 
     const send = (content: string) => {
-        console.log(content, socketRef.current)
         return socketRef.current?.emit("chat:send", { content });
     }
 

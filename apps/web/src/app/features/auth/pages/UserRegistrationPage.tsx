@@ -2,9 +2,10 @@ import React, { useRef, useState } from "react";
 import { useAuth } from "../useAuth";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
-import GoogleSignInButton from "../../../components/ui/buttons/GoogleSignInButton";
-import { Link, useNavigate } from "react-router-dom";
-import { OrganizationSelector } from "../../../components/ui/inputs/OrganizationSelector";
+import { useNavigate } from "react-router-dom";
+
+
+
 
 export const UserRegistrationPage = () => {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
@@ -22,7 +23,6 @@ export const UserRegistrationPage = () => {
   const [selectedOrgId, setSelectedOrgId] = useState("");
 
   const { signup, verifyOtp, invitation, } = useAuth();
-  console.log(invitation)
 if(!invitation)return <> no invitation</>
 
   const validateForm = () => {

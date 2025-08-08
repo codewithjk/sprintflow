@@ -70,7 +70,6 @@ const columns: GridColDef[] = [
     headerName: "Assignee",
     width: 150,
     renderCell: (params) => {
-      console.log(params)
      return  params.value?.name || "Unassigned"
     },
   },

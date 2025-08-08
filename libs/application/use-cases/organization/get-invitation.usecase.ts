@@ -17,7 +17,6 @@ export class GetInvitationUseCase {
     async execute(token: string):Promise<InvitationData |null> {
         const invite = await this.invitationService.getInvitation(token);
 
-        console.log(invite)
         if (!invite) {
             throw new ValidationError(Messages.INVITATION_EXPIRED);
         }
@@ -29,7 +28,7 @@ export class GetInvitationUseCase {
         await this.invitationService.removeInvitation(token);
         const orgId = invite.orgId;
         //todo : clear this shit
-        console.log(orgId)
+
         this.orgRepo.findById(orgId);
         return invite;
     }

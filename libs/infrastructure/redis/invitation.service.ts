@@ -49,7 +49,6 @@ export class InvitationService implements IInvitationService {
 
   // Used during joining (from token link)
   async getInvitation(token: string): Promise<InvitationData | null> {
-    console.log(token)
     const data = await redis.get(this.getTokenKey(token));
     return data ? JSON.parse(data) : null;
   }

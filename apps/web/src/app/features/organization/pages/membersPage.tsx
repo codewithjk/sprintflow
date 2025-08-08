@@ -56,7 +56,6 @@ const columns: GridColDef[] = [
 ];
 
 export const MembersPage = () => {
-  console.log("member")
   const {
     members,
     loading: isLoading,
@@ -69,7 +68,6 @@ export const MembersPage = () => {
     getAllMembers({ page: 1, limit: 10 });
  }, []);
   
-  console.log(members)
   if (isLoading) return <div>Loading...</div>;
   if (isError || !members) return <div className="text-white">Error fetching members</div>;
   return (

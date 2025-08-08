@@ -91,15 +91,12 @@ export const PriorityPage = ({ priority }: Props) => {
             fetchTasks({ orgId: currentUser.id, page: 1, limit: 10 });
         }
     }, []);
-    console.log(currentUser)
 
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
 
   const filteredTasks = tasks?.filter(
     (task: Task) => task.priority === priority,
   );
-
-  console.log(filteredTasks?.length)
 
   if (fetchError || !tasks) return <div>Error fetching tasks</div>;
 

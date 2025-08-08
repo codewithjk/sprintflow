@@ -19,7 +19,6 @@ const initialState: ProjectState = {
 export const fetchProjectsThunk = createAsyncThunk("project/fetch", async (filter: any, thunkAPI) => {
   try {
     const res = await projectAPI.getAllProjects(filter);
-    console.log(res.data.projects)
     return res.data.projects;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(error.response.data.message)
@@ -28,7 +27,6 @@ export const fetchProjectsThunk = createAsyncThunk("project/fetch", async (filte
 export const createProjectThunk = createAsyncThunk("project/create", async (data: Partial<ProjectProps>, thunkAPI) => {
   try {
     const res = await projectAPI.create(data);
-    console.log(res.data.project)
     return res.data.project;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(error.response.data.message)

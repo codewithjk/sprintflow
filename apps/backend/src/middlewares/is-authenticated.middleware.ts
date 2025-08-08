@@ -38,11 +38,9 @@ const isAuthenticated = async (req: any, res: Response, next: NextFunction) => {
             if (!admin) return res.status(HttpStatus.UNAUTHORIZED).json({ message: Messages.USER_NOT_FOUND });
             req.admin = admin.toDTO();
         }
-        console.log(decoded)
         req.role = decoded.role;
         return next();
     } catch (error) {
-        console.log(error)
         return res.status(HttpStatus.UNAUTHORIZED).json({ message: Messages.JWT_TOKEN_EXPIRED })
     }
 }

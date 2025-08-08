@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../useAuth";
 
 
@@ -39,7 +39,6 @@ export const OrganizationLogin = () => {
       toast.success("Logged in as organization");
       navigate("/org/dashboard");
     } catch (err: any) {
-      console.log(err)
       toast.error(err || "Login failed");
     }
   };
@@ -57,6 +56,12 @@ export const OrganizationLogin = () => {
           <h3 className="text-3xl font-semibold text-center mb-2">
             Login as Organization
           </h3>
+             <p className="text-center text-gray-500 mb-4">
+            Don't have an account?{' '}
+            <Link to="/org/signup" className="text-blue-500">
+              Sign up
+            </Link>
+          </p>
 
           <form onSubmit={handleSubmit}>
             <label className="block text-gray-700 mb-1">Email</label>

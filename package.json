@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "npx nx run-many --target=serve --all",
     "web": "npx nx run-many --target=dev --all --projects=web --port=3000",
+    "web:prod": "npx nx run web:preview --port=3000 ",
     "web:build": "npx nx build web",
     "backend": "npx nx run-many --target=serve --projects=backend ",
     "prisma:generate": "npx prisma generate --schema=libs/infrastructure/prisma/schema.prisma",

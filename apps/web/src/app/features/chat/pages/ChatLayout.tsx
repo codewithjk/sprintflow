@@ -13,8 +13,6 @@ export function ChatLayout({ orgId, userId }: Props) {
     orgId,
     userId
   );
-    
-    console.log(onlineMembers)
 
   return (
     <div className="flex h-full w-full bg-gray-100 dark:bg-gray-900">

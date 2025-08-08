@@ -40,11 +40,10 @@ const DashBoard = () => {
   const { projects, isLoading:projectLoading,fetchError : projectError,getAllProjects} = useProject();
   const { user } = useAuth();
   useEffect(() => {
-    getAllProjects({orgId:user?.id})
-    fetchTasks({ orgId: user?.id,page:1,limit:10 });
+    getAllProjects({ orgId: user?.id })
+    fetchTasks({ orgId: user?.id, page: 1, limit: 10 });
   
-  },[])
-  console.log(user,projects)
+  }, []);
 
 
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);

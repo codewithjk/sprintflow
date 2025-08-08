@@ -23,7 +23,6 @@ export class PrismaTaskRepository implements ITaskRepository {
     }
 
     async create(task: TaskProps): Promise<Task> {
-        console.log(task)
         const mappedTaskInput = this.mapTaskInput(task);
         const created = await prisma.task.create({ data: mappedTaskInput });
         return new Task({ ...created });

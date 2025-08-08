@@ -23,8 +23,6 @@ export const createTaskController = async (req: Request, res: Response, next: Ne
     if (!title || !description || !startDate || !endDate || !assignedUserId) throw new ValidationError(Messages.MISSING_FIELDS);
     const orgId = req.organization.id;
     const useCase = new CreateTaskUseCase(taskRepo);
-    console.log(orgId,req.body)
-
     const task = await useCase.execute({ ...req.body, orgId, createdAt: new Date(), updatedAt: new Date() });
     res.status(HttpStatus.CREATED).json({ task: task.toDTO() });
   } catch (err) {
@@ -43,7 +41,6 @@ export const getTaskController = async (req: Request, res: Response, next: NextF
 };
 
 export const updateTaskController = async (req: Request, res: Response, next: NextFunction) => {
-  console.log("dkjfa")
   try {
     const idParam = req.params.id;
     const body = req.body;
@@ -61,7 +58,6 @@ export const updateTaskController = async (req: Request, res: Response, next: Ne
     const id: string = idParam;
     const useCase = new UpdateTaskUseCase(taskRepo);
     const task = await useCase.execute({ id, data, updaterId });
-    console.log(task)
     res.status(HttpStatus.OK).json({ message: Messages.TASK_UPDATED, task });
   } catch (err) {
     next(err);

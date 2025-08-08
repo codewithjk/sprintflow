@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../useAuth";
 
 export const OrganizationSignup = () => {
@@ -128,7 +128,12 @@ export const OrganizationSignup = () => {
       <div className="w-full flex justify-center">
         <div className="md:w-[480px] p-8 bg-white shadow rounded-lg">
           <h3 className="text-3xl font-semibold text-center mb-4">Create Organization</h3>
-
+  <p className="text-center text-gray-500 mb-4">
+              Already have an account?
+              <Link to={"/org/login"} className="text-blue-500">
+                Log in
+              </Link>
+            </p>
           {!showOtp ? (
             <form onSubmit={handleSubmit}>
               {/* Basic Fields */}

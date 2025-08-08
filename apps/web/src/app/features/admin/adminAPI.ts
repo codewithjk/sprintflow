@@ -11,6 +11,15 @@ export const adminAPI = {
   getAllOrganization: (filters: Partial<Task> & {page:number,limit:number} ) => {
   return axios.get('/admin/organizations', { params: filters });
   },
+  getSubscriptions: (limit: number, starting_after?: string) =>
+    axios.get('/admin/subscriptions', {
+      params: { limit, starting_after },
+    }),
+
+  getCharges: (limit: number, starting_after?: string) =>
+    axios.get('/admin/charges', {
+      params: { limit, starting_after },
+    }),
   
     
 }

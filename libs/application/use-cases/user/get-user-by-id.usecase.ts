@@ -7,9 +7,7 @@ export class GetUserByIdUseCase {
     private readonly userRepo: IUserRepository,
   ) {}
   async execute(id: string) {
-      console.log(id)
       const user = await this.userRepo.findById(id);
-      console.log(user)
       if (!user) throw new NotFoundError(Messages.USER_NOT_FOUND);
       return user.toDTO();
   }

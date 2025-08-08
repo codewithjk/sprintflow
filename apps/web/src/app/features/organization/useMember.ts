@@ -26,7 +26,6 @@ export function useMember() {
         setError(null);
         try {
             const res = await orgAPI.getAllMembers(params);
-            console.log(res)
             setMembers(res.data.members);
         } catch (error: any) {
             const message = error?.response?.data?.message || 'Failed to send invitation';

@@ -69,18 +69,18 @@ export const Login = () => {
           <h3 className="text-3xl font-semibold text-center mb-2">
             Login to Sprint Flow
           </h3>
-          <p className="text-center text-gray-500 mb-4">
+          {/* <p className="text-center text-gray-500 mb-4">
             Don't have an account?{' '}
             <Link to="/signup" className="text-blue-500">
               Sign up
             </Link>
-          </p>
-          <GoogleSignInButton/>
-          <div className="flex items-center my-5 text-gray-400 text-sm">
+          </p> */}
+          {/* <GoogleSignInButton/> */}
+          {/* <div className="flex items-center my-5 text-gray-400 text-sm">
             <div className="flex-1 border-t border-gray-300" />
             <span className="px-3">or sign in with email</span>
             <div className="flex-1 border-t border-gray-300" />
-          </div>
+          </div> */}
 
           <form onSubmit={handleSubmit}>
             {/* Email input */}

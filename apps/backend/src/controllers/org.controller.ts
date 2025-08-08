@@ -66,7 +66,6 @@ export const loginOrgController = async (req: Request, res: Response, next: Next
 
     setCookie(res, "refresh_token", data.refreshToken);
     setCookie(res, "access_token", data.accessToken);
-    console.log(data)
     res.status(HttpStatus.OK).json({
       message: Messages.LOGIN_SUCCESS,
       org: data.org,

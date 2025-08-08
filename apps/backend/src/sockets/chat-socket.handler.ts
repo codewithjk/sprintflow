@@ -34,8 +34,6 @@ export class ChatSocketHandler {
         const { orgId, userId ,role} = socket.handshake.auth;
         const onlineUserService = new OnlineUsersService()
 
-        console.log("Socket handshake:", orgId, userId, role);
-
         if (!orgId || !userId || !role) {
             socket.disconnect();
             return;

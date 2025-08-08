@@ -19,7 +19,6 @@ const Timeline = ({ id, setIsModalNewTaskOpen }: Props) => {
   const { user } = useAuth();
  
   const { tasks, fetchLoading, fetchError } = useTasks();
-  console.log(tasks)
   const [displayOptions, setDisplayOptions] = useState<DisplayOption>({
     viewMode: ViewMode.Month,
     locale: "en-US",
@@ -50,7 +49,6 @@ const Timeline = ({ id, setIsModalNewTaskOpen }: Props) => {
 
   if (fetchLoading) return <div>Loading...</div>;
   if (fetchError || !tasks?.length) return <div>An error occurred while fetching tasks</div>;
-  console.log(tasks)
   return (
     <div className="px-4 xl:px-6">
       <div className="flex flex-wrap items-center justify-between gap-2 py-5">

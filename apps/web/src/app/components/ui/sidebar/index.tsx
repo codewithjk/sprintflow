@@ -7,6 +7,7 @@ import {
   ChevronDown,
   ChevronUp,
   Home,
+  IndianRupee,
   Layers3,
   LockIcon,
   LucideIcon,
@@ -53,6 +54,7 @@ const Sidebar = () => {
   if (!user) return null;
   const currentUserDetails: UserType = user;
 
+
   const sidebarClassNames = `fixed flex flex-col h-[100%] justify-between shadow-xl
     transition-all duration-300 h-full z-40 dark:bg-black overflow-y-auto bg-white
     ${isSidebarCollapsed ? "w-0 hidden" : "w-64"}
@@ -63,6 +65,7 @@ const Sidebar = () => {
       { icon: Home, label: "Home", href: "/admin/dashboard" },
       { icon: Building, label: "Organizations", href: "/admin/organizations" },
       { icon: Users, label: "Users", href: "/admin/users" },
+      { icon: IndianRupee, label: "Payments", href: "/admin/payments" },
       { icon: Settings, label: "Settings", href: "/admin/settings" },
     ],
     organization: [

@@ -29,7 +29,6 @@ export const fetchTasksThunk = createAsyncThunk("task/fetch", async (filter: Par
 export const createTaskThunk = createAsyncThunk("task/create", async (data: Partial<TaskProps>, thunkAPI) => {
     try {
         const res = await taskAPI.create(data);
-        console.log(res.data.task)
         return res.data.task;
     } catch (error: any) {
         return thunkAPI.rejectWithValue(error.response.data.message)
@@ -39,7 +38,6 @@ export const createTaskThunk = createAsyncThunk("task/create", async (data: Part
 export const updateTaskThunk = createAsyncThunk("task/update", async ({ taskId, data }: { taskId: string, data: Partial<TaskProps> }, thunkAPI) => {
     try {
         const res = await taskAPI.update(taskId, data);
-        console.log(res.data.task)
         return res.data.task;
     } catch (error: any) {
         return thunkAPI.rejectWithValue(error.response.data.message)
@@ -100,7 +98,6 @@ export const taskSlice = createSlice({
                 }
             })
             .addCase(updateTaskThunk.rejected, (state, action) => {
-                console.log(action)
                 state.updateLoading = false;
                 state.updateError = action.payload as string;
             })
@@ -109,7 +106,6 @@ export const taskSlice = createSlice({
                 state.deleteError = null;
             })
             .addCase(deleteTaskThunk.fulfilled, (state, action) => {
-                console.log(action)
                 state.deleteLoading = false;
                 if (state.tasks) {
                     state.tasks = state.tasks.filter(task => task.id !== action.payload);

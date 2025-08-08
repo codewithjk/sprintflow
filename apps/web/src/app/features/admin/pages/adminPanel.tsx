@@ -1,4 +1,3 @@
-
 import {
   LineChart,
   Line,
@@ -12,43 +11,54 @@ import {
 import { useAppSelector } from "../../../store/hooks";
 
 import { useEffect, useState } from "react";
-import { format, parseISO, startOfWeek, startOfMonth,subDays, subMonths } from "date-fns";
-
+import {
+  format,
+  parseISO,
+  startOfWeek,
+  startOfMonth,
+  subDays,
+  subMonths,
+} from "date-fns";
 
 import { useAdmin } from "../useAdmin";
 import Header from "../../../components/ui/header";
 
 export const AdminPanel = () => {
-  const { organizations, fetchOrganizations} = useAdmin(); // fetch from backend
+  const { organizations, fetchOrganizations,subscriptions,fetchSubscriptions ,charges,fetchCharges} = useAdmin(); // fetch from backend
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
 
-    const [viewMode, setViewMode] = useState<"daily" | "weekly" | "monthly">("monthly");
+  const [viewMode, setViewMode] = useState<"daily" | "weekly" | "monthly">(
+    "monthly"
+  );
+  useEffect(() => {
+    fetchSubscriptions(10)
+   fetchCharges(10)
+  }, []);
 
-useEffect(() => {
-  const now = new Date();
-  let createdAfter = new Date();
 
-  if (viewMode === "daily") {
-    createdAfter = subDays(now, 1);
-  } else if (viewMode === "weekly") {
-    createdAfter = subDays(now, 7);
-  } else if (viewMode === "monthly") {
-    createdAfter = subMonths(now, 1);
-  }
+  useEffect(() => {
+    const now = new Date();
+    let createdAfter = new Date();
 
-  fetchOrganizations({
-    page: 1,
-    limit: 1000,
+    if (viewMode === "daily") {
+      createdAfter = subDays(now, 1);
+    } else if (viewMode === "weekly") {
+      createdAfter = subDays(now, 7);
+    } else if (viewMode === "monthly") {
+      createdAfter = subMonths(now, 1);
+    }
+
+    fetchOrganizations({
+      page: 1,
+      limit: 1000,
       createdAt: {
         gte: createdAfter.toISOString(),
       },
-    
-  });
-}, [viewMode]);
+    });
+  }, [viewMode]);
 
-
-    const chartData = groupOrganizationsByTime(organizations, viewMode);
-     const chartColors = isDarkMode
+  const chartData = groupOrganizationsByTime(organizations, viewMode);
+  const chartColors = isDarkMode
     ? {
         line: "#82ca9d",
         text: "#ffffff",
@@ -59,54 +69,57 @@ useEffect(() => {
         text: "#000000",
         grid: "#ccc",
       };
+    
 
 
   return (
     <div className="container h-full w-[100%] bg-gray-100 bg-transparent p-8">
-          <Header name="Admin Dashboard" />
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-1 ">
-       
-              <div className="rounded-lg bg-white p-4 shadow dark:bg-dark-secondary">
-                         <div className=" mb-4 flex items-center justify-between">
-      <h3 className="mb-4 text-center pt-5 text-lg font-semibold dark:text-white">{`Organizations Created (${viewMode})`}</h3>
-                  
-        <select
-          value={viewMode}
-          onChange={(e) => setViewMode(e.target.value as "daily" | "weekly" | "monthly")}
-          className="rounded border p-2"
-        >
-          <option value="daily">Daily</option>
-          <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
-        </select>
-      </div>
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={chartData} className="border border-slate-600">
-          <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
-          <XAxis dataKey="date" stroke={chartColors.text} />
-          <YAxis stroke={chartColors.text} allowDecimals={false} />
-          <Tooltip />
-          <Legend />
-          <Line
-            type="monotone"
-            dataKey="count"
-            stroke={chartColors.line}
-            strokeWidth={2}
-            dot={{ r: 3 }}
-            activeDot={{ r: 6 }}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+      <Header name="Admin Dashboard" />
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-1 ">
+        <div className="rounded-lg bg-white p-4 shadow dark:bg-dark-secondary">
+          <div className=" mb-4 flex items-center justify-between">
+            <h3 className="mb-4 text-center pt-5 text-lg font-semibold dark:text-white">{`Organizations Created (${viewMode})`}</h3>
+
+            <select
+              value={viewMode}
+              onChange={(e) =>
+                setViewMode(e.target.value as "daily" | "weekly" | "monthly")
+              }
+              className="rounded border p-2"
+            >
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
           </div>
-          
-</div>
+          {chartData.length === 0 ? (
+            <div className="flex h-[70vh] w-full items-center justify-center">
+              <p className="select-none text-6xl font-extrabold tracking-wide text-gray-500/50 dark:text-gray-300/30 text-center">
+                NO ORGANIZATIONS
+              </p>
+            </div>
+          ) :(<ResponsiveContainer width="100%" height={300}>
+            <LineChart data={chartData} className="border border-slate-600">
+              <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
+              <XAxis dataKey="date" stroke={chartColors.text} />
+              <YAxis stroke={chartColors.text} allowDecimals={false} />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="count"
+                stroke={chartColors.line}
+                strokeWidth={2}
+                dot={{ r: 3 }}
+                activeDot={{ r: 6 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>)}
+        </div>
+      </div>
     </div>
   );
 };
-
-
-
-
 
 type GroupBy = "daily" | "weekly" | "monthly";
 

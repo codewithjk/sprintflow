@@ -49,7 +49,6 @@ export const UserSettingsPage = () => {
       !/^[\d+\-() ]{7,20}$/.test(profileData.phoneNumber)
     )
       errs.phoneNumber = "Invalid phone number";
-    console.log(errs)
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -100,7 +99,6 @@ export const UserSettingsPage = () => {
   };
 
   const handleProfileSave = () => {
-    console.log("fjksdl ")
     if (!validate()) return;
     try {
           if (user)  updateProfile({id:user?.id, data:profileData, role:"user"});

@@ -15,15 +15,12 @@ export class HandleStripeWebhookUseCase {
       case 'checkout.session.completed': {
         const session = event.data.object;
             const updateData: stripePlanDTO = await this.stripeService.parseCheckoutSession(session.id);
-            console.log( "updated data === ",updateData)
             const { email, ...restData } = updateData;
             if (email) {
                 //todo : find better way to get orgId here. And  else case is not defined for email or org is null 
                 const organization = await this.orgRepository.findByEmail(email);
-                console.log(organization)
                 if (organization) {
-                    let res = await this.orgRepository.update(organization.id, { plan: restData.plan, subscriptionId: restData.subscriptionId });
-                    console.log("after update ========", res)
+                    await this.orgRepository.update(organization.id, { plan: restData.plan, subscriptionId: restData.subscriptionId });
                 }
             }
 
@@ -34,13 +31,13 @@ export class HandleStripeWebhookUseCase {
         const subscription = event.data.object;
         const res = await this.orgRepository.find({ subscriptionId: subscription.id }, 0, 1);
         const orgId = res.orgs[0]?.id;
-        console.log(orgId, res)
         if (orgId) await this.orgRepository.update(orgId, { plan: "free" });
         break;
       }
 
       case 'invoice.payment_succeeded': {
         console.log(event.data.object)
+        //todo :
         // await this.stripeService.handleInvoice(event.data.object);
         break;
       }

@@ -21,12 +21,10 @@ export const loginThunk = createAsyncThunk(
       let res;
       if (role === 'user') {
         res = await authAPI.loginUser(payload);
-        console.log(res)
         return res.data.user;
       }
       else if (role === 'super_admin') {
         res = await authAPI.loginAdmin(payload);
-        console.log(res.data.user)
         return res.data.user;
       }
       else {

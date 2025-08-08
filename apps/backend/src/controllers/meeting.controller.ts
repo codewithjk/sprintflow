@@ -15,7 +15,6 @@ export const createMeetingController = async (req: Request, res: Response, next:
         const { name, subject, startTime, endTime } = req.body;
         const orgId = req.organization.id;
 
-        console.log(orgId,req.body)
         if (!name || !orgId || !subject || !startTime || !endTime) throw new ValidationError(Messages.MISSING_FIELDS);
 
         const meetingRepo = new PrismaMeetingRepository();

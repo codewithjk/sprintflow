@@ -9,7 +9,7 @@ import {
 import { PlusSquare, Trash2 } from "lucide-react";
 import Header from "../../../components/ui/header";
 import { useAppSelector } from "../../../store/hooks";
-import { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useMeeting } from "../useMeeting";
 import NewMeetingModal from "../../../components/ui/modals/NewMeetingModal";
 import {
@@ -20,9 +20,12 @@ import { format } from "date-fns";
 import { MeetingProps } from "../../../../../../../libs/domain/entities/meeting.entity";
 import { useAuth } from "../../auth/useAuth";
 import moment from "moment/moment";
-import MeetingScreen from "./MeetingScreen";
 import { toast } from "react-toastify";
 import ConfirmationDialog from "../../../components/ui/popup/ConformationDialog";
+
+const MeetingScreen = React.lazy(() => import("./MeetingScreen"));
+
+
 
 export const MeetingPage = () => {
   const {
@@ -211,7 +214,12 @@ export const MeetingPage = () => {
           sx={dataGridSxStyles(isDarkMode)}
         />
       </div>
-      {roomId && <MeetingScreen roomId={roomId} onClose={handleCloseMeeting} />}
+      {roomId && (
+  <Suspense fallback={<div className="text-white">Loading Meeting Screen...</div>}>
+    <MeetingScreen roomId={roomId} onClose={handleCloseMeeting} />
+  </Suspense>
+)}
+
     </div>
   );
 };

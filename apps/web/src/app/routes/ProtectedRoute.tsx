@@ -45,9 +45,6 @@ export const ProtectedRoute = ({
     return <Navigate to="/org/dashboard" replace />;
   }
 
-
-  console.log(role)
-
   // Role-based route protection
   if (allowedRoles.includes(role)) {
     return <Outlet />;
@@ -56,6 +53,6 @@ export const ProtectedRoute = ({
   return user ? (
     <Navigate to="/unauthorized" state={{ from: pathname }} replace />
   ) : (
-    <Navigate to="/login" state={{ from: pathname }} replace />
+    <Navigate to="/" state={{ from: pathname }} replace />
   );
 };

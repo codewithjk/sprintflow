@@ -30,6 +30,8 @@ import { OrganizationsListPage } from '../features/admin/pages/OrganizationListP
 import { ChatPage } from '../features/chat/pages/ChatPage';
 import { TimeLinePage } from '../pages/TimelinePage';
 import { UserSettingsPage } from '../pages/UserSettings';
+import { PaymentListPage } from '../features/admin/pages/paymentList';
+import LandingPage from '../pages/LandingPage';
 
 const AppRouter = () => {
   const { user } = useAuth();
@@ -44,6 +46,11 @@ const AppRouter = () => {
 
   return (
     <Routes>
+        <Route
+        path="/"
+        element={<LandingPage/>}
+      />
+      
       {/* Auth pages (only visible if NOT logged in) */}
       <Route
         path="/login"
@@ -114,6 +121,7 @@ const AppRouter = () => {
         <Route path="/admin/dashboard" element={<DashboardWrapper><AdminPanel /></DashboardWrapper>} />
         <Route path="/admin/organizations" element={<DashboardWrapper><OrganizationsListPage /></DashboardWrapper>} />
         <Route path="/admin/users" element={<DashboardWrapper><UsersListPage /></DashboardWrapper>} />
+        <Route path="/admin/payments" element={<DashboardWrapper><PaymentListPage /></DashboardWrapper>} />
         <Route path="/admin/settings" element={<DashboardWrapper><UserSettingsPage /></DashboardWrapper>} />
 
         

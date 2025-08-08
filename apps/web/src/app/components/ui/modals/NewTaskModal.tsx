@@ -44,7 +44,6 @@ const NewTaskModal = ({ isOpen, onClose, id = null }: Props) => {
     });
 
     try {
-      console.log(status)
       await createTask({
         title,
         description,

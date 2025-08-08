@@ -8,7 +8,6 @@ import {
 
 import Header from "../../../components/ui/header";
 import { useAppSelector } from "../../../store/hooks";
-import Image from "../../../components/ui/images";
 import {
   dataGridClassNames,
   dataGridSxStyles,
@@ -16,7 +15,7 @@ import {
 
 import InviteUserModal from "../../../components/ui/modals/InviteUserModal";
 import { useEffect, useState } from "react";
-import { User } from "lucide-react";
+
 import { useAdmin } from "../useAdmin";
 
 const CustomToolbar = () => (
@@ -27,59 +26,51 @@ const CustomToolbar = () => (
 );
 
 const columns: GridColDef[] = [
+  { field: "name", headerName: "Name", width: 150 },
+  { field: "email", headerName: "Email", width: 250 },
+  { field: "amount", headerName: "Amount", width: 150, flex: 1 },
   {
-    field: "profileUrl",
-    headerName: "Profile Picture",
-    width: 100,
+    align: "center",
+    headerAlign: "center",
+    field: "receiptUrl",
+    headerName: "Receipt",
+      width: 150,
     renderCell: (params) => (
-      <div className="flex h-full w-full items-center justify-center">
-        <div className="h-9 w-9">
-          {params.row.profileUrl ? (
-            <Image
-              src={params.row?.profileUrl}
-              alt={params.row.name || "User Profile Picture"}
-              width={35}
-              height={35}
-              className="h-full rounded-full object-cover"
-            />
-          ) : (
-            <User className="h-6 w-6 cursor-pointer self-center rounded-full dark:text-white" />
-          )}
-        </div>
-      </div>
+      <a
+        href={params.row.receiptUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="rounded bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
+      >
+        Receipt
+      </a>
     ),
   },
-  { field: "name", headerName: "Name", width: 150 },
-  { field: "email", headerName: "Email", width: 150 },
 ];
 
-export const UsersListPage = () => {
-  const {
-    users,
-    fetchUsersLoading: isLoading,
-    fetchUsersError: isError,
-    fetchUsers,
-  } = useAdmin();
+export const PaymentListPage = () => {
+  const { charges, fetchCharges, fetchChargesError, fetchChargesLoading } =
+    useAdmin();
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
   const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
   useEffect(() => {
-    fetchUsers({ role: "user", page: 1, limit: 10 });
+    fetchCharges(10);
   }, []);
 
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError || !users)
-    return <div className="text-white">Error fetching users</div>;
+  if (fetchChargesLoading) return <div>Loading...</div>;
+  if (fetchChargesError || !charges)
+    return <div className="text-white">Error fetching charges</div>;
   return (
     <div className="flex w-full flex-col p-8">
       <InviteUserModal
         isOpen={isModalNewTaskOpen}
         onClose={() => setIsModalNewTaskOpen(false)}
       />
-      <Header name="Users" />
+      <Header name="Payment history" />
       <div style={{ height: 650, width: "100%" }}>
         <DataGrid
-          rows={users || []}
+          rows={charges || []}
           columns={columns}
           getRowId={(row) => row.id}
           pagination
