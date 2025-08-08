@@ -8,7 +8,7 @@ export class StripeService  implements IStripeService{
   private webhookSecret: string;
 
   constructor() {
-    this.stripe = new Stripe(process.env.STRIPE_SECRETE_KEY!, { apiVersion: '2025-06-30.basil' });
+    this.stripe = new Stripe(process.env.STRIPE_SECRETE_KEY!, { apiVersion: '2025-07-30.basil' });
     this.webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
   }
 
