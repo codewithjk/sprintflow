@@ -9,7 +9,9 @@
     "web:build": "npx nx build web",
     "backend": "npx nx run-many --target=serve --projects=backend ",
     "prisma:generate": "npx prisma generate --schema=libs/infrastructure/prisma/schema.prisma",
-    "prisma:push": "npx prisma db push --schema=libs/infrastructure/prisma/schema.prisma"
+    "prisma:push": "npx prisma db push --schema=libs/infrastructure/prisma/schema.prisma",
+    "deploy:backend": "npm run prisma:generate && npx nx run backend:build:production",
+    "deploy:all": "npm run prisma:generate && npm run web:build && npx nx run backend:build:production"
   },
   "private": true,
   "dependencies": {
