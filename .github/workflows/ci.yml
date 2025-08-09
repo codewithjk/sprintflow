@@ -29,12 +29,12 @@ jobs:
       # Install dependencies
       - run: npm ci --legacy-peer-deps
 
-      # Set Nx SHAs (for affected commands)
-      - uses: nrwl/nx-set-shas@v4
-
       # Optional: Disable Nx Cloud if not using it
       - name: Disable Nx Cloud
         run: npx nx reset
+
+      # Set Nx SHAs (for affected commands)
+      - uses: nrwl/nx-set-shas@v4
 
       # Run affected commands (for PRs or partial rebuilds)
       - run: npx nx affected -t lint test build
