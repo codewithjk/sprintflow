@@ -28,6 +28,10 @@ jobs:
 
       # Install dependencies
       - run: npm install --legacy-peer-deps
+      
+      - name: Disable Nx Cloud
+        run: npx nx reset
+
 
       - name: Full build for deploy
         run: npm run deploy:all
