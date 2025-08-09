@@ -1,6 +1,7 @@
 
 import { Link } from "react-router-dom";
 import Button from "../components/ui/buttons/Button";
+import { pricingList } from "../constants/price-list.constants";
 
 export default function LandingPage() {
   return (
@@ -21,7 +22,7 @@ export default function LandingPage() {
             <Link to="/login">
               <Button variant="outline" className="border-white text-white hover:border-blue-500 hover:text-blue-500">Login</Button>
             </Link>
-            <Link to="/signup">
+            <Link to="/org/signup">
               <Button className="bg-blue-600 hover:bg-blue-700">Signup</Button>
             </Link>
           </div>
@@ -36,8 +37,8 @@ export default function LandingPage() {
         <p className="max-w-2xl text-lg text-gray-400 mb-8">
           Seamless project tracking, real-time communication, and powerful team collaboration — all in one place.
         </p>
-        <Link to="/signup">
-          <Button className="bg-blue-600 hover:bg-blue-700">Get Started Free</Button>
+        <Link to="/org/signup">
+          <Button className="bg-blue-600 hover:bg-blue-700">Get Started As An Organization</Button>
         </Link>
       </section>
 
@@ -68,39 +69,33 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto text-center">
           <h3 className="text-3xl font-bold mb-6">Simple Pricing</h3>
           <p className="text-gray-400 mb-8">Start free. Upgrade when your team grows.</p>
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                name: "Free",
-                price: "₹0",
-                features: ["Up to 3 Projects", "10 Users", "Basic Chat"],
-                highlight: false,
-              },
-              {
-                name: "Pro",
-                price: "₹499/mo",
-                features: ["Unlimited Projects", "Unlimited Users", "Meetings + Chat", "Priority Support"],
-                highlight: true,
-              },
-              {
-                name: "Enterprise",
-                price: "Contact Us",
-                features: ["Custom Access", "Dedicated Server", "Onboarding Assistance"],
-                highlight: false,
-              },
-            ].map((plan, idx) => (
-              <div key={idx} className={`rounded-lg p-6 border ${plan.highlight ? "border-blue-500 bg-blue-900" : "border-gray-700 bg-gray-800"}`}>
-                <h4 className="text-xl font-semibold mb-2">{plan.name}</h4>
-                <p className="text-3xl font-bold mb-4">{plan.price}</p>
-                <ul className="text-left text-gray-300 space-y-2 mb-6">
-                  {plan.features.map((f, i) => (
-                    <li key={i}>• {f}</li>
-                  ))}
-                </ul>
-                <Button className="w-full bg-blue-600 hover:bg-blue-700">Choose {plan.name}</Button>
-              </div>
-            ))}
-          </div>
+         <div className="grid md:grid-cols-2 gap-6">
+  {pricingList.map((plan, idx) => (
+    <div
+      key={idx}
+      className={`rounded-lg p-6 border ${
+        plan.popular ? "border-blue-500 bg-blue-900" : "border-gray-700 bg-gray-800"
+      }`}
+    >
+      <h4 className="text-xl font-semibold mb-1">{plan.title}</h4>
+      <p className="text-sm text-gray-400 mb-3">{plan.description}</p>
+      <p className="text-3xl font-bold mb-4">
+        ${plan.price} <span className="text-base font-medium text-gray-300">{plan.billing}</span>
+      </p>
+      <ul className="text-left text-gray-300 space-y-2 mb-6">
+        {plan.benefits.map((benefit, i) => (
+          <li key={i}>• {benefit}</li>
+        ))}
+      </ul>
+      <a href="/org/signup">
+        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
+          {plan.buttonText}
+        </button>
+      </a>
+    </div>
+  ))}
+</div>
+
         </div>
       </section>
 

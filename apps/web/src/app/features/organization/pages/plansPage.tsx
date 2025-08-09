@@ -1,31 +1,9 @@
 import { PricingCard } from "../../../components/ui/cards/PriceCard";
+import { pricingList } from "../../../constants/price-list.constants";
 
 
 export const PlansPage = () => {
-  const pricingList = [
-    {
-      title: "Monthly",
-      price: 10,
-      description: "For larger teams with advanced features.",
-      buttonText: "Buy Now",
-      benefits: ["Unlimited Projects", "Team Assignments", "Video Meetings"],
-      billing: "/month",
-      href: "/signup",
-      paymentLink: import.meta.env.VITE_STRIPE_MONTHLY_PLAN_LINK,
-      popular: true,
-    },
-    {
-      title: "Yearly",
-      price: 99,
-      description: "Yearly plan for large organizations.",
-      buttonText: "Buy Now",
-      benefits: ["Custom Workflows", "Dedicated Support", "Admin Control"],
-      billing: "/year",
-      href: "/signup",
-      paymentLink: import.meta.env.VITE_STRIPE_YEARLY_PLAN_LINK,
-      popular: false,
-    },
-  ];
+ 
 
   return (
     <section className="py-20 px-4 sm:px-8 lg:px-24 bg-white dark:bg-gray-900 transition-colors duration-300">
