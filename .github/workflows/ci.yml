@@ -19,15 +19,21 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "18"
-      # Step 3: Install dependencies
+
+      # Step 3: Disable Nx Cloud (optional but recommended for CI without auth)
+      - name: Disable Nx Cloud
+        run: |
+          npx nx reset
+
+      # Step 4: Install dependencies
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      # Step 4: Build apps using Nx
+      # Step 5: Build apps using Nx
       - name: Build frontend and backend
         run: npm run deploy:all
 
-      # Step 5: Deploy to GCP
+      # Step 6: Deploy to GCP
       - name: Deploy to GCP
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -36,14 +42,8 @@ jobs:
           key: ${{ secrets.GCP_PRIVATE_KEY }}
           port: 22
           script: |
-            # Navigate to project folder
             cd sprintflow
-
-            # Pull latest changes
-            # git reset --hard
             git pull origin main
-
-            # Update code
             npm install --legacy-peer-deps
             npm run deploy:all
             pm2 restart all
