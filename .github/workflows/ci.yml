@@ -1,39 +1,49 @@
-name: CI sprint-flow
+name: CI
 
 on:
   push:
     branches:
       - main
+  pull_request:
+
+permissions:
+  actions: read
+  contents: read
 
 jobs:
-  build-and-deploy:
+  main:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout code
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      # Step 2: Install Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
         with:
-          node-version: "18"
+          filter: tree:0
+          fetch-depth: 0
 
-      # Step 3: Disable Nx Cloud (optional but recommended for CI without auth)
+      # Setup Node.js and enable npm cache
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      # Install dependencies
+      - run: npm ci --legacy-peer-deps
+
+      # Set Nx SHAs (for affected commands)
+      - uses: nrwl/nx-set-shas@v4
+
+      # Optional: Disable Nx Cloud if not using it
       - name: Disable Nx Cloud
-        run: |
-          npx nx reset
+        run: npx nx reset
 
-      # Step 4: Install dependencies
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
+      # Run affected commands (for PRs or partial rebuilds)
+      - run: npx nx affected -t lint test build
 
-      # Step 5: Build apps using Nx
-      - name: Build frontend and backend
+      # ✅ Full Build (for deployment)
+      - name: Full build for deploy
         run: npm run deploy:all
 
-      # Step 6: Deploy to GCP
+      # ✅ Deploy to GCP via SSH
       - name: Deploy to GCP
         uses: appleboy/ssh-action@v0.1.7
         with:
