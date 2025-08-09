@@ -1,44 +1,49 @@
-name: CI
+name: CI sprint-flow
 
 on:
   push:
     branches:
       - main
-  pull_request:
-
-permissions:
-  actions: read
-  contents: read
 
 jobs:
-  main:
+  build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      # Step 1: Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Install Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          filter: tree:0
-          fetch-depth: 0
+          node-version: "18"
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
 
-      
-      
+      # Step 4: Build apps using Nx
+      - name: Build frontend and backend
+        run: npm run deploy:all
 
-      # This enables task distribution via Nx Cloud
-      # Run this command as early as possible, before dependencies are installed
-      # Learn more at https://nx.dev/ci/reference/nx-cloud-cli#npx-nxcloud-startcirun
-      # Uncomment this line to enable task distribution
-      # - run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="build"
-
-      
-      # Cache node_modules
-      - uses: actions/setup-node@v4
+      # Step 5: Deploy to GCP
+      - name: Deploy to GCP
+        uses: appleboy/ssh-action@v0.1.7
         with:
-          node-version: 20
-          cache: 'npm'
-       
-      - run: npm ci --legacy-peer-deps
-      - uses: nrwl/nx-set-shas@v4
+          host: ${{ secrets.GCP_HOST }}
+          username: ${{ secrets.GCP_USERNAME }}
+          key: ${{ secrets.GCP_PRIVATE_KEY }}
+          port: 22
+          script: |
+            # Navigate to project folder
+            cd sprintflow
 
-      # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
-      # - run: npx nx-cloud record -- echo Hello World
-      # Nx Affected runs only tasks affected by the changes in this PR/commit. Learn more: https://nx.dev/ci/features/affected
-      - run: npx nx affected -t lint test build
+            # Pull latest changes
+            # git reset --hard
+            git pull origin main
+
+            # Update code
+            npm install --legacy-peer-deps
+            npm run deploy:all
+            pm2 restart all
