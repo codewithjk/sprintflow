@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { formatISO } from "date-fns";
+import {  useState } from "react";
+import { formatISO, isBefore, parseISO, startOfDay } from "date-fns";
 import Modal from "./Modal";
 import { useProject } from "../../../features/project/useProject";
 import { toast } from "react-toastify";
@@ -10,26 +10,72 @@ type Props = {
 };
 
 const NewProjectModal = ({ isOpen, onClose }: Props) => {
-  const { createProject, isLoading, createError } = useProject();
+  const { createProject, isLoading } = useProject();
+
   const [projectName, setProjectName] = useState("");
   const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  const handleSubmit = async () => {
-    if (!projectName || !startDate || !endDate) return;
+  const [errors, setErrors] = useState({
+    projectName: "",
+    description: "",
+    startDate: "",
+    endDate: "",
+  });
 
-    const formattedStartDate = formatISO(new Date(startDate), {
-      representation: "complete",
-    });
-    const formattedEndDate = formatISO(new Date(endDate), {
-      representation: "complete",
-    });
+  const validate = () => {
+    const newErrors: typeof errors = {
+      projectName: "",
+      description: "",
+      startDate: "",
+      endDate: "",
+    };
+
+    if (!projectName.trim()) {
+      newErrors.projectName = "Project name is required.";
+    }
+
+    if (!description.trim()) {
+      newErrors.description = "Description is required.";
+    }
+
+    const today = startOfDay(new Date());
+
+    if (!startDate) {
+      newErrors.startDate = "Start date is required.";
+    } else {
+      const start = startOfDay(parseISO(startDate));
+      if (isBefore(start, today)) {
+        newErrors.startDate = "Start date cannot be in the past.";
+      }
+    }
+
+    if (!endDate) {
+      newErrors.endDate = "End date is required.";
+    } else if (startDate) {
+      const start = startOfDay(parseISO(startDate));
+      const end = startOfDay(parseISO(endDate));
+      if (!isBefore(start, end)) {
+        newErrors.endDate = "End date must be after the start date.";
+      }
+    }
+
+    setErrors(newErrors);
+
+    return Object.values(newErrors).every((error) => error === "");
+  };
+
+  const handleSubmit = async () => {
+    if (!validate()) return;
 
     try {
+      const formattedStartDate = formatISO(new Date(startDate));
+      const formattedEndDate = formatISO(new Date(endDate));
+
       await createProject({
-        name: projectName,
-        description,
+        name: projectName.trim(),
+        description: description.trim(),
         startDate: formattedStartDate,
         endDate: formattedEndDate,
       });
@@ -38,7 +84,7 @@ const NewProjectModal = ({ isOpen, onClose }: Props) => {
       onClose();
       resetForm();
     } catch (err: any) {
-      toast.error(err || "Failed to create project.");
+      toast.error(err?.message || "Failed to create project.");
     }
   };
 
@@ -47,14 +93,18 @@ const NewProjectModal = ({ isOpen, onClose }: Props) => {
     setDescription("");
     setStartDate("");
     setEndDate("");
-  };
-
-  const isFormValid = () => {
-    return projectName && description && startDate && endDate;
+    setErrors({
+      projectName: "",
+      description: "",
+      startDate: "",
+      endDate: "",
+    });
   };
 
   const inputStyles =
     "w-full rounded border border-gray-300 p-2 shadow-sm dark:border-dark-tertiary dark:bg-dark-tertiary dark:text-white dark:focus:outline-none";
+
+  const errorStyles = "text-sm text-red-500 mt-1";
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} name="Create New Project">
@@ -64,40 +114,57 @@ const NewProjectModal = ({ isOpen, onClose }: Props) => {
           e.preventDefault();
           handleSubmit();
         }}
+        noValidate
       >
-        <input
-          type="text"
-          className={inputStyles}
-          placeholder="Project Name"
-          value={projectName}
-          onChange={(e) => setProjectName(e.target.value)}
-        />
-        <textarea
-          className={inputStyles}
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-2">
+        <div>
           <input
-            type="date"
+            type="text"
             className={inputStyles}
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
+            placeholder="Project Name"
+            value={projectName}
+            onChange={(e) => setProjectName(e.target.value)}
           />
-          <input
-            type="date"
-            className={inputStyles}
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
+          {errors.projectName && <p className={errorStyles}>{errors.projectName}</p>}
         </div>
+
+        <div>
+          <textarea
+            className={inputStyles}
+            placeholder="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+          {errors.description && <p className={errorStyles}>{errors.description}</p>}
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-2">
+          <div>
+            <input
+              type="date"
+              className={inputStyles}
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+            {errors.startDate && <p className={errorStyles}>{errors.startDate}</p>}
+          </div>
+
+          <div>
+            <input
+              type="date"
+              className={inputStyles}
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+            {errors.endDate && <p className={errorStyles}>{errors.endDate}</p>}
+          </div>
+        </div>
+
         <button
           type="submit"
           className={`focus-offset-2 mt-4 flex w-full justify-center rounded-md border border-transparent bg-blue-primary px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
-            !isFormValid() || isLoading ? "cursor-not-allowed opacity-50" : ""
+            isLoading ? "cursor-not-allowed opacity-50" : ""
           }`}
-          disabled={!isFormValid() || isLoading}
+          disabled={isLoading}
         >
           {isLoading ? "Creating..." : "Create Project"}
         </button>

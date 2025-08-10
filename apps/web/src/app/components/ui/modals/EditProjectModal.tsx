@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { formatISO, parseISO } from "date-fns";
+import { formatISO, parseISO, startOfDay, isBefore } from "date-fns";
 import Modal from "./Modal";
 import { useProject } from "../../../features/project/useProject";
 import { toast } from "react-toastify";
@@ -11,7 +11,7 @@ type Props = {
 };
 
 const EditProjectModal = ({ isOpen, onClose, initialData }: Props) => {
-  const { updateProject ,updateLoading} = useProject();
+  const { updateProject, updateLoading } = useProject();
 
   const [form, setForm] = useState({
     name: "",
@@ -34,14 +34,41 @@ const EditProjectModal = ({ isOpen, onClose, initialData }: Props) => {
       });
     }
     setErrors({});
-  }, [isOpen,initialData]);
+  }, [isOpen, initialData]);
 
   const validate = () => {
     const errs: { [key: string]: string } = {};
-    if (!form.name) errs.name = "Project name is required";
-    if (!form.description) errs.description = "Description is required";
-    if (!form.startDate) errs.startDate = "Start date is required";
-    if (!form.endDate) errs.endDate = "End date is required";
+    const trimmedName = form.name.trim();
+    const trimmedDesc = form.description.trim();
+
+    if (!trimmedName) {
+      errs.name = "Project name is required";
+    }
+
+    if (!trimmedDesc) {
+      errs.description = "Description is required";
+    }
+
+    const today = startOfDay(new Date());
+
+    if (!form.startDate) {
+      errs.startDate = "Start date is required";
+    } else {
+      const start = startOfDay(parseISO(form.startDate));
+      if (isBefore(start, today)) {
+        errs.startDate = "Start date cannot be in the past";
+      }
+    }
+
+    if (!form.endDate) {
+      errs.endDate = "End date is required";
+    } else if (form.startDate) {
+      const start = startOfDay(parseISO(form.startDate));
+      const end = startOfDay(parseISO(form.endDate));
+      if (!isBefore(start, end)) {
+        errs.endDate = "End date must be after start date";
+      }
+    }
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -60,8 +87,8 @@ const EditProjectModal = ({ isOpen, onClose, initialData }: Props) => {
 
     try {
       await updateProject(initialData.id, {
-        name: form.name,
-        description: form.description,
+        name: form.name.trim(),
+        description: form.description.trim(),
         startDate: formatISO(new Date(form.startDate)),
         endDate: formatISO(new Date(form.endDate)),
       });
@@ -76,6 +103,7 @@ const EditProjectModal = ({ isOpen, onClose, initialData }: Props) => {
 
   const inputStyles =
     "w-full border px-3 py-2 rounded dark:bg-gray-800 dark:border-gray-600 dark:text-white";
+  const errorStyles = "text-xs text-red-500 mt-1";
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} name="Edit Project">
@@ -85,6 +113,7 @@ const EditProjectModal = ({ isOpen, onClose, initialData }: Props) => {
           e.preventDefault();
           handleSubmit();
         }}
+        noValidate
       >
         <div>
           <label className="block text-sm font-medium mb-1">Project Name</label>
@@ -95,7 +124,7 @@ const EditProjectModal = ({ isOpen, onClose, initialData }: Props) => {
             value={form.name}
             onChange={handleInputChange}
           />
-          {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
+          {errors.name && <p className={errorStyles}>{errors.name}</p>}
         </div>
 
         <div>
@@ -107,7 +136,7 @@ const EditProjectModal = ({ isOpen, onClose, initialData }: Props) => {
             onChange={handleInputChange}
           />
           {errors.description && (
-            <p className="text-xs text-red-500">{errors.description}</p>
+            <p className={errorStyles}>{errors.description}</p>
           )}
         </div>
 
@@ -122,7 +151,7 @@ const EditProjectModal = ({ isOpen, onClose, initialData }: Props) => {
               onChange={handleInputChange}
             />
             {errors.startDate && (
-              <p className="text-xs text-red-500">{errors.startDate}</p>
+              <p className={errorStyles}>{errors.startDate}</p>
             )}
           </div>
           <div>
@@ -135,19 +164,19 @@ const EditProjectModal = ({ isOpen, onClose, initialData }: Props) => {
               onChange={handleInputChange}
             />
             {errors.endDate && (
-              <p className="text-xs text-red-500">{errors.endDate}</p>
+              <p className={errorStyles}>{errors.endDate}</p>
             )}
           </div>
         </div>
 
         <button
-           disabled={ updateLoading}
+          disabled={updateLoading}
           type="submit"
           className={`mt-4 w-full bg-blue-primary text-white py-2 rounded hover:bg-blue-600 disabled:opacity-50 ${
-             updateLoading ? "cursor-not-allowed opacity-50" : ""
+            updateLoading ? "cursor-not-allowed opacity-50" : ""
           }`}
         >
-            {updateLoading ? "Saving..." : "Save"}
+          {updateLoading ? "Saving..." : "Save"}
         </button>
       </form>
     </Modal>

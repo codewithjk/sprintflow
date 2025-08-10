@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Modal from "./Modal";
 import { MeetingProps } from "../../../../../../../libs/domain/entities/meeting.entity";
+import { isBefore, parseISO } from "date-fns";
 
 type Props = {
   isOpen: boolean;
@@ -9,35 +10,86 @@ type Props = {
   isLoading?: boolean;
 };
 
-const NewMeetingModal = ({ isOpen, onClose, onSubmit, isLoading = false }: Props) => {
+const NewMeetingModal = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  isLoading = false,
+}: Props) => {
   const [name, setName] = useState("");
   const [subject, setSubject] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+
+  const [errors, setErrors] = useState({
+    name: "",
+    subject: "",
+    startDate: "",
+    endDate: "",
+  });
 
   const resetForm = () => {
     setName("");
     setSubject("");
     setStartDate("");
     setEndDate("");
+    setErrors({
+      name: "",
+      subject: "",
+      startDate: "",
+      endDate: "",
+    });
   };
 
-  const isFormValid = () => {
-    return (
-      name.trim() !== "" &&
-      subject.trim() !== "" &&
-      startDate !== "" &&
-      endDate !== "" &&
-      new Date(startDate) <= new Date(endDate)
-    );
+  const validate = () => {
+    const newErrors = {
+      name: "",
+      subject: "",
+      startDate: "",
+      endDate: "",
+    };
+
+    const trimmedName = name.trim();
+    const trimmedSubject = subject.trim();
+    const now = new Date();
+
+    if (!trimmedName) {
+      newErrors.name = "Meeting name is required.";
+    }
+
+    if (!trimmedSubject) {
+      newErrors.subject = "Subject is required.";
+    }
+
+    if (!startDate) {
+      newErrors.startDate = "Start date and time is required.";
+    } else {
+      const start = parseISO(startDate);
+      if (isBefore(start, now)) {
+        newErrors.startDate = "Start time must be in the future.";
+      }
+    }
+
+    if (!endDate) {
+      newErrors.endDate = "End date and time is required.";
+    } else if (startDate) {
+      const start = parseISO(startDate);
+      const end = parseISO(endDate);
+      if (!isBefore(start, end)) {
+        newErrors.endDate = "End time must be after start time.";
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.values(newErrors).every((e) => e === "");
   };
 
   const handleSubmit = () => {
-    if (!isFormValid()) return;
+    if (!validate()) return;
 
     const meeting: Partial<MeetingProps> = {
-      name,
-      subject,
+      name: name.trim(),
+      subject: subject.trim(),
       startTime: new Date(startDate),
       endTime: new Date(endDate),
     };
@@ -50,6 +102,8 @@ const NewMeetingModal = ({ isOpen, onClose, onSubmit, isLoading = false }: Props
   const inputClass =
     "w-full rounded border border-gray-300 p-2 shadow-sm dark:border-dark-tertiary dark:bg-dark-tertiary dark:text-white dark:focus:outline-none";
 
+  const errorTextClass = "text-sm text-red-500 mt-1";
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} name="Create New Meeting">
       <form
@@ -58,43 +112,73 @@ const NewMeetingModal = ({ isOpen, onClose, onSubmit, isLoading = false }: Props
           handleSubmit();
         }}
         className="mt-4 space-y-4"
+        noValidate
       >
-        <input
-          type="text"
-          className={inputClass}
-          placeholder="Meeting Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+        <div>
+          <input
+            type="text"
+            className={inputClass}
+            placeholder="Meeting Name"
+            value={name}
+            onChange={(e) => {
+              setName(e.target.value);
+              setErrors((prev) => ({ ...prev, name: "" }));
+            }}
+          />
+          {errors.name && <p className={errorTextClass}>{errors.name}</p>}
+        </div>
 
-        <input
-          type="text"
-          className={inputClass}
-          placeholder="Subject"
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-        />
+        <div>
+          <input
+            type="text"
+            className={inputClass}
+            placeholder="Subject"
+            value={subject}
+            onChange={(e) => {
+              setSubject(e.target.value);
+              setErrors((prev) => ({ ...prev, subject: "" }));
+            }}
+          />
+          {errors.subject && <p className={errorTextClass}>{errors.subject}</p>}
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <input
-            type="datetime-local"
-            className={inputClass}
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
-          <input
-            type="datetime-local"
-            className={inputClass}
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
+          <div>
+            <input
+              type="datetime-local"
+              className={inputClass}
+              value={startDate}
+              onChange={(e) => {
+                setStartDate(e.target.value);
+                setErrors((prev) => ({ ...prev, startDate: "" }));
+              }}
+            />
+            {errors.startDate && (
+              <p className={errorTextClass}>{errors.startDate}</p>
+            )}
+          </div>
+
+          <div>
+            <input
+              type="datetime-local"
+              className={inputClass}
+              value={endDate}
+              onChange={(e) => {
+                setEndDate(e.target.value);
+                setErrors((prev) => ({ ...prev, endDate: "" }));
+              }}
+            />
+            {errors.endDate && (
+              <p className={errorTextClass}>{errors.endDate}</p>
+            )}
+          </div>
         </div>
 
         <button
           type="submit"
-          disabled={!isFormValid() || isLoading}
+          disabled={isLoading}
           className={`mt-4 w-full rounded-md bg-blue-primary px-4 py-2 text-white font-semibold hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 transition ${
-            !isFormValid() || isLoading ? "cursor-not-allowed opacity-50" : ""
+            isLoading ? "cursor-not-allowed opacity-50" : ""
           }`}
         >
           {isLoading ? "Creating..." : "Create Meeting"}
