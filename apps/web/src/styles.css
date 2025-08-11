@@ -17,6 +17,7 @@ body,
   @apply text-sm;
   @apply bg-white;
   @apply dark:bg-black;
+  overflow: hidden;
 }
 
 /* TIMELINE STYLING */

@@ -15,11 +15,11 @@ export function ChatLayout({ orgId, userId }: Props) {
   );
 
   return (
-    <div className="flex h-full w-full bg-gray-100 dark:bg-gray-900">
-      <aside className="w-64 border-r bg-white dark:bg-dark-secondary">
+    <div className="flex h-full flex-1 overflow-hidden bg-gray-100 dark:bg-gray-900">
+      <aside className="md:w-64 hidden md:flex border-r  bg-white dark:bg-dark-secondary">
         <OnlineMembers members={onlineMembers} />
       </aside>
-      <section className="flex flex-col flex-1">
+      <section className="flex  h-[520px] flex-1 flex-col overflow-hidden">
         <MessageList
           messages={messages}
           loadMore={loadMore}

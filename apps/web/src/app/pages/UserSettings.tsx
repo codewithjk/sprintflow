@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Camera, Moon, Sun, User } from "lucide-react";
-import axios from "axios";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { useAuth } from "../features/auth/useAuth";
 import { setIsDarkMode } from "../store/globalSlice";
@@ -8,6 +7,7 @@ import Header from "../components/ui/header";
 import { toast } from "react-toastify";
 import { useOrganizations } from "../features/organization/useOrganization";
 import Image from "../components/ui/images";
+import { useFileUpload } from "../hooks/useFileUpload";
 
 export const UserSettingsPage = () => {
   const dispatch = useAppDispatch();
@@ -23,9 +23,16 @@ export const UserSettingsPage = () => {
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState("");
   const { updateProfile } = useOrganizations();
+  const { files, loading: fileUploadLoading, error: fileUploadError, uploadFile } = useFileUpload();
+  
+  
+  useEffect(() => {
+  if (files.length > 0) {
+    setPreviewImage(files[0].previewLink);
+    profileData.profileUrl = files[0].previewLink;
+  }
+  },[files])
 
   useEffect(() => {
     if (user) {
@@ -66,32 +73,8 @@ export const UserSettingsPage = () => {
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    setUploading(true);
-    setUploadError("");
-
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await axios.post("/api/upload/profile", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      setProfileData((prev) => ({
-        ...prev,
-        profileUrl: response.data.profileUrl,
-      }));
-
-      const reader = new FileReader();
-      reader.onloadend = () => setPreviewImage(reader.result as string);
-      reader.readAsDataURL(file);
-    } catch (err) {
-      console.error(err);
-      setUploadError("Failed to upload image");
-    } finally {
-      setUploading(false);
-    }
+    await uploadFile([file]);
+    
   };
 
   const handleThemeToggle = () => {
@@ -110,6 +93,8 @@ export const UserSettingsPage = () => {
 
   };
 
+  console.log(previewImage)
+
   return (
     <div className="flex w-full flex-col p-8 space-y-6 max-w-3xl text-gray-900 dark:text-gray-100 transition-colors">
       <Header name="Settings" />
@@ -121,7 +106,7 @@ export const UserSettingsPage = () => {
         {/* Profile Image Upload */}
         <div className="flex items-center gap-4">
           <label
-            htmlFor="imageInput"
+            htmlFor="profileInput"
             className=" group relative top-0  w-20 h-20 rounded-full overflow-hidden border border-gray-300 dark:border-gray-600"
           >
             {previewImage || profileData.profileUrl ? (
@@ -148,14 +133,14 @@ export const UserSettingsPage = () => {
               accept="image/*"
               onChange={handleImageChange}
               className="text-sm text-gray-700 dark:text-gray-200"
-              disabled={uploading}
+              disabled={fileUploadLoading}
               hidden
             />
-            {uploading && (
+            {fileUploadLoading && (
               <p className="text-xs text-gray-500">Uploading...</p>
             )}
-            {uploadError && (
-              <p className="text-xs text-red-500">{uploadError}</p>
+            {fileUploadError && (
+              <p className="text-xs text-red-500">{fileUploadError}</p>
             )}
           </div>
         </div>

@@ -11,7 +11,7 @@ const Image = ({
   alt,
   width,
   height,
-  className,
+  className ="",
   effect = 'blur',
   ...rest
 }: ImageProps) => {
@@ -22,7 +22,8 @@ const Image = ({
       alt={alt}
       width={width}
       height={height}
-      className={className}
+      className={`object-cover w-full h-full ${className}`}
+      wrapperClassName="w-full h-full block" // 👈 this is important!
       effect={effect}
       {...rest}
     />
@@ -30,12 +31,3 @@ const Image = ({
 };
 
 export default Image;
-{/* <LazyLoadImage
-      src={`${src}`}
-      alt={alt}
-      width={width}
-      height={height}
-      className={className}
-      effect={effect}
-      {...rest}
-    /> */}

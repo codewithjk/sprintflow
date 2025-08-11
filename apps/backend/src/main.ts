@@ -4,6 +4,7 @@ import orgRoute from './routes/org.routes'
 import taskRoute from './routes/task.routes'
 import projectRoute from './routes/project.routes'
 import adminRoute from './routes/admin.routes'
+import fileUploadRoute from './routes/upload.routes'
 import webhookRoute from './routes/webhook.routes'
 import meetingRoute from './routes/meeting.routes'
 import { errorMiddleware } from './middlewares/error-handler.middleware';
@@ -43,7 +44,8 @@ app.use('/api/org', orgRoute);
 app.use('/api/project', projectRoute);
 app.use('/api/task', taskRoute);
 app.use('/api/meeting', meetingRoute);
-app.use('/api/admin', adminRoute)
+app.use('/api/admin', adminRoute);
+app.use("/api/upload", fileUploadRoute);
 
 
 

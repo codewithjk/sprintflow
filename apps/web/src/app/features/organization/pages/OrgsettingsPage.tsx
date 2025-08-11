@@ -8,7 +8,7 @@ import Header from "../../../components/ui/header";
 import { toast } from "react-toastify";
 import { useOrganizations } from "../useOrganization";
 import Image from "../../../components/ui/images";
-import axios from "axios";
+import { useFileUpload } from "../../../hooks/useFileUpload";
 
 export const OrgSettingsPage = () => {
   const dispatch = useAppDispatch();
@@ -30,10 +30,16 @@ export const OrgSettingsPage = () => {
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState("");
 
-  // const { profileUpdate } = useAuth();
+    const { files, loading: fileUploadLoading, error: fileUploadError, uploadFile } = useFileUpload();
+    
+
+ useEffect(() => {
+  if (files.length > 0) {
+    setPreviewImage(files[0].previewLink);
+    profileData.profileUrl = files[0].previewLink;
+  }
+  },[files])
 
   // Pre-fill user data
   useEffect(() => {
@@ -78,32 +84,7 @@ export const OrgSettingsPage = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setUploading(true);
-    setUploadError("");
-
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-//todo : 
-      // 🔁 Adjust this endpoint to match your backend
-      const response = await axios.post("/api/upload/profile", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      setProfileData((prev) => ({
-        ...prev,
-        profileUrl: response.data.profileUrl,
-      }));
-
-      const reader = new FileReader();
-      reader.onloadend = () => setPreviewImage(reader.result as string);
-      reader.readAsDataURL(file);
-    } catch (err) {
-      console.error(err);
-      setUploadError("Failed to upload image");
-    } finally {
-      setUploading(false);
-    }
+await uploadFile([file]);
   };
 
   const handleThemeToggle = () => {
@@ -164,12 +145,12 @@ export const OrgSettingsPage = () => {
               accept="image/*"
               onChange={handleImageChange}
               className="text-sm file:text-sm file:border file:px-2 file:py-1 file:rounded file:cursor-pointer dark:file:bg-gray-800"
-              disabled={uploading}
+              disabled={fileUploadLoading}
               hidden
             />
-            {uploading && <p className="text-xs text-gray-500">Uploading...</p>}
-            {uploadError && (
-              <p className="text-xs text-red-500">{uploadError}</p>
+            {fileUploadLoading && <p className="text-xs text-gray-500">Uploading...</p>}
+            {fileUploadError && (
+              <p className="text-xs text-red-500">{fileUploadError}</p>
             )}
           </div>
         </div>

@@ -19,12 +19,27 @@ export default function MessageList({
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    containerRef.current?.scrollTo(0, containerRef.current.scrollHeight);
-  }, [messages]);
+
+
+ useEffect(() => {
+  if (!containerRef.current || messages.length === 0) return;
+
+  const lastMessage = messages[messages.length - 1];
+  const isNewMessage =
+    Date.now() - new Date(lastMessage.createdAt).getTime() < 2000;
+
+  const scrollBehavior = isNewMessage ? "smooth" : "auto";
+
+  // Always scroll to bottom, animate only if it's a new message
+  containerRef.current.scrollTo({
+    top: containerRef.current.scrollHeight,
+    behavior: scrollBehavior,
+  });
+}, [messages]);
+
 
   return (
-    <div id="scrollableDiv" className="flex-1 overflow-auto p-4" ref={containerRef}>
+    <div id="scrollableDiv" className="flex-1 overflow-y-auto p-4 h-0 min-h-0" ref={containerRef}>
       <InfiniteScroll
         dataLength={messages.length}
         next={loadMore}

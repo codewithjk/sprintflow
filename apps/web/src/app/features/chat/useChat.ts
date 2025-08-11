@@ -26,6 +26,7 @@ export function useChat(orgId: string, userId: string) {
         socketRef.current = socket;
 
         socket.on("chat:init", (msgs: ChatMessage[]) => {
+            console.log(msgs)
             setMessages(msgs)
         });
         socket.on("chat:message", (msg: ChatMessage) => {
@@ -56,6 +57,7 @@ export function useChat(orgId: string, userId: string) {
     }
 
     const loadMore = () => {
+        console.log("loadMore is triggering")
         const before = messages[0]?.createdAt;
         if (before) socketRef.current?.emit("chat:loadMore", { before });
     };

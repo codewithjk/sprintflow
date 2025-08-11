@@ -13,5 +13,7 @@ export const orgAPI = {
         axios.get('/org/members', { params }),
     getOrgById: (id:string) => axios.get(`/org/${id}`),
     updateOrg: (id:string, data :Partial<OrgProps>) => axios.put(`/org/${id}`, data),
-    updateMember : (id:string,data : Partial<UserProps>)=>axios.put(`/org/members/${id}`,data),
+    updateMember: (id: string, data: Partial<UserProps>) => axios.put(`/org/members/${id}`, data),
+    
+    fileUpload:(formData:FormData) => axios.post(`/upload`,formData,{headers:{"Content-Type": "multipart/form-data",}})
 };
