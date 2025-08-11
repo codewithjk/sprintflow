@@ -5,7 +5,7 @@ import { pricingList } from "../constants/price-list.constants";
 
 export default function LandingPage() {
   return (
-    <main className="bg-gray-950 text-white">
+    <main className="bg-gray-950 text-white overflow-auto h-full">
      
 
       {/* Navbar */}
