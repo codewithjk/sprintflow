@@ -15,28 +15,55 @@ export const OrganizationSignup = () => {
     industry: "",
     location: "",
     phoneNumber: "",
-    role: 'organization',
+    role: "organization",
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [showOtp, setShowOtp] = useState(false);
   const [canResend, setCanResend] = useState(false);
   const [timer, setTimer] = useState(60);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
-  const { signup ,verifyOrganization } = useAuth();
+  const { signup, verifyOrganization ,isLoading} = useAuth();
 
   const validate = () => {
     const errs: typeof errors = {};
-    if (!form.name) errs.name = "Organization name is required";
-    if (!form.email) errs.email = "Email is required";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+
+    // Name
+    if (!form.name.trim()) {
+      errs.name = "Organization name is required";
+    }
+
+    // Email
+    if (!form.email.trim()) {
+      errs.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
       errs.email = "Invalid email format";
     }
-    if (!form.password) errs.password = "Password is required";
-    else if (form.password.length < 6) errs.password = "Min 6 characters";
+
+    // Password
+    if (!form.password) {
+      errs.password = "Password is required";
+    } else if (form.password.length < 6) {
+      errs.password = "Password must be at least 6 characters";
+    }
+
+    // Confirm Password (assuming you have confirmPassword state)
+    if (form.password !== confirmPassword) {
+      errs.confirmPassword = "Passwords do not match";
+    }
+
+    // Phone Number
+    if (
+      form.phoneNumber.trim() &&
+      !/^[\d+\-() ]{7,15}$/.test(form.phoneNumber)
+    ) {
+      errs.phoneNumber = "Invalid phone number";
+    }
+
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -59,7 +86,7 @@ export const OrganizationSignup = () => {
     if (!validate()) return;
 
     try {
-      await signup({...form,role:"organization"});
+      await signup({ ...form, role: "organization" });
       setShowOtp(true);
       toast.success("OTP sent to your email");
       startTimer();
@@ -86,7 +113,7 @@ export const OrganizationSignup = () => {
 
   const handleVerifyOtp = async () => {
     try {
-      await verifyOrganization({...form,role:"organization"}, otp.join(""));
+      await verifyOrganization({ ...form, role: "organization" }, otp.join(""));
       toast.success("Organization account verified!");
       setForm({
         name: "",
@@ -109,7 +136,7 @@ export const OrganizationSignup = () => {
 
   const handleResendOtp = async () => {
     try {
-      await signup({...form,role:"organization"});
+      await signup({ ...form, role: "organization" });
       setTimer(60);
       setCanResend(false);
       startTimer();
@@ -120,20 +147,24 @@ export const OrganizationSignup = () => {
   };
 
   return (
-    <div className="w-full py-10 min-h-[85vh] bg-[#f1f1f1]">
-      <h2 className="text-4xl font-Poppins font-semibold text-black text-center">Organization Signup</h2>
+    <div className="w-full py-10 overflow-scroll h-full bg-[#f1f1f1]">
+      <h2 className="text-4xl font-Poppins font-semibold text-black text-center">
+        Organization Signup
+      </h2>
       <p className="text-center text-lg font-medium py-3 text-[#00000099]">
         Home . Organization Signup
       </p>
       <div className="w-full flex justify-center">
         <div className="md:w-[480px] p-8 bg-white shadow rounded-lg">
-          <h3 className="text-3xl font-semibold text-center mb-4">Create Organization</h3>
-  <p className="text-center text-gray-500 mb-4">
-              Already have an account?
-              <Link to={"/org/login"} className="text-blue-500">
-                Log in
-              </Link>
-            </p>
+          <h3 className="text-3xl font-semibold text-center mb-4">
+            Create Organization
+          </h3>
+          <p className="text-center text-gray-500 mb-4">
+            Already have an account?
+            <Link to={"/org/login"} className="text-blue-500">
+              Log in
+            </Link>
+          </p>
           {!showOtp ? (
             <form onSubmit={handleSubmit}>
               {/* Basic Fields */}
@@ -167,7 +198,25 @@ export const OrganizationSignup = () => {
                   type={passwordVisible ? "text" : "password"}
                   className="w-full p-2 border mb-2 rounded"
                   value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, password: e.target.value })
+                  }
+                />
+                <button
+                  type="button"
+                  onClick={() => setPasswordVisible(!passwordVisible)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                >
+                  {!passwordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              <label className="block mb-1">Confirm Password</label>
+              <div className="relative">
+                <input
+                  type={passwordVisible ? "text" : "password"}
+                  className="w-full p-2 border mb-2 rounded"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                 />
                 <button
                   type="button"
@@ -196,12 +245,14 @@ export const OrganizationSignup = () => {
                 type="submit"
                 className="w-full bg-black text-white py-2 rounded mt-2"
               >
-                Signup
+               {isLoading ? "Signing in...":"Sign up"}
               </button>
             </form>
           ) : (
             <div>
-              <h3 className="text-lg font-medium text-center mb-3">Enter OTP</h3>
+              <h3 className="text-lg font-medium text-center mb-3">
+                Enter OTP
+              </h3>
               <div className="flex justify-center gap-3 mb-4">
                 {otp.map((digit, index) => (
                   <input

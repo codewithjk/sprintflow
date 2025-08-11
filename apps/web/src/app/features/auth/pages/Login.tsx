@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useAuth } from "../useAuth";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import GoogleSignInButton from "../../../components/ui/buttons/GoogleSignInButton";
 import { toast } from "react-toastify";
 
 
@@ -69,18 +68,6 @@ export const Login = () => {
           <h3 className="text-3xl font-semibold text-center mb-2">
             Login to Sprint Flow
           </h3>
-          {/* <p className="text-center text-gray-500 mb-4">
-            Don't have an account?{' '}
-            <Link to="/signup" className="text-blue-500">
-              Sign up
-            </Link>
-          </p> */}
-          {/* <GoogleSignInButton/> */}
-          {/* <div className="flex items-center my-5 text-gray-400 text-sm">
-            <div className="flex-1 border-t border-gray-300" />
-            <span className="px-3">or sign in with email</span>
-            <div className="flex-1 border-t border-gray-300" />
-          </div> */}
 
           <form onSubmit={handleSubmit}>
             {/* Email input */}
@@ -127,11 +114,11 @@ export const Login = () => {
             )}
 
             {/* Forgot Password */}
-            <div className="flex justify-between items-center my-4">
+            {/* <div className="flex justify-between items-center my-4">
               <Link to="/forgot-password" className="text-blue-500 text-sm">
                 Forgot Password?
               </Link>
-            </div>
+            </div> */}
 
             <button
               disabled={isLoading}

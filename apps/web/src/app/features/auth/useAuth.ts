@@ -1,4 +1,4 @@
-//useAuth.ts
+
 import { loginThunk, logout, verifyInvitationThunk,refreshAuthThunk, profileUpdateThunk } from './authSlice';
 import { authAPI } from './authAPI';
 import { RootState } from '../../store/store';
@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { CreateOrganizationDTO, LoginDTO, SignupDTO } from '../../../../../../libs/shared/types/src';
 import { UserProps } from '../../../../../../libs/domain/entities/user.entity';
 import { OrgProps } from '../../../../../../libs/domain/entities/organization.entity';
-import { orgAPI } from '../organization/orgAPI';
+
 
 export function useAuth() {
   const dispatch = useAppDispatch();
