@@ -71,11 +71,12 @@ export const MembersPage = () => {
   if (isLoading) return <div>Loading...</div>;
   if (isError || !members) return <div className="text-white">Error fetching members</div>;
   return (
-    <div className="flex w-full flex-col p-8">
+    <>
       <InviteUserModal
         isOpen={isModalNewTaskOpen}
         onClose={() => setIsModalNewTaskOpen(false)}
       />
+       <div className="pb-6 pt-6 lg:pb-4 lg:pt-8 px-4 xl:px-6">
       <Header
         name="Users"
         buttonComponent={
@@ -86,8 +87,9 @@ export const MembersPage = () => {
             Invite Member
           </button>
         }
-      />
-      <div style={{ height: 650, width: "100%" }}>
+        />
+        </div>
+      <div style={{  width: "100%" }} className="flex flex-1">
         <DataGrid
           rows={members || []}
           columns={columns}
@@ -100,6 +102,6 @@ export const MembersPage = () => {
           sx={dataGridSxStyles(isDarkMode)}
         />
       </div>
-    </div>
+    </>
   );
 };

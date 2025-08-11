@@ -29,6 +29,7 @@ const MeetingScreen = React.lazy(() => import("./MeetingScreen"));
 
 export const MeetingPage = () => {
   const {
+    total,
     meetings,
     fetchError,
     fetchLoading,
@@ -44,13 +45,22 @@ export const MeetingPage = () => {
   const [roomId, setRoomId] = useState(null);
   const { user } = useAuth();
 
-  useEffect(() => {
-    if (user?.role === "user") {
-      fetchMeetings({ orgId: user?.orgId, page: 1, limit: 10 });
-    } else if (user?.role === "organization") {
-      fetchMeetings({ orgId: user?.id, page: 1, limit: 10 });
-    }
-  }, []);
+  const [paginationModel, setPaginationModel] = useState({
+  page: 0, // 0-based for DataGrid
+  pageSize: 10,
+});
+
+useEffect(() => {
+  if (!user) return;
+
+  const orgId = user?.role === "user" ? user?.orgId : user?.id;
+
+  fetchMeetings({
+    orgId,
+    page: paginationModel.page + 1, // API is 1-based
+    limit: paginationModel.pageSize,
+  });
+}, [paginationModel, user]);
 
   if (fetchLoading) return <div>Loading...</div>;
   if (fetchError)
@@ -164,7 +174,7 @@ export const MeetingPage = () => {
   ];
 
   return (
-    <div>
+    <>
       {/* header */}
       <div className="px-4 xl:px-6">
         <NewMeetingModal
@@ -201,12 +211,18 @@ export const MeetingPage = () => {
         </div>
       </div>
 
-      <div style={{ height: 650, width: "100%" }}>
+      <div style={{  width: "100%" }} className="flex flex-1">
         <DataGrid
           rows={meetings || []}
           columns={columns}
           getRowId={(row) => row.id}
           pagination
+          paginationMode="server"
+          rowCount={total}
+          pageSizeOptions={[5, 10, 25, 50]}
+  paginationModel={paginationModel}
+  onPaginationModelChange={setPaginationModel}
+  loading={fetchLoading}
           slots={{
             toolbar: CustomToolbar,
           }}
@@ -220,7 +236,7 @@ export const MeetingPage = () => {
   </Suspense>
 )}
 
-    </div>
+    </>
   );
 };
 

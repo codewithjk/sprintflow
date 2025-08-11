@@ -9,7 +9,7 @@ export function ChatPage() {
   const userId = user?.id;
   if (!orgId || !userId) return <NotFoundPage />;
   return (
-    <div className="flex-1 flex w-full  flex-col  ">
+    <div id="chat page" className="flex flex-1 w-full  flex-col  ">
 
         <Header name="Messages" isSmallText />
 

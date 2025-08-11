@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 import { User as UserIcon } from "lucide-react"; // Assuming this is the icon you're using
@@ -18,7 +18,14 @@ export default function MessageList({
   hasMore,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
+ const [scrollParent, setScrollParent] = useState<HTMLElement | null>(null);
 
+  // Attach scrollable target after mount
+  useEffect(() => {
+    if (containerRef.current) {
+      setScrollParent(containerRef.current);
+    }
+  }, []);
 
 
  useEffect(() => {
@@ -35,18 +42,20 @@ export default function MessageList({
     top: containerRef.current.scrollHeight,
     behavior: scrollBehavior,
   });
-}, [messages]);
+ }, [messages]);
+  console.log(hasMore)
 
-
+console.log(messages.length)
   return (
-    <div id="scrollableDiv" className="flex-1 overflow-y-auto p-4 h-0 min-h-0" ref={containerRef}>
-      <InfiniteScroll
+    <div id="scrollableDiv"  ref={containerRef} style={{ height: 520, overflow: "auto" }}>
+     {scrollParent&&( <InfiniteScroll
         dataLength={messages.length}
         next={loadMore}
         hasMore={hasMore}
         inverse={true}
+        scrollThreshold={1}
         loader={<p className="text-center">Loading older messages…</p>}
-        scrollableTarget="scrollableDiv"
+        scrollableTarget="scrollableDiv" 
       >
         {messages.map((msg) => {
           const sender = msg.sender ?? msg.organization;
@@ -85,7 +94,7 @@ export default function MessageList({
             </div>
           );
         })}
-      </InfiniteScroll>
+      </InfiniteScroll>)}
     </div>
   );
 }

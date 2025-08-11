@@ -14,6 +14,10 @@ export function useMeeting() {
     const [fetchError, setFetchError] = useState<boolean>(false)
     const [meetings, setMeetings] = useState<Meeting[]>([]);
 
+     const [total, setTotal] = useState(0);
+     const [page, setPage] = useState(1); 
+     const [pageSize, setPageSize] = useState(10); 
+
 
     const createMeeting = async (data: Partial<MeetingProps>) => {
         setCreateLoading(true);
@@ -30,7 +34,10 @@ export function useMeeting() {
         setFetchLoading(true);
         try {
             const res = await meetingAPI.getMeetings(filter);
-            setMeetings(res.data.meetings)
+            setMeetings(res.data.meetings);
+            setTotal(res.data.total);
+      setPage(res.data.page);
+      setPageSize(res.data.pageSize);
         } catch (error: any) {
             setFetchError(error.response.data.message)
         } finally {
@@ -48,6 +55,6 @@ export function useMeeting() {
         }
     };
 
-    return { meetings, createLoading, fetchLoading, createError, fetchError, fetchMeetings, createMeeting, deleteMeeting }
+    return {   total,page,pageSize, meetings, createLoading, fetchLoading, createError, fetchError, fetchMeetings, createMeeting, deleteMeeting }
 }
 

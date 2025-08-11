@@ -99,7 +99,7 @@ export const ProjectListPage = () => {
     return <div className="text-white">Error fetching members</div>;
 
   return (
-    <div>
+    <>
       {/* header */}
       <div className="px-4 xl:px-6">
         <NewProjectModal
@@ -136,7 +136,7 @@ export const ProjectListPage = () => {
         </div>
       </div>
 
-      <div style={{ height: 650, width: "100%" }}>
+      <div style={{  width: "100%" }} className="flex flex-1">
         <DataGrid
           rows={projects || []}
           columns={columns}
@@ -149,7 +149,7 @@ export const ProjectListPage = () => {
           sx={dataGridSxStyles(isDarkMode)}
         />
       </div>
-    </div>
+    </>
   );
 };
 
