@@ -50,7 +50,7 @@ export function useAdmin() {
         }
     };
 
-    // 🔁 Fetch paginated Stripe subscriptions
+    
     const fetchSubscriptions = async (limit: number, starting_after?: string) => {
         setFetchSubscriptionsLoading(true);
         try {
@@ -69,6 +69,10 @@ export function useAdmin() {
         try {
             const res = await adminAPI.getCharges(limit, starting_after);
             setCharges(res.data.charges);
+            return {
+      hasMore: res.data.hasMore,
+      lastId: res.data.lastId,
+    };
         } catch (error: any) {
             setFetchChargesError(error?.response?.data?.message || 'Failed to fetch charges.');
         } finally {

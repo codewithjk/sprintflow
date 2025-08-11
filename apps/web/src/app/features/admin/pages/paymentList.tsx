@@ -51,11 +51,22 @@ const columns: GridColDef[] = [
 export const PaymentListPage = () => {
   const { charges, fetchCharges, fetchChargesError, fetchChargesLoading } =
     useAdmin();
+  
+  const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
+const [hasMore, setHasMore] = useState(false);
+const [lastId, setLastId] = useState<string | null>(null);
+
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
   const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
-  useEffect(() => {
-    fetchCharges(10);
-  }, []);
+useEffect(() => {
+  fetchCharges(paginationModel.pageSize, lastId).then((res) => {
+    if (res) {
+      setHasMore(res.hasMore);
+      setLastId(res.lastId);
+    }
+  });
+}, [paginationModel]);
+
 
 
   if (fetchChargesLoading) return <div>Loading...</div>;
@@ -74,6 +85,12 @@ export const PaymentListPage = () => {
           columns={columns}
           getRowId={(row) => row.id}
           pagination
+          paginationMode="server"
+          rowCount={hasMore ? (paginationModel.page + 2) * paginationModel.pageSize : (paginationModel.page + 1) * paginationModel.pageSize}
+  pageSizeOptions={[10]}
+  paginationModel={paginationModel}
+  onPaginationModelChange={setPaginationModel}
+  loading={fetchChargesLoading}
           slots={{
             toolbar: CustomToolbar,
           }}
