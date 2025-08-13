@@ -1,82 +1,61 @@
-# 
+# 🚀 SprintFlow — Project Management & Collaboration Platform
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+![License](https://img.shields.io/badge/license-MIT-green)
+![Tech Stack](https://img.shields.io/badge/stack-MERN-blue)
+![Clean Architecture](https://img.shields.io/badge/architecture-clean-orange)
+![WebSocket](https://img.shields.io/badge/realtime-Socket.IO-purple)
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+A modern **project management tool** inspired by [Plane.so](https://plane.so) — but with **real-time chat**, **video conferencing**, and **organization-based collaboration**.  
+Built with **MERN Stack** and **Clean Architecture**, designed for **scalability** and **role-based access control**.
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/node?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+---
 
-## Finish your CI setup
+## 📌 Features
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/G6WW7FQPeZ)
+- 🏢 **Organization-based Workspaces**  
+  Create and manage multiple organizations, each with its own projects, members, and permissions.
 
+- 📂 **Project & Module Management**  
+  - Create, edit, delete projects
+  - Organize work into modules and tasks
+  - Assign members and track progress
 
-## Run tasks
+- ✅ **Role-Based Access Control (RBAC)**  
+  - **Admin** — Full control over organization and projects  
+  - **Member** — Create issues, join discussions  
+  - **Custom Roles** — Extendable for future needs
 
-To run the dev server for your app, use:
+- 💬 **Real-Time Chat** (per organization/project)  
+  - Instant messaging with Socket.IO  
+  - Infinite scroll & lazy loading for older messages
 
-```sh
-npx nx serve backend
-```
+- 🎥 **Video Conferencing** *(planned)*  
+  - Group calls for project meetings
 
-To create a production bundle:
+- 📊 **Task Management**  
+  - Kanban board with drag & drop (dnd-kit)  
+  - Real-time task state updates
 
-```sh
-npx nx build backend
-```
+- 🔐 **Authentication & Security**  
+  - Email & password login with verification  
+  - Google & GitHub OAuth  
+  - JWT-based authentication with refresh tokens
 
-To see all available targets to run for a project, run:
+---
 
-```sh
-npx nx show project backend
-```
+## 🛠 Tech Stack
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+**Frontend**
+- ⚛ React (TypeScript)  
+- 🎨 Tailwind CSS (custom components)  
+- 📦 Redux Toolkit (state management)  
+- 📡 Axios (API calls)  
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+**Backend**
+- 🟢 Node.js + Express  
+- 🗄 MongoDB + Prisma ORM  
+- 🧹 Clean Architecture + SOLID Principles  
+- 🔌 Socket.IO (real-time communication)  
+- 📧 Nodemailer (email verification)
 
-## Add new projects
-
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-Use the plugin's generator to create new projects.
-
-To generate a new application, use:
-
-```sh
-npx nx g @nx/node:app demo
-```
-
-To generate a new library, use:
-
-```sh
-npx nx g @nx/node:lib mylib
-```
-
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
-
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/nx-api/node?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+---
