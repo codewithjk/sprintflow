@@ -10,7 +10,7 @@ import { HttpStatus } from "../../../../libs/shared/constants/http-status.enum";
 import { Organization } from "../../../../libs/domain/entities/organization.entity";
 import { UpdateOrganizationUseCase } from "../../../../libs/application/use-cases/organization/update-organization.usecase";
 import { SearchOrganizationsUseCase } from "../../../../libs/application/use-cases/organization/search-organizations.usecase";
-import { CreateOrganizationDTO } from "../../../../libs/shared/types/src";
+import { AppUserRole, CreateOrganizationDTO } from "../../../../libs/shared/types/src";
 import { OtpService } from "../../../../libs/infrastructure/redis/otp.service";
 import path from "path";
 import { EmailService } from "../../../../libs/infrastructure/email/email.service";
@@ -26,6 +26,7 @@ import { GetInvitationUseCase } from "../../../../libs/application/use-cases/org
 import { GetAllUsersUseCase } from "../../../../libs/application/use-cases/user/get-all-users.usecase";
 import { UserProps } from "../../../../libs/domain/entities/user.entity";
 import { UpdateUserUseCase } from "../../../../libs/application/use-cases/user/update-user.usecase";
+import { TokenType } from "../../../../libs/shared/constants/jwt-token-constants";
 
 
 
@@ -34,7 +35,7 @@ export const createOrganizationController = async (req: Request, res: Response, 
     const { name, email, password, } = req.body;
     if (!name || !email || !password) throw new ValidationError(Messages.MISSING_FIELDS);
 
-    const role = "organization";
+    const role = AppUserRole.ORGANIZATION;
     const data: CreateOrganizationDTO = {
       name, email, password, role
     }
@@ -62,10 +63,11 @@ export const loginOrgController = async (req: Request, res: Response, next: Next
     const jwtService = new JwtService(JWT_TOKEN_SECRET)
 
     const useCase = new OrgLoginUseCase(orgRepository, passwordService, jwtService);
-    const data = await useCase.execute({ email, password }, "organization")
+    const data = await useCase.execute({ email, password }, AppUserRole.ORGANIZATION)
 
-    setCookie(res, "refresh_token", data.refreshToken);
-    setCookie(res, "access_token", data.accessToken);
+    setCookie(res,  data.refreshToken,AppUserRole.ORGANIZATION, TokenType.REFRESH_TOKEN);
+    setCookie(res, data.accessToken, AppUserRole.ORGANIZATION, TokenType.ACCESS_TOKEN);
+    
     res.status(HttpStatus.OK).json({
       message: Messages.LOGIN_SUCCESS,
       org: data.org,
@@ -82,7 +84,7 @@ export const verifyOrgController = async (req: Request, res: Response, next: Nex
     if (!email || !otp || !password || !name) {
       return next(new ValidationError("Missing required fields!"));
     }
-    const role = "organization";
+    const role = AppUserRole.ORGANIZATION;
     const data: CreateOrganizationDTO = { email, password, name, description, location, profileUrl, industry, phoneNumber, role }
     const orgRepo = new PrismaOrganizationRepository();
     const otpService = new OtpService()

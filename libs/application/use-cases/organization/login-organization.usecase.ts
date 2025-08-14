@@ -1,10 +1,11 @@
 import { Messages } from "../../../shared/constants/messages";
-import { ACCESS_TOKEN_EXPIRATION, REFRESH_TOKEN_EXPIRATION } from "../../../shared/constants/time-constants";
+import { ACCESS_TOKEN_EXPIRATION, REFRESH_TOKEN_EXPIRATION } from "../../../shared/constants/jwt-token-constants";
 import { NotFoundError, ValidationError } from "../../../shared/errors/app-error";
-import { LoginDTO } from "../../../shared/types/src";
+import { AppUserRole, LoginDTO } from "../../../shared/types/src";
 import { IJwtService } from "../../interfaces/jwt-service.interface";
 import { IOrganizationRepository } from "../../interfaces/org-repository.interface";
 import { IPasswordService } from "../../interfaces/password-service.interface";
+
 
 
 export class OrgLoginUseCase {
@@ -12,7 +13,7 @@ export class OrgLoginUseCase {
         private readonly passwordService: IPasswordService,
         private readonly jwtService: IJwtService) { };
     
-    async execute(data: LoginDTO,role:"organization") {
+    async execute(data: LoginDTO,role:AppUserRole.ORGANIZATION) {
         const { email, password } = data;
         const org = await this.orgRepo.findByEmail(email);
         if (!org) throw new NotFoundError(Messages.ORG_NOT_FOUND);

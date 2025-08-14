@@ -15,8 +15,9 @@ import { JwtService } from '../../../../libs/infrastructure/jwt/jwt.service';
 import { JWT_TOKEN_SECRET } from '../../../../libs/shared/constants/env-constants';
 import { clearCookie, setCookie } from '../utils/cookies/setCookie';
 import { JsonWebTokenError } from 'jsonwebtoken';
-import { ACCESS_TOKEN_EXPIRATION } from '../../../../libs/shared/constants/time-constants';
+import { ACCESS_TOKEN_EXPIRATION, TokenType } from '../../../../libs/shared/constants/jwt-token-constants';
 import { PrismaOrganizationRepository } from '../../../../libs/infrastructure/prisma/org.repository';
+import { AppUserRole } from '../../../../libs/shared/types/src';
 
 
 export const signupController = async (req: Request, res: Response, next: NextFunction) => {
@@ -41,11 +42,11 @@ export const signupController = async (req: Request, res: Response, next: NextFu
 //Verify OTP for user registration
 export const verifyUserController = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, otp, password, name,orgId } = req.body;
+    const { email, otp, password, name, orgId } = req.body;
     if (!email || !otp || !password || !name || !orgId) {
       return next(new ValidationError("Missing required fields!"));
     }
-    const data = { email, otp, password, name,orgId }
+    const data = { email, otp, password, name, orgId }
     const userRepository = new PrismaUserRepository();
     const otpService = new OtpService()
     const passwordService = new BcryptPasswordService()
@@ -74,10 +75,10 @@ export const loginUserController = async (req: Request, res: Response, next: Nex
     const jwtService = new JwtService(JWT_TOKEN_SECRET)
 
     const useCase = new LoginUseCase(userRepository, passwordService, jwtService);
-    const data = await useCase.execute({ email, password }, "user")
+    const data = await useCase.execute({ email, password }, AppUserRole.USER)
 
-    setCookie(res, "refresh_token", data.refreshToken);
-    setCookie(res, "access_token", data.accessToken);
+    setCookie(res, data.refreshToken, AppUserRole.USER, TokenType.REFRESH_TOKEN);
+    setCookie(res, data.accessToken, AppUserRole.USER, TokenType.ACCESS_TOKEN);
     res.status(HttpStatus.OK).json({
       message: Messages.LOGIN_SUCCESS,
       user: data.user,
@@ -118,17 +119,17 @@ export const refreshTokenController = async (req: Request, res: Response, next: 
     if (decoded.role === "super_admin") {
       account = await userRepository.findById(decoded.id);
       if (!account?.isAdmin()) return new UnauthorizedError(Messages.USER_NOT_FOUND);
-      
+
 
     }
-    //todo : other roles here 
+
 
     if (!account) {
       return new UnauthorizedError(Messages.USER_NOT_FOUND);
     }
     const accessToken = jwtService.sign({ email: account.email, id: account.id, role: decoded.role }, ACCESS_TOKEN_EXPIRATION);
 
-    setCookie(res, "access_token", accessToken);
+    setCookie(res, accessToken, decoded.role, TokenType.ACCESS_TOKEN);
     return res.status(HttpStatus.OK).json({ success: true })
   } catch (error) {
 
@@ -142,9 +143,19 @@ export const logoutController = async (
   res: Response,
   next: NextFunction
 ) => {
+
   try {
-    clearCookie(res, 'refresh_token');
-    clearCookie(res, 'access_token');
+    if (req.user) {
+      clearCookie(res, AppUserRole.USER, TokenType.REFRESH_TOKEN);
+      clearCookie(res, AppUserRole.USER, TokenType.ACCESS_TOKEN);
+    } else if (req.organization) {
+      clearCookie(res, AppUserRole.ORGANIZATION, TokenType.REFRESH_TOKEN);
+      clearCookie(res, AppUserRole.ORGANIZATION, TokenType.ACCESS_TOKEN);
+    } else if (req.super_admin) {
+      clearCookie(res, AppUserRole.SUPER_ADMIN, TokenType.REFRESH_TOKEN);
+      clearCookie(res, AppUserRole.SUPER_ADMIN, TokenType.ACCESS_TOKEN);
+    }
+
 
     res.status(HttpStatus.OK).json({
       message: Messages.LOGOUT_SUCCESS,
@@ -171,10 +182,10 @@ export const loginAdminController = async (req: Request, res: Response, next: Ne
     const jwtService = new JwtService(JWT_TOKEN_SECRET)
 
     const useCase = new LoginUseCase(userRepository, passwordService, jwtService);
-    const data = await useCase.execute({ email, password }, "super_admin")
+    const data = await useCase.execute({ email, password }, AppUserRole.SUPER_ADMIN)
 
-    setCookie(res, "refresh_token", data.refreshToken);
-    setCookie(res, "access_token", data.accessToken);
+    setCookie(res, data.refreshToken, AppUserRole.SUPER_ADMIN, TokenType.REFRESH_TOKEN);
+    setCookie(res, data.accessToken, AppUserRole.SUPER_ADMIN, TokenType.ACCESS_TOKEN);
     res.status(HttpStatus.OK).json({
       message: Messages.LOGIN_SUCCESS,
       user: data.user,

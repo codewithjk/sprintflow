@@ -1,7 +1,7 @@
 import { MeetingProps } from "../../../domain/entities/meeting.entity";
 import { IMeetingRepository } from "../../interfaces/meeting-repository.interface";
 
-
+//dto
 
 export class GetMeetingUseCase {
   constructor(

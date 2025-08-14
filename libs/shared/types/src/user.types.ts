@@ -1,6 +1,9 @@
+
+
 export enum AppUserRole {
   USER = "user" ,
   SUPER_ADMIN = "super_admin",
+  ORGANIZATION = "organization",
 }
 
 export interface SignupDTO {
@@ -47,5 +50,5 @@ export interface User{
 export interface JwtPayload{
   email: string;
   id: string;
-  role: "user" | "super_admin" | "organization";
+  role:AppUserRole
 }

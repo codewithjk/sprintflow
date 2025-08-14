@@ -19,7 +19,6 @@ router.get('/:id', getTaskController);
 router.put('/:id', updateTaskController);
 router.delete('/:id', deleteTaskController);
 
-// router.get('/org/:orgId', getTasksByOrgController); // all tasks under an org
-// router.get('/project/:projectId', getTasksByProjectController);
+
 
 export default router;

@@ -1,10 +1,11 @@
 import { Messages } from "../../../shared/constants/messages";
-import { ACCESS_TOKEN_EXPIRATION, REFRESH_TOKEN_EXPIRATION } from "../../../shared/constants/time-constants";
+import { ACCESS_TOKEN_EXPIRATION, REFRESH_TOKEN_EXPIRATION } from "../../../shared/constants/jwt-token-constants";
 import { NotFoundError, UnauthorizedError, ValidationError } from "../../../shared/errors/app-error";
-import { LoginDTO } from "../../../shared/types/src";
+import { AppUserRole, LoginDTO } from "../../../shared/types/src";
 import { IJwtService } from "../../interfaces/jwt-service.interface";
 import { IPasswordService } from "../../interfaces/password-service.interface";
 import { IUserRepository } from "../../interfaces/user-repository.interface";
+
 
 
 
@@ -13,7 +14,7 @@ export class LoginUseCase {
         private readonly passwordService: IPasswordService,
         private readonly jwtService: IJwtService) { };
     
-    async execute(data: LoginDTO,role:"user" |"super_admin") {
+    async execute(data: LoginDTO,role:AppUserRole) {
         const { email, password } = data;
         const user = await this.userRepo.findByEmail(email);
         if (!user) throw new NotFoundError(Messages.USER_NOT_FOUND);

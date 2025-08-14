@@ -8,7 +8,7 @@ declare global {
       user: User
       role: Roles
       organization: Organization
-      admin : User
+      super_admin : User
     }
   }
 }
