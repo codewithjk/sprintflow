@@ -57,10 +57,10 @@ export const refreshAuthThunk = createAsyncThunk(
     try {
       let res;
       //todo : clean or add this for other role's also
-      // if (role === 'user') {
-      //   res = await authAPI.loginUser(payload);
-      //   return res.data.user;
-      // }
+      if (role === 'user') {
+        res = await authAPI.getUser(id);
+        return res.data.user;
+      }
       // else if (role === 'super_admin') {
       //   res = await authAPI.loginAdmin(payload);
       //   return res.data.admin;

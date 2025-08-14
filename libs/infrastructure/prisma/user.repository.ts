@@ -2,7 +2,7 @@
 
 import { Prisma } from '@prisma/client';
 import { IUserRepository } from '../../application/interfaces/user-repository.interface';
-import { User } from '../../domain/entities/user.entity';
+import { User, } from '../../domain/entities/user.entity';
 import { CreateUserDTO } from '../../shared/types/src';
 import prisma from './client';
 

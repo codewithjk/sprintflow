@@ -19,7 +19,8 @@ export const Messages = {
   USER_VERIFIED: 'User verified successfully',
   USER_UPDATED: 'User updated successfully',
   LOGIN_SUCCESS: 'Logged in successfully',
-  LOGOUT_SUCCESS:"Log out success",
+  LOGOUT_SUCCESS: "Log out success",
+  USERS_FOUND: 'Users found',
   
   USER_ALREADY_EXISTS: 'User already exists',
   INVALID_EMAIL: 'Invalid email',

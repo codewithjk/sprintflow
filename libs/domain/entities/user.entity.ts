@@ -1,3 +1,5 @@
+// import { UserStatus } from "../enums/user.enums";
+
 
 export interface UserProps {
   id: string;
@@ -12,10 +14,13 @@ export interface UserProps {
   profileUrl?: string |null;
   phoneNumber?: string |null;
   authProvider: 'local' | 'google' | 'github' | null;
-}
+  status?: "blocked" | "active" | "inactive";
+} 
 
 export class User {
-  constructor(private readonly props: UserProps) {}
+  constructor(private readonly props: UserProps) {
+    this.props.status = props.status ?? "active";
+  }
 
   get id() {
     return this.props.id;
@@ -33,6 +38,9 @@ export class User {
   }
   get orgId() {
     return this.props.orgId
+  }
+  get status() {
+    return this.props.status
   }
   // internal use
   getAuthProvider() {

@@ -10,7 +10,7 @@ const router = Router();
 router.post('/signup', signupController);
 router.post('/verify', verifyUserController);
 router.post('/login', loginUserController);
-router.post('/logout',logoutController)
+router.post('/logout',isAuthenticated, logoutController);
 router.post('/refresh', refreshTokenController);
 router.post('/org/signup', createOrganizationController);
 router.post('/org/login',loginOrgController)
@@ -22,5 +22,5 @@ router.post('/admin/login', loginAdminController);
 
 router.post('/verify/invitation', acceptInvitationController);
 
-router.get('/get-user',isAuthenticated,authorizeRoles(Roles.user), getUserController)
+router.get('/get-user/:id',isAuthenticated,authorizeRoles(Roles.user), getUserController)
 export default router;

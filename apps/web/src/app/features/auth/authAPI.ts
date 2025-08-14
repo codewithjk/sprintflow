@@ -19,6 +19,7 @@ export const authAPI = {
   
   verifyInvitation: (data: { token: string }) => axios.post('/auth/verify/invitation', data),
   
+  getUser: (id: string) => axios.get(`auth/get-user/${id}`),
 
   
 

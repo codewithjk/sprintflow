@@ -16,8 +16,10 @@ import {
 
 import InviteUserModal from "../../../components/ui/modals/InviteUserModal";
 import { useEffect, useState } from "react";
-import { User } from "lucide-react";
+import {  Ban, DoorClosed, DoorOpen, User } from "lucide-react";
 import { useAdmin } from "../useAdmin";
+import { UserStatus } from "../../../../../../../libs/domain/enums/user.enums";
+import { toast } from "react-toastify";
 
 const CustomToolbar = () => (
   <GridToolbarContainer className="toolbar flex gap-2">
@@ -25,6 +27,38 @@ const CustomToolbar = () => (
     <GridToolbarExport />
   </GridToolbarContainer>
 );
+
+
+
+export const UsersListPage = () => {
+  const {
+    users,
+    fetchUsersLoading: isLoading,
+    fetchUsersError: isError,
+    fetchUsers,
+
+     updateUserStatus,
+        updateUsersError,
+        updateUsersLoading,
+    
+  } = useAdmin();
+  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
+  useEffect(() => {
+    fetchUsers({ role: "user", page: 1, limit: 10 });
+  }, []);
+  useEffect(() => {
+    if (updateUsersError) {
+      toast.error(updateUsersError || "failed to change status")
+    }
+  },[updateUsersError])
+
+  const handleBlock = (id:string) => {
+    updateUserStatus(id, UserStatus.BLOCKED);
+  };
+  const handleActive = (id:string) => {
+    updateUserStatus(id, UserStatus.ACTIVE);
+  }
 
 const columns: GridColDef[] = [
   {
@@ -50,23 +84,37 @@ const columns: GridColDef[] = [
     ),
   },
   { field: "name", headerName: "Name", width: 150 },
-  { field: "email", headerName: "Email", width: 150 },
+  { field: "email", headerName: "Email", width: 150 ,flex:1},
+  {
+        field: "actions",
+    headerName: "Actions",
+    align: "center",
+    headerAlign:"center",
+        width: 150,
+        sortable: false,
+    renderCell: (params) => {
+      const status = params.row.status;
+      const id = params.row.id;
+      return status == "active"?(
+        <button
+              disabled={updateUsersLoading}
+              onClick={()=>handleBlock(id)}
+              className="  rounded bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600 mx-2"
+            >
+             <span className="flex gap-2 items-center"> <DoorClosed size={14} /> <p> Block</p></span>
+          </button>
+          ):(
+          <button
+              disabled={updateUsersLoading}
+              onClick={()=>handleActive(id)}
+              className="rounded bg-green-500 px-2 py-1 text-sm text-white hover:bg-green-600"
+            >
+             <span className="flex items-center gap-2"> <DoorOpen size={14} /> <p> Unblock</p></span>
+            </button>
+
+        )},
+      },
 ];
-
-export const UsersListPage = () => {
-  const {
-    users,
-    fetchUsersLoading: isLoading,
-    fetchUsersError: isError,
-    fetchUsers,
-  } = useAdmin();
-  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
-  const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
-  useEffect(() => {
-    fetchUsers({ role: "user", page: 1, limit: 10 });
-  }, []);
-
-
   if (isLoading) return <div>Loading...</div>;
   if (isError || !users)
     return <div className="text-white">Error fetching users</div>;

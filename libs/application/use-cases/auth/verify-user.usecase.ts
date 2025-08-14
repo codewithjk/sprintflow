@@ -1,4 +1,5 @@
 
+import { UserStatus } from '../../../domain/enums/user.enums';
 import { Messages } from '../../../shared/constants/messages';
 import { ConflictError } from '../../../shared/errors/app-error';
 import {  VerificationDTO } from '../../../shared/types/src';
@@ -6,7 +7,6 @@ import {  VerificationDTO } from '../../../shared/types/src';
 import { IOtpService } from '../../interfaces/otp-service.interface';
 import { IPasswordService } from '../../interfaces/password-service.interface';
 import { IUserRepository } from '../../interfaces/user-repository.interface';
-
 
 
 
@@ -29,7 +29,8 @@ export class VerifyUserUseCase {
             isVerified: true,
             isOwner: false,
             role: 'user',
-            orgId: data.orgId
+            orgId: data.orgId,
+            status:UserStatus.ACTIVE,
         });
         return user.toDTO();
     }

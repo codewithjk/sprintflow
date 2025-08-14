@@ -32,6 +32,7 @@ import { TimeLinePage } from '../pages/TimelinePage';
 import { UserSettingsPage } from '../pages/UserSettings';
 import { PaymentListPage } from '../features/admin/pages/paymentList';
 import LandingPage from '../pages/LandingPage';
+import { BlockedPage } from '../features/organization/pages/bolckedUserPage';
 
 const AppRouter = () => {
   const { user } = useAuth();
@@ -85,6 +86,7 @@ const AppRouter = () => {
         <Route path="/chat/" element={<DashboardWrapper><ChatPage /></DashboardWrapper>} />
         <Route path="/timeline/" element={<DashboardWrapper><TimeLinePage/></DashboardWrapper>} />
         <Route path="/settings/" element={<DashboardWrapper><UserSettingsPage/></DashboardWrapper>} />
+        <Route path="/blocked/" element={user ? <BlockedPage /> : <Navigate to="/" replace />} />
         
       </Route>
 
@@ -129,6 +131,7 @@ const AppRouter = () => {
 
 
      
+      
 
       {/* Error */}
       <Route path='/unauthorized' element={<UnauthorizedPage/>}/>

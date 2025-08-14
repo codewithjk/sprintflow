@@ -1,3 +1,4 @@
+import { UserStatus } from "../../../domain/enums/user.enums";
 
 
 export enum AppUserRole {
@@ -34,6 +35,7 @@ export interface CreateUserDTO {
   isVerified: boolean;
   isBlocked?: boolean;
   orgId: string;
+  status: UserStatus;
 }
 
 export interface User{

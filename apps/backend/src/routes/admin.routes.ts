@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllOrganizationsController, getAllUsersController, getChargesController, getRevenueController, getSubscriptionsController } from "../controllers/admin.controller";
+import { getAllOrganizationsController, getAllUsersController, getChargesController, getRevenueController, getSubscriptionsController, updateUserStatusController } from "../controllers/admin.controller";
 import { authorizeRoles } from "../middlewares/authorize-roles.middleware";
 import { Roles } from "../types";
 
@@ -7,7 +7,8 @@ import { Roles } from "../types";
 const router = express.Router();
 
 
-router.get("/users",authorizeRoles(Roles.super_admin), getAllUsersController);
+router.get("/users", authorizeRoles(Roles.super_admin), getAllUsersController);
+router.patch("/users/:id/status", authorizeRoles(Roles.super_admin), updateUserStatusController);
 router.get("/organizations",authorizeRoles(Roles.super_admin), getAllOrganizationsController);
 router.get("/charges",authorizeRoles(Roles.super_admin), getChargesController);
 router.get("/subscriptions",authorizeRoles(Roles.super_admin), getSubscriptionsController);

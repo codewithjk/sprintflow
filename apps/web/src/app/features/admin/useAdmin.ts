@@ -6,6 +6,8 @@ import { Organization, OrgProps } from '../../../../../../libs/domain/entities/o
 import { UserProps } from '../../../../../../libs/domain/entities/user.entity';
 import { adminAPI } from './adminAPI';
 import { StripeCharge, StripeSubscription } from '../../../../../../libs/shared/types/src';
+import { UserStatus } from '../../../../../../libs/domain/enums/user.enums';
+
 
 
 export function useAdmin() {
@@ -13,9 +15,14 @@ export function useAdmin() {
     const [users, setUsers] = useState<UserProps[]>([]);
     const [organizations, setOrganizations] = useState<Organization[]>([]);
     const [fetchUsersLoading, setFetchUsersLoading] = useState<boolean>(false);
+
     const [fetchOrganizationsLoading, setFetchOrganizationLoading] = useState<boolean>(false);
     const [fetchUsersError, setFetchUsersError] = useState<string | null>(null);
     const [fetchOrganizationsError, setFetchOrganizationError] = useState<string | null>(null);
+
+    const [updateUsersLoading, setUpdateUsersLoading] = useState<boolean>(false);
+    const [updateUsersError, setUpdateUsersError] = useState<string | null>(null);
+
 
 
     const [subscriptions, setSubscriptions] = useState<StripeSubscription[]>([]);
@@ -28,6 +35,7 @@ export function useAdmin() {
 
     const fetchUsers = async (filters: Partial<UserProps> & { page: number; limit: number }) => {
         setFetchUsersLoading(true);
+        setFetchUsersError(null)
         try {
             const res = await adminAPI.getAllUsers(filters); // replace with your actual API method
             setUsers(res.data.users);
@@ -38,8 +46,27 @@ export function useAdmin() {
         }
     };
 
+    const updateUserStatus = async (userId: string, status: UserStatus) => {
+        setUpdateUsersLoading(true);
+        setUpdateUsersError(null);
+        try {
+            const response = await adminAPI.updateUserStatus(userId, status);
+            const updatedUser = response.data.user;
+            setUsers((prevUsers) =>
+                prevUsers.map((user) =>
+                    user.id === updatedUser.id ? updatedUser : user
+                )
+            );
+        } catch (error: any) {
+            setUpdateUsersError(error?.response?.data?.message || 'Failed to update charges.');
+        } finally {
+            setUpdateUsersLoading(false)
+        }
+    }
+
     const fetchOrganizations = async (filters: Partial<OrgProps> & { page: number; limit: number }) => {
         setFetchOrganizationLoading(true);
+        setFetchOrganizationError(null);
         try {
             const res = await adminAPI.getAllOrganization(filters); // replace with your actual API method
             setOrganizations(res.data.orgs);
@@ -50,9 +77,10 @@ export function useAdmin() {
         }
     };
 
-    
+
     const fetchSubscriptions = async (limit: number, starting_after?: string) => {
         setFetchSubscriptionsLoading(true);
+        setFetchSubscriptionsError(null)
         try {
             const res = await adminAPI.getSubscriptions(limit, starting_after);
             setSubscriptions(res.data.subscriptions);
@@ -66,13 +94,14 @@ export function useAdmin() {
     // 🔁 Fetch paginated Stripe charges
     const fetchCharges = async (limit: number, starting_after?: string) => {
         setFetchChargesLoading(true);
+        setFetchChargesError(null);
         try {
             const res = await adminAPI.getCharges(limit, starting_after);
             setCharges(res.data.charges);
             return {
-      hasMore: res.data.hasMore,
-      lastId: res.data.lastId,
-    };
+                hasMore: res.data.hasMore,
+                lastId: res.data.lastId,
+            };
         } catch (error: any) {
             setFetchChargesError(error?.response?.data?.message || 'Failed to fetch charges.');
         } finally {
@@ -90,6 +119,10 @@ export function useAdmin() {
         fetchOrganizationsLoading,
         fetchUsers,
         fetchOrganizations,
+
+        updateUserStatus,
+        updateUsersError,
+        updateUsersLoading,
 
         subscriptions,
         charges,

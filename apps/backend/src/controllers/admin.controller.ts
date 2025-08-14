@@ -6,6 +6,7 @@ import { Messages } from "../../../../libs/shared/constants/messages";
 import { PrismaOrganizationRepository } from "../../../../libs/infrastructure/prisma/org.repository";
 import { GetAllOrganizationUseCase } from "../../../../libs/application/use-cases/organization/get-all-organization.usecase";
 import { StripeService } from "../../../../libs/infrastructure/stripe/stripe.service";
+import { UpdateUserUseCase } from "../../../../libs/application/use-cases/user/update-user.usecase";
 
 
 
@@ -20,7 +21,23 @@ export const getAllUsersController = async (req: Request, res: Response, next: N
       Number(limit)
     );
     const { users, ...rest } = result;
-    res.status(HttpStatus.OK).json({ message: Messages.USER_NOT_FOUND, users, ...rest });
+    res.status(HttpStatus.OK).json({ message: Messages.USERS_FOUND, users, ...rest });
+
+  } catch (err) {
+    next(err);
+  }
+}
+
+export const updateUserStatusController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    const userRepo = new PrismaUserRepository();
+    const useCase = new UpdateUserUseCase(userRepo);
+    console.log(req.body)
+    const user = await useCase.execute({id, data:{status}} );
+    
+    res.status(HttpStatus.OK).json({ message: Messages.USER_UPDATED, user });
 
   } catch (err) {
     next(err);

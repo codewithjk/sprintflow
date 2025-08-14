@@ -8,7 +8,7 @@ export const dataGridSxStyles = (isDarkMode: boolean) => {
       '& [role="row"] > *': {
         backgroundColor: `${isDarkMode ? "#1d1f21" : "white"}`,
         borderColor: `${isDarkMode ? "#2d3135" : ""}`,
-        
+
       },
     },
     "& .MuiIconbutton-root": {
@@ -29,7 +29,7 @@ export const dataGridSxStyles = (isDarkMode: boolean) => {
     "& .MuiDataGrid-withBorderColor": {
       borderColor: `${isDarkMode ? "#2d3135" : "e5e7eb"}`,
     },
-  
+
     // Hover style
     "& .MuiDataGrid-row:hover": {
       backgroundColor: isDarkMode ? "#2a2d31" : "#f5f5f5",
@@ -41,6 +41,10 @@ export const dataGridSxStyles = (isDarkMode: boolean) => {
       "&:hover": {
         backgroundColor: isDarkMode ? "#3a3f44" : "#d1d5db",
       },
+    },
+
+    "& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within": {
+      outline: "none", // removes blue focus border
     },
   };
 };
