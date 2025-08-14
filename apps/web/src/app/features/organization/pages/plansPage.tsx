@@ -1,4 +1,5 @@
 import { PricingCard } from "../../../components/ui/cards/PriceCard";
+import Navbar from "../../../components/ui/navbar";
 import { pricingList } from "../../../constants/price-list.constants";
 
 
@@ -6,6 +7,7 @@ export const PlansPage = () => {
  
 
   return (
+    <>    <Navbar/>
     <section className="py-20 px-4 sm:px-8 lg:px-24 bg-white dark:bg-gray-900 transition-colors duration-300">
       <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white">
         Get <span className="bg-gradient-to-r from-purple-500 to-indigo-600 text-transparent bg-clip-text uppercase">Unlimited</span> Access
@@ -19,7 +21,9 @@ export const PlansPage = () => {
           <PricingCard key={plan.title} plan={plan} />
         ))}
       </div>
-    </section>
+      </section>
+      </>
+
   );
 };
 
