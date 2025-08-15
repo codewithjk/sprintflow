@@ -2,6 +2,8 @@ import { format } from "date-fns";
 import Image from "../images";
 import { Task } from "../../../types/state.type";
 import { User } from "lucide-react";
+import TaskDrawer from "../drawers/TaskDrawer";
+import { useState } from "react";
 
 type Props = {
   task: Task;
@@ -9,6 +11,11 @@ type Props = {
 
 const TaskCard = ({ task }: Props) => {
   const taskTagsSplit = task.tags ? task.tags.split(",") : [];
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const toggleDrawer = (newOpen: boolean) => () => {
+     console.log(newOpen)
+    setDrawerOpen(newOpen);
+  };
 
   const formattedStartDate = task.startDate
     ? format(new Date(task.startDate), "P")
@@ -35,8 +42,18 @@ const TaskCard = ({ task }: Props) => {
     </div>
   );
 
+  
+
   return (
-    <div className="mb-4 overflow-hidden rounded-lg bg-white shadow-md transition-shadow hover:shadow-lg dark:bg-dark-secondary dark:text-white">
+    <div
+      onClick={toggleDrawer(!drawerOpen)}
+      className="mb-4 overflow-hidden rounded-lg bg-white shadow-md transition-shadow hover:shadow-lg dark:bg-dark-secondary dark:text-white"
+    >
+      <TaskDrawer
+        task={task}
+        isDrawerOpen={drawerOpen}
+        toggleDrawer={toggleDrawer}
+      />
       {task.attachments?.length > 0 && (
         <Image
           src={`https://pm-s3-images.s3.us-east-2.amazonaws.com/${task.attachments[0].fileURL}`}

@@ -1,18 +1,15 @@
-
-
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
 import { EllipsisVertical, MessageSquareMore, Plus } from "lucide-react";
-import {  format } from "date-fns";
+import { format } from "date-fns";
 import Image from "../../../components/ui/images";
 import { useTasks } from "../../task/useTask";
 import { Task as taskType } from "../../../types/state.type";
 import { toast } from "react-toastify";
-
-
-
-
+import { useState } from "react";
+import TaskSettingsPopOver from "../../../components/ui/popover/TaskSettingsPopOver";
+import { useAuth } from "../../auth/useAuth";
 
 type BoardProps = {
   id: string;
@@ -22,16 +19,14 @@ type BoardProps = {
 const taskStatus = ["To Do", "Work In Progress", "Under Review", "Completed"];
 
 const BoardView = ({ id, setIsModalNewTaskOpen }: BoardProps) => {
+  const { tasks, fetchError, fetchLoading, updateTask, updateError } =
+    useTasks();
 
-  const { tasks, fetchError, fetchLoading, updateTask,updateError } = useTasks();
-
-  
-
-  const moveTask = async(taskId: string, toStatus: string) => {
+  const moveTask = async (taskId: string, toStatus: string) => {
     try {
-      await updateTask( taskId,{ status: toStatus });
+      await updateTask(taskId, { status: toStatus });
     } catch (error: any) {
-      toast.error(error || updateError || "Failed to updated task")
+      toast.error(error || updateError || "Failed to updated task");
     }
   };
 
@@ -82,7 +77,7 @@ const TaskColumn = ({
     "To Do": "#2563EB",
     "Work In Progress": "#059669",
     "Under Review": "#D97706",
-    "Completed": "#000000",
+    Completed: "#000000",
   };
 
   return (
@@ -90,7 +85,9 @@ const TaskColumn = ({
       ref={(instance) => {
         drop(instance);
       }}
-      className={`sl:py-4 rounded-lg py-2 xl:px-2 ${isOver ? "bg-blue-100 dark:bg-neutral-950" : ""}`}
+      className={`sl:py-4 rounded-lg py-2 xl:px-2 ${
+        isOver ? "bg-blue-100 dark:bg-neutral-950" : ""
+      }`}
     >
       <div className="mb-3 flex w-full">
         <div
@@ -135,6 +132,9 @@ type TaskProps = {
 };
 
 const Task = ({ task }: TaskProps) => {
+
+  const { user } = useAuth();
+
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "task",
     item: { id: task.id },
@@ -143,6 +143,17 @@ const Task = ({ task }: TaskProps) => {
     }),
   }));
 
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
+  const popOverOpen = Boolean(anchorEl);
 
   const taskTagsSplit = task.tags ? task.tags.split(",") : [];
 
@@ -161,12 +172,12 @@ const Task = ({ task }: TaskProps) => {
         priority === "Urgent"
           ? "bg-red-200 text-red-700"
           : priority === "High"
-            ? "bg-yellow-200 text-yellow-700"
-            : priority === "Medium"
-              ? "bg-green-200 text-green-700"
-              : priority === "Low"
-                ? "bg-blue-200 text-blue-700"
-                : "bg-gray-200 text-gray-700"
+          ? "bg-yellow-200 text-yellow-700"
+          : priority === "Medium"
+          ? "bg-green-200 text-green-700"
+          : priority === "Low"
+          ? "bg-blue-200 text-blue-700"
+          : "bg-gray-200 text-gray-700"
       }`}
     >
       {priority}
@@ -178,10 +189,18 @@ const Task = ({ task }: TaskProps) => {
       ref={(instance) => {
         drag(instance);
       }}
-      className={`mb-4 rounded-md bg-white shadow dark:bg-dark-secondary ${
+      className={`mb-4 rounded-md bg-white shadow dark:bg-dark-secondary relative ${
         isDragging ? "opacity-50" : "opacity-100"
       }`}
     >
+      {/* task settings  view edit delete*/}
+      <TaskSettingsPopOver
+        isOpen={popOverOpen}
+        anchorEl={anchorEl}
+        onClose={handlePopoverClose}
+        task={task}
+      />
+
       {task.attachments && task.attachments.length > 0 && (
         <Image
           src={`https://pm-s3-images.s3.us-east-2.amazonaws.com/${task.attachments[0].fileURL}`}
@@ -207,9 +226,12 @@ const Task = ({ task }: TaskProps) => {
               ))}
             </div>
           </div>
-          <button className="flex h-6 w-4 flex-shrink-0 items-center justify-center dark:text-neutral-500">
+          {user?.role === "organization" &&(<button
+            onClick={handlePopoverOpen}
+            className="flex h-6 w-4 flex-shrink-0 items-center justify-center dark:text-neutral-500"
+          >
             <EllipsisVertical size={26} />
-          </button>
+          </button>)}
         </div>
 
         <div className="my-3 flex justify-between">

@@ -138,14 +138,14 @@ export const authSlice = createSlice({
         state.error = action.payload as string;
       })
     .addCase(refreshAuthThunk.pending, (state) => {
-        state.isLoading = true;
+        // state.isLoading = true;
         state.error = null;
       }).addCase(refreshAuthThunk.fulfilled, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
         state.user = action.payload;
       })
       .addCase(refreshAuthThunk.rejected, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
         state.error = action.payload as string;
       })
     .addCase(profileUpdateThunk.pending, (state) => {

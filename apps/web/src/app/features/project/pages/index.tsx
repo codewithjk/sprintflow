@@ -4,9 +4,9 @@ import Timeline from "./TimeLineView";
 
 import Table from "./TableView";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState ,lazy, Suspense} from "react";
 import ProjectHeader from "./ProjectHeader";
-import NewTaskModal from "../../../components/ui/modals/NewTaskModal";
+// import NewTaskModal from "../../../components/ui/modals/NewTaskModal";
 import { Navigate, useParams } from "react-router-dom";
 import { isValidObjectId } from "../../../../utils/validation";
 import { useTasks } from "../../task/useTask";
@@ -14,7 +14,8 @@ import Header from "../../../components/ui/header";
 import { PlusSquare } from "lucide-react";
 import { useProject } from "../useProject";
 import { useAuth } from "../../auth/useAuth";
-
+const NewTaskModal = lazy(()=>import("../../../components/ui/modals/NewTaskModal"))
+ 
 export const ProjectViewPage = () => {
   const { id } = useParams<{ id: string }>();
   if (id === undefined || !isValidObjectId(id)) {
@@ -36,11 +37,13 @@ export const ProjectViewPage = () => {
   return (
     <div>
       <div className="px-4 xl:px-6">
+        <Suspense fallback={null}>
         <NewTaskModal
           isOpen={isModalNewTaskOpen}
           onClose={() => setIsModalNewTaskOpen(false)}
           id={id}
-        />
+          />
+          </Suspense>
         <div className="pb-6 pt-6 lg:pb-4 lg:pt-8">
           <Header
             name={project.name}

@@ -7,6 +7,7 @@ import { useMember } from "../../../features/organization/useMember";
 import { Listbox } from "@headlessui/react";
 import { User } from "lucide-react";
 import { toast } from "react-toastify";
+import { useAuth } from "../../../features/auth/useAuth";
 
 type Props = {
   isOpen: boolean;
@@ -16,6 +17,7 @@ type Props = {
 
 const NewTaskModal = ({ isOpen, onClose, id = null }: Props) => {
   const { createLoading, createTask } = useTasks();
+  const { user,} = useAuth();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState<Status | null>(null);
@@ -30,7 +32,7 @@ const NewTaskModal = ({ isOpen, onClose, id = null }: Props) => {
   const { members, getAllMembers } = useMember();
 
   useEffect(() => {
-    getAllMembers({ page: 1, limit: 10 });
+    if(user?.role === "organization")getAllMembers({ page: 1, limit: 10 });
   }, []);
 
   const validate = () => {
