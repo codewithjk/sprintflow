@@ -3,6 +3,8 @@ import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../useAuth";
+import { Listbox } from "@headlessui/react";
+import { industries } from "../../../constants/industries.constants";
 
 export const OrganizationSignup = () => {
   const [form, setForm] = useState({
@@ -27,7 +29,7 @@ export const OrganizationSignup = () => {
   const [timer, setTimer] = useState(60);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
-  const { signup, verifyOrganization ,isLoading} = useAuth();
+  const { signup, verifyOrganization, isLoading , signUpLoading, signupError } = useAuth();
 
   const validate = () => {
     const errs: typeof errors = {};
@@ -91,7 +93,7 @@ export const OrganizationSignup = () => {
       toast.success("OTP sent to your email");
       startTimer();
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Signup failed");
+       toast.error(err.message);
     }
   };
 
@@ -173,7 +175,6 @@ export const OrganizationSignup = () => {
                 { label: "Email", key: "email" },
                 { label: "Website", key: "website" },
                 { label: "Phone Number", key: "phoneNumber" },
-                { label: "Industry", key: "industry" },
                 { label: "Location", key: "location" },
               ].map(({ label, key }) => (
                 <div key={key}>
@@ -190,6 +191,42 @@ export const OrganizationSignup = () => {
                   )}
                 </div>
               ))}
+
+              {/* Industry Dropdown */}
+              <div className="mb-2">
+                <label className="block mb-1">Industry</label>
+                <Listbox
+                  value={form.industry}
+                  onChange={(value) => {
+                    setForm({ ...form, industry: value });
+                    setErrors((prev) => ({ ...prev, industry: "" }));
+                  }}
+                >
+                  <div className="relative">
+                    <Listbox.Button className="w-full border p-2 rounded bg-white text-left">
+                      {form.industry || "Select industry"}
+                    </Listbox.Button>
+                    <Listbox.Options className="absolute z-10 w-full bg-white border mt-1 max-h-60 overflow-auto rounded">
+                      {industries.map((industry) => (
+                        <Listbox.Option
+                          key={industry}
+                          value={industry}
+                          className={({ active }) =>
+                            `px-4 py-2 cursor-pointer ${
+                              active ? "bg-gray-100" : ""
+                            }`
+                          }
+                        >
+                          {industry}
+                        </Listbox.Option>
+                      ))}
+                    </Listbox.Options>
+                  </div>
+                </Listbox>
+                {errors.industry && (
+                  <p className="text-red-500 text-sm">{errors.industry}</p>
+                )}
+              </div>
 
               {/* Password */}
               <label className="block mb-1">Password</label>
@@ -244,8 +281,9 @@ export const OrganizationSignup = () => {
               <button
                 type="submit"
                 className="w-full bg-black text-white py-2 rounded mt-2"
+                disabled={signUpLoading}
               >
-               {isLoading ? "Signing in...":"Sign up"}
+                {signUpLoading ? "Signing in..." : "Sign up"}
               </button>
             </form>
           ) : (

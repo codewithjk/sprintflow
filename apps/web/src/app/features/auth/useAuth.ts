@@ -6,11 +6,14 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { CreateOrganizationDTO, LoginDTO, SignupDTO } from '../../../../../../libs/shared/types/src';
 import { UserProps } from '../../../../../../libs/domain/entities/user.entity';
 import { OrgProps } from '../../../../../../libs/domain/entities/organization.entity';
+import { useState } from 'react';
 
 
 export function useAuth() {
   const dispatch = useAppDispatch();
   const auth = useAppSelector((state: RootState) => state.auth);
+    const [signUpLoading, setSignUpLoading] = useState(false);
+  const [signupError, setSignupError] = useState<string | null>(null);
 
   const login = async (data: LoginDTO , role: 'user' | 'super_admin' | 'organization' ) => {
     await dispatch(loginThunk({...data,role})).unwrap();
@@ -20,10 +23,26 @@ export function useAuth() {
     await dispatch(verifyInvitationThunk(token));
   }
 
+
+
   const signup = async (data: SignupDTO & { role: 'user' | 'super_admin' | 'organization' }) => {
-    const { role, ...rest } = data;
-    if (role === 'user') return authAPI.signupUser(rest);
-    return authAPI.signupOrganization(rest);
+    setSignUpLoading(true);
+    setSignupError(null);
+
+    try {
+      const { role, ...rest } = data;
+      if (role === 'user') {
+        await authAPI.signupUser(rest);
+      } else {
+        await authAPI.signupOrganization(rest);
+      }
+    } catch (err: any) {
+      const message = err?.response?.data?.message || "Signup failed";
+      setSignupError(message);
+      throw new Error(message); // Still allow components to catch it
+    } finally {
+      setSignUpLoading(false);
+    }
   };
 
   const verifyOtp = async (data: { email: string; otp: string,name:string,password:string,orgId:string }) => {
@@ -52,5 +71,5 @@ export function useAuth() {
     await dispatch(refreshAuthThunk({id,role}))
   }
  
-  return { ...auth, login, signup, verifyOtp, logOut,verifyOrganization, verifyInvitation, refreshAuth,logOutOrganization ,profileUpdate };
+  return { ...auth, login, signup, signUpLoading, signupError, verifyOtp, logOut,verifyOrganization, verifyInvitation, refreshAuth,logOutOrganization ,profileUpdate };
 }
