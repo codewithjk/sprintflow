@@ -104,17 +104,6 @@ const TaskColumn = ({
               {tasksCount}
             </span>
           </h3>
-          <div className="flex items-center gap-1">
-            <button className="flex h-6 w-5 items-center justify-center dark:text-neutral-500">
-              <EllipsisVertical size={26} />
-            </button>
-            <button
-              className="flex h-6 w-6 items-center justify-center rounded bg-gray-200 dark:bg-dark-tertiary dark:text-white"
-              onClick={() => setIsModalNewTaskOpen(true)}
-            >
-              <Plus size={16} />
-            </button>
-          </div>
         </div>
       </div>
 
