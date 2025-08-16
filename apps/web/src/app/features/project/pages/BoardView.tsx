@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { useState } from "react";
 import TaskSettingsPopOver from "../../../components/ui/popover/TaskSettingsPopOver";
 import { useAuth } from "../../auth/useAuth";
+import TaskDrawer from "../../../components/ui/drawers/TaskDrawer";
 
 type BoardProps = {
   id: string;
@@ -134,6 +135,11 @@ const Task = ({ task }: TaskProps) => {
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const toggleDrawer = (newOpen: boolean) => () => {
+    setDrawerOpen(newOpen);
+  };
+
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -174,7 +180,8 @@ const Task = ({ task }: TaskProps) => {
   );
 
   return (
-    <div
+    <div 
+      onClick={toggleDrawer(!drawerOpen)}
       ref={(instance) => {
         drag(instance);
       }}
@@ -188,6 +195,12 @@ const Task = ({ task }: TaskProps) => {
         anchorEl={anchorEl}
         onClose={handlePopoverClose}
         task={task}
+      />
+      {/* detailed view of task */}
+         <TaskDrawer
+        task={task}
+        isDrawerOpen={drawerOpen}
+        toggleDrawer={toggleDrawer}
       />
 
       {task.attachments && task.attachments.length > 0 && (

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Popover from "@mui/material/Popover";
 
-import { Edit2, Trash2 } from "lucide-react";
+import { Edit2, MoveVertical, Trash2 } from "lucide-react";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -12,6 +12,7 @@ import { lazy, Suspense } from "react";
 import ConfirmationDialog from "../popup/ConformationDialog";
 import { toast } from "react-toastify";
 import { useTasks } from "../../../features/task/useTask";
+import TaskDrawer from "../drawers/TaskDrawer";
 
 const EditTaskModal = lazy(() => import("../modals/EditTaskModal"));
 
@@ -29,19 +30,22 @@ const TaskSettingsPopOver: React.FC<TaskSettingsPopOverProps> = ({
 }) => {
 
 
-//   const [viewDrawerOpen, setViewDrawerOpen] = useState(false);
+  const [viewDrawerOpen, setViewDrawerOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
     const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
     
       const { removeTask, deleteError, deleteLoading } = useTasks();
     
-   
+//     const toggleDrawer = (newOpen: boolean) => () => {
+//         console.log(newOpen);
+//     setViewDrawerOpen(newOpen);
+//   };
 
   const options = [
     // {
     //   label: "View",
     //   icon: <MoveVertical fontSize="small" />,
-    //   onClick: () => setViewDrawerOpen(true),
+    //   onClick:  toggleDrawer(!viewDrawerOpen),
     // },
     {
       label: "Edit",
@@ -69,6 +73,13 @@ const TaskSettingsPopOver: React.FC<TaskSettingsPopOverProps> = ({
 
   return (
       <>
+           {/* <TaskDrawer
+        task={task}
+        isDrawerOpen={viewDrawerOpen}
+        toggleDrawer={toggleDrawer}
+      /> */}
+
+
           <ConfirmationDialog
           isOpen={confirmDeleteOpen}
           title="Delete this meeting?"

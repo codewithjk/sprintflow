@@ -5,7 +5,7 @@ import { AppUserRole } from '../../../../../libs/shared/types/src';
 
 
 // select token name based on role and token type.
-const getTokenName = (role: AppUserRole, type: TokenType): string => {
+export const getTokenName = (role: AppUserRole, type: TokenType): string => {
   switch (role) {
     case AppUserRole.SUPER_ADMIN:
       return type === TokenType.ACCESS_TOKEN

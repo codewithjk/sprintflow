@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express"
 import { HttpStatus } from "../../../../libs/shared/constants/http-status.enum"
 import { Messages } from "../../../../libs/shared/constants/messages"
-import { Roles } from "../types"
+import { AppUserRole } from "../../../../libs/shared/types/src"
 
 
-export const authorizeRoles = (...allowedRoles: Roles[]) => {
+export const authorizeRoles = (...allowedRoles: AppUserRole[]) => {
     return (req: Request, res: Response, next: NextFunction) => {
         if (!allowedRoles.includes(req.role)) {
             return res.status(HttpStatus.FORBIDDEN).json({message:Messages.FORBIDDEN})

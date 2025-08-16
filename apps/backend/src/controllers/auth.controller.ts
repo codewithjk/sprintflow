@@ -13,7 +13,7 @@ import { UnauthorizedError, ValidationError } from '../../../../libs/shared/erro
 import { LoginUseCase } from '../../../../libs/application/use-cases/auth/login.usecase';
 import { JwtService } from '../../../../libs/infrastructure/jwt/jwt.service';
 import { JWT_TOKEN_SECRET } from '../../../../libs/shared/constants/env-constants';
-import { clearCookie, setCookie } from '../utils/cookies/setCookie';
+import { clearCookie, getTokenName, setCookie } from '../utils/cookies/setCookie';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { ACCESS_TOKEN_EXPIRATION, TokenType } from '../../../../libs/shared/constants/jwt-token-constants';
 import { PrismaOrganizationRepository } from '../../../../libs/infrastructure/prisma/org.repository';
@@ -94,7 +94,14 @@ export const refreshTokenController = async (req: Request, res: Response, next: 
 
 
   try {
-    const refreshToken = req.cookies.refresh_token;
+    const role = req.role as AppUserRole;
+
+    if (!role) {
+      throw new ValidationError(Messages.JWT_TOKEN_MISSING);
+    }
+
+    const refreshTokenName = getTokenName(role, TokenType.REFRESH_TOKEN);
+    const refreshToken = req.cookies[refreshTokenName];
 
     if (!refreshToken || refreshToken === undefined) {
 

@@ -13,7 +13,6 @@ const TaskCard = ({ task }: Props) => {
   const taskTagsSplit = task.tags ? task.tags.split(",") : [];
   const [drawerOpen, setDrawerOpen] = useState(false);
   const toggleDrawer = (newOpen: boolean) => () => {
-     console.log(newOpen)
     setDrawerOpen(newOpen);
   };
 
