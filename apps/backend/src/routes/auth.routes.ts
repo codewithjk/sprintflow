@@ -11,7 +11,7 @@ router.post('/signup', signupController);
 router.post('/verify', verifyUserController);
 router.post('/login', loginUserController);
 router.post('/logout',isAuthenticated, logoutController);
-router.post('/refresh',isAuthenticated, refreshTokenController);
+router.post('/refresh', refreshTokenController);
 router.post('/org/signup', createOrganizationController);
 router.post('/org/login',loginOrgController)
 router.post('/org/verify', verifyOrgController);

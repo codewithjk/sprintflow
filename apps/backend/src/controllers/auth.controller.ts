@@ -13,9 +13,9 @@ import { UnauthorizedError, ValidationError } from '../../../../libs/shared/erro
 import { LoginUseCase } from '../../../../libs/application/use-cases/auth/login.usecase';
 import { JwtService } from '../../../../libs/infrastructure/jwt/jwt.service';
 import { JWT_TOKEN_SECRET } from '../../../../libs/shared/constants/env-constants';
-import { clearCookie, getTokenName, setCookie } from '../utils/cookies/setCookie';
+import { clearCookie, setCookie } from '../utils/cookies/setCookie';
 import { JsonWebTokenError } from 'jsonwebtoken';
-import { ACCESS_TOKEN_EXPIRATION, TokenType } from '../../../../libs/shared/constants/jwt-token-constants';
+import { ACCESS_TOKEN_EXPIRATION, TokenNames, TokenType } from '../../../../libs/shared/constants/jwt-token-constants';
 import { PrismaOrganizationRepository } from '../../../../libs/infrastructure/prisma/org.repository';
 import { AppUserRole } from '../../../../libs/shared/types/src';
 
@@ -94,15 +94,32 @@ export const refreshTokenController = async (req: Request, res: Response, next: 
 
 
   try {
-    const role = req.role as AppUserRole;
+    // const role = req.role as AppUserRole;
 
-    if (!role) {
-      throw new ValidationError(Messages.JWT_TOKEN_MISSING);
-    }
+    // if (!role) {
+    //   throw new ValidationError(Messages.JWT_TOKEN_MISSING);
+    // }
 
-    const refreshTokenName = getTokenName(role, TokenType.REFRESH_TOKEN);
-    console.log(refreshTokenName)
-    const refreshToken = req.cookies[refreshTokenName];
+    // const refreshTokenName = getTokenName(role, TokenType.REFRESH_TOKEN);
+    // console.log(refreshTokenName)
+    // const refreshToken = req.cookies[refreshTokenName];
+
+     // Check for possible access token names in cookies
+            const possibleRefreshTokens = [
+                TokenNames.USER_REFRESH_TOKEN,
+                TokenNames.ORG_REFRESH_TOKEN,
+                TokenNames.SUPER_ADMIN_REFRESH_TOKEN,
+            ];
+    
+            let refreshToken: string | undefined;
+    
+            // Search for token in known access token cookies
+            for (const name of possibleRefreshTokens) {
+                if (req.cookies[name]) {
+                    refreshToken = req.cookies[name];
+                    break;
+                }
+            }
 
     if (!refreshToken || refreshToken === undefined) {
 
