@@ -9,7 +9,7 @@ import { createProjectThunk, deleteProjectThunk, fetchProjectsThunk, updateProje
 
 export function useProject() {
     const dispatch = useAppDispatch();
-    const { projects, isLoading, createError, fetchError ,deleteLoading,updateLoading} = useAppSelector(state => state.project);
+    const { projects, isLoading, createError, fetchError ,deleteLoading,updateLoading ,createLoading} = useAppSelector(state => state.project);
     const [project, setProject] = useState<Project | null>(null);
 
     const getAllProjects = async ({orgId} :{orgId:string})=>{
@@ -33,6 +33,6 @@ export function useProject() {
         setProject(res.data.project);
     }
 
-    return {projects, project,isLoading ,deleteLoading,updateLoading,createError,fetchError,getAllProjects, fetchProjects ,createProject ,getProjectById ,updateProject,deleteProject} 
+    return {projects, project,isLoading  , createLoading,deleteLoading,updateLoading,createError,fetchError,getAllProjects, fetchProjects ,createProject ,getProjectById ,updateProject,deleteProject} 
 }
 

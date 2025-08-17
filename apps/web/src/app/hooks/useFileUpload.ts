@@ -15,7 +15,7 @@ export function useFileUpload() {
 setLoading(true)
     try {
         const response = await orgAPI.fileUpload(formData);
-        console.log(response)
+
         setFiles((pre)=> [...pre, ...response.data])
     } catch (error:any) {
          const message = error?.response?.data?.message || 'Failed to upload file';

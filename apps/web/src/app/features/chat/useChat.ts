@@ -26,7 +26,6 @@ export function useChat(orgId: string, userId: string) {
         socketRef.current = socket;
 
         socket.on("chat:init", (msgs: ChatMessage[]) => {
-            console.log(msgs)
             setMessages(msgs)
         });
         socket.on("chat:message", (msg: ChatMessage) => {

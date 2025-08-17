@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { formatISO, parseISO, startOfDay, isBefore } from "date-fns";
+import { formatISO,  } from "date-fns";
 import Modal from "./Modal";
 import { useProject } from "../../../features/project/useProject";
 import { toast } from "react-toastify";
+import { getProjectSchema } from "../../../validations/projectSchema";
 
 type Props = {
   isOpen: boolean;
@@ -36,44 +37,26 @@ const EditProjectModal = ({ isOpen, onClose, initialData }: Props) => {
     setErrors({});
   }, [isOpen, initialData]);
 
-  const validate = () => {
-    const errs: { [key: string]: string } = {};
-    const trimmedName = form.name.trim();
-    const trimmedDesc = form.description.trim();
-
-    if (!trimmedName) {
-      errs.name = "Project name is required";
-    }
-
-    if (!trimmedDesc) {
-      errs.description = "Description is required";
-    }
-
-    const today = startOfDay(new Date());
-
-    if (!form.startDate) {
-      errs.startDate = "Start date is required";
-    } else {
-      const start = startOfDay(parseISO(form.startDate));
-      if (isBefore(start, today)) {
-        errs.startDate = "Start date cannot be in the past";
-      }
-    }
-
-    if (!form.endDate) {
-      errs.endDate = "End date is required";
-    } else if (form.startDate) {
-      const start = startOfDay(parseISO(form.startDate));
-      const end = startOfDay(parseISO(form.endDate));
-      if (!isBefore(start, end)) {
-        errs.endDate = "End date must be after start date";
-      }
-    }
-
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
-  };
-
+  const validate = async () => {
+  try {
+    const schema = getProjectSchema(true);
+    await schema.validate(form, { abortEarly: false });
+    setErrors({
+    projectName: "",
+    description: "",
+    startDate: "",
+    endDate: "",
+  });
+    return true;
+  } catch (err: any) {
+    const newErrors: Record<string, string> = {};
+    err.inner.forEach((e: any) => {
+      if (e.path) newErrors[e.path] = e.message;
+    });
+    setErrors(newErrors);
+    return false;
+  }
+};
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {

@@ -10,6 +10,7 @@ const initialState: ProjectState = {
   isLoading: false,
   fetchError: null,
   createError: null,
+  createLoading:false,
   deleteError: null,
   deleteLoading: false,
   updateError:null,
@@ -79,15 +80,15 @@ export const projectSlice = createSlice({
         state.fetchError = action.payload as string;
       })
       .addCase(createProjectThunk.pending, (state) => {
-        state.isLoading = true;
+        state.createLoading = true;
         state.createError = null;
       })
       .addCase(createProjectThunk.fulfilled, (state, action) => {
-        state.isLoading = false;
+        state.createLoading = false;
         state.projects = [...(state.projects || []), action.payload];
       })
       .addCase(createProjectThunk.rejected, (state, action) => {
-        state.isLoading = false;
+        state.createLoading = false;
         state.createError = action.payload as string;
       })
       .addCase(updateProjectThunk.fulfilled, (state, action) => {

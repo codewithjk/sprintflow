@@ -101,6 +101,7 @@ export const refreshTokenController = async (req: Request, res: Response, next: 
     }
 
     const refreshTokenName = getTokenName(role, TokenType.REFRESH_TOKEN);
+    console.log(refreshTokenName)
     const refreshToken = req.cookies[refreshTokenName];
 
     if (!refreshToken || refreshToken === undefined) {

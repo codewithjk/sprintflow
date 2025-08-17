@@ -25,6 +25,7 @@ export interface ProjectState {
   updateLoading: boolean,
   deleteError: string | null,
   deleteLoading: boolean,
+  createLoading:boolean,
 }
 export interface TaskState {
   tasks: Task[] | null;

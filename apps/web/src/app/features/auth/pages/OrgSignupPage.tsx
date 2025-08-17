@@ -5,6 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../useAuth";
 import { Listbox } from "@headlessui/react";
 import { industries } from "../../../constants/industries.constants";
+import { orgRegistrationSchema } from "../../../validations/orgRegisterSchema";
+
 
 export const OrganizationSignup = () => {
   const [form, setForm] = useState({
@@ -31,45 +33,27 @@ export const OrganizationSignup = () => {
   const navigate = useNavigate();
   const { signup, verifyOrganization, isLoading , signUpLoading, signupError } = useAuth();
 
-  const validate = () => {
-    const errs: typeof errors = {};
-
-    // Name
-    if (!form.name.trim()) {
-      errs.name = "Organization name is required";
-    }
-
-    // Email
-    if (!form.email.trim()) {
-      errs.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      errs.email = "Invalid email format";
-    }
-
-    // Password
-    if (!form.password) {
-      errs.password = "Password is required";
-    } else if (form.password.length < 6) {
-      errs.password = "Password must be at least 6 characters";
-    }
-
-    // Confirm Password (assuming you have confirmPassword state)
+  const validate = async () => {
+  try {
+    await orgRegistrationSchema.validate(form, { abortEarly: false });
+    setErrors({});
     if (form.password !== confirmPassword) {
-      errs.confirmPassword = "Passwords do not match";
+      setErrors({ password: "Passwords do not match" });
+      return false;
     }
-
-    // Phone Number
-    if (
-      form.phoneNumber.trim() &&
-      !/^[\d+\-() ]{7,15}$/.test(form.phoneNumber)
-    ) {
-      errs.phoneNumber = "Invalid phone number";
-    }
-
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
-  };
-
+    return true;
+  } catch (err: any) {
+    const newErrors: typeof errors = {};
+    err.inner.forEach((validationError: any) => {
+      if (validationError.path) {
+        newErrors[validationError.path as keyof typeof errors] = validationError.message;
+      }
+    });
+    console.log(newErrors)
+    setErrors(newErrors);
+    return false;
+  }
+};
   const startTimer = () => {
     const interval = setInterval(() => {
       setTimer((prev) => {
@@ -85,7 +69,8 @@ export const OrganizationSignup = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
+
+    if (!await validate()) return;
 
     try {
       await signup({ ...form, role: "organization" });
@@ -277,6 +262,9 @@ export const OrganizationSignup = () => {
                   setForm({ ...form, description: e.target.value })
                 }
               />
+               {errors.description && (
+                <p className="text-red-500 text-sm">{errors.description}</p>
+              )}
 
               <button
                 type="submit"

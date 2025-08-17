@@ -1,5 +1,5 @@
 // src/features/org/pages/AdminLogin.tsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -12,7 +12,9 @@ export const AdminLogin = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const navigate = useNavigate();
-  const { login, isLoading } = useAuth()
+  const { login, isLoading } = useAuth();
+
+
 
   const validate = () => {
     const errs: typeof errors = {};
@@ -39,6 +41,7 @@ export const AdminLogin = () => {
       toast.success("Logged in as admin");
       navigate("/admin/dashboard");
     } catch (err: any) {
+      console.log(err)
       toast.error(err || "Login failed");
     }
   };

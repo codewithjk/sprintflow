@@ -22,7 +22,9 @@ export class CreateOrganizationUseCase {
     async execute(data: {name :string ,email : string}) {
   
       const existing = await this.orgRepo.findByName(data.name);
-      if (existing) throw new ConflictError(Messages.ORG_ALREADY_EXISTS);
+      const sameEmail = await this.orgRepo.findByEmail(data.email);
+      if (existing || sameEmail) throw new ConflictError(Messages.ORG_ALREADY_EXISTS);
+
   
       await this.otpService.checkRestrictions(data.email);
       await this.otpService.trackRequest(data.email);

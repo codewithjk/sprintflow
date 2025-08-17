@@ -181,7 +181,7 @@ const Task = ({ task }: TaskProps) => {
 
   return (
     <div 
-      onClick={toggleDrawer(!drawerOpen)}
+      // onClick={toggleDrawer(!drawerOpen)}
       ref={(instance) => {
         drag(instance);
       }}

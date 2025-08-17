@@ -8,6 +8,7 @@ import { Listbox } from "@headlessui/react";
 import { User } from "lucide-react";
 import { toast } from "react-toastify";
 import { useAuth } from "../../../features/auth/useAuth";
+import { getTaskSchema } from "../../../validations/taskSchema";
 
 type Props = {
   isOpen: boolean;
@@ -35,44 +36,73 @@ const NewTaskModal = ({ isOpen, onClose, id = null }: Props) => {
     if(user?.role === "organization")getAllMembers({ page: 1, limit: 10 });
   }, []);
 
-  const validate = () => {
-    const errs: { [key: string]: string } = {};
-    const now = startOfDay(new Date());
+  // const validate = () => {
+  //   const errs: { [key: string]: string } = {};
+  //   const now = startOfDay(new Date());
 
-    if (!title.trim()) errs.title = "Title is required.";
-    if (!description.trim()) errs.description = "Description is required.";
-    if (!priority) errs.priority = "Priority is required.";
-    if (!status) errs.status = "Status is required.";
-    if (!assignedUserId) errs.assignedUserId = "Assignee is required.";
+  //   if (!title.trim()) errs.title = "Title is required.";
+  //   if (!description.trim()) errs.description = "Description is required.";
+  //   if (!priority) errs.priority = "Priority is required.";
+  //   if (!status) errs.status = "Status is required.";
+  //   if (!assignedUserId) errs.assignedUserId = "Assignee is required.";
 
-    if (id === null && !projectId.trim())
-      errs.projectId = "Project ID is required.";
+  //   if (id === null && !projectId.trim())
+  //     errs.projectId = "Project ID is required.";
 
-    if (!startDate) {
-      errs.startDate = "Start date is required.";
-    } else {
-      const start = startOfDay(parseISO(startDate));
-      if (isBefore(start, now)) {
-        errs.startDate = "Start date cannot be in the past.";
-      }
+  //   if (!startDate) {
+  //     errs.startDate = "Start date is required.";
+  //   } else {
+  //     const start = startOfDay(parseISO(startDate));
+  //     if (isBefore(start, now)) {
+  //       errs.startDate = "Start date cannot be in the past.";
+  //     }
+  //   }
+
+  //   if (!dueDate) {
+  //     errs.dueDate = "Due date is required.";
+  //   } else if (startDate) {
+  //     const start = startOfDay(parseISO(startDate));
+  //     const end = startOfDay(parseISO(dueDate));
+  //     if (!isBefore(start, end)) {
+  //       errs.dueDate = "Due date must be after start date.";
+  //     }
+  //   }
+
+  //   setErrors(errs);
+  //   return Object.keys(errs).length === 0;
+  // };
+
+const validate = async (
+  
+) => {
+  try {
+    const schema = getTaskSchema(false);
+    await schema.validate({
+    title,
+    description,
+    status,
+    priority,
+    tags,
+    assignedUserId,
+    startDate,
+    dueDate,
+  }, { abortEarly: false });
+    setErrors({});
+    return true;
+  } catch (err: any) {
+    const validationErrors: Record<string, string> = {};
+    if (err.inner) {
+      err.inner.forEach((e: any) => {
+        if (e.path) validationErrors[e.path] = e.message;
+      });
     }
-
-    if (!dueDate) {
-      errs.dueDate = "Due date is required.";
-    } else if (startDate) {
-      const start = startOfDay(parseISO(startDate));
-      const end = startOfDay(parseISO(dueDate));
-      if (!isBefore(start, end)) {
-        errs.dueDate = "Due date must be after start date.";
-      }
-    }
-
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
-  };
+    setErrors(validationErrors);
+    return false;
+  }
+};
 
   const handleSubmit = async () => {
-    if (!validate()) return;
+    if (! await validate()) return;
 
     const formattedStartDate = formatISO(new Date(startDate));
     const formattedDueDate = formatISO(new Date(dueDate));
@@ -213,6 +243,7 @@ const NewTaskModal = ({ isOpen, onClose, id = null }: Props) => {
             setErrors((prev) => ({ ...prev, tags: "" }));
           }}
         />
+        {errors.tags && <p className={errorText}>{errors.tags}</p>}
 
         {/* Dates */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-2">

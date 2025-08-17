@@ -54,7 +54,7 @@ export const Messages = {
   ORG_UPDATED: 'Organization updated',
   ORG_FOUND: 'Organization found',
   ORG_VERIFIED: 'Organization verified',
-  ORG_ALREADY_EXISTS: 'Organization already exists',
+  ORG_ALREADY_EXISTS: 'Organization already exists. Please Login',
   ORG_JOIN_SUCCESS: "Successfully joined organization",
 
   //project

@@ -3,6 +3,7 @@ import { useAuth } from "../useAuth";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { userRegistrationSchema } from "../../../validations/userRegisterSchema";
 
 
 
@@ -17,37 +18,59 @@ export const UserRegistrationPage = () => {
   const [timer, setTimer] = useState(60);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
+    const [confirmPassword, setConfirmPassword] = useState("");
 
   //todo : pass orgId with form data, get it from redux state
 
   const [selectedOrgId, setSelectedOrgId] = useState("");
 
-  const { signup, verifyOtp, invitation, } = useAuth();
+  const { signup, verifyOtp, invitation,signUpLoading } = useAuth();
 if(!invitation)return <> no invitation</>
 
-  const validateForm = () => {
+  // const validateForm = () => {
+  //   const newErrors: { [key: string]: string } = {};
+  //   if (!form.name) newErrors.name = "Name is required";
+  //   if (!form.email) {
+  //     newErrors.email = "Email is required";
+  //   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+  //     newErrors.email = "Invalid email format";
+  //   }
+  //   if (!form.password) {
+  //     newErrors.password = "Password is required";
+  //   } else if (form.password.length < 6) {
+  //     newErrors.password = "Password must be at least 6 characters";
+  //   }
+  // //   if (!form.orgId) {
+  // //   newErrors.orgId = "Please select an organization";
+  // // }
+  //   setErrors(newErrors);
+  //   return Object.keys(newErrors).length === 0;
+  // };
+
+  const validateForm = async () => {
+  try {
+    await userRegistrationSchema.validate(form, { abortEarly: false });
+    setErrors({});
+     if (form.password !== confirmPassword) {
+      setErrors({ password: "Passwords do not match" });
+      return false;
+    }
+    return true;
+  } catch (validationError: any) {
     const newErrors: { [key: string]: string } = {};
-    if (!form.name) newErrors.name = "Name is required";
-    if (!form.email) {
-      newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      newErrors.email = "Invalid email format";
-    }
-    if (!form.password) {
-      newErrors.password = "Password is required";
-    } else if (form.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
-  //   if (!form.orgId) {
-  //   newErrors.orgId = "Please select an organization";
-  // }
+    validationError.inner.forEach((err: any) => {
+      if (err.path) {
+        newErrors[err.path] = err.message;
+      }
+    });
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+    return false;
+  }
+};
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    if (! await validateForm()) return;
 
     try {
       await signup({...form,role:"user"});
@@ -57,7 +80,7 @@ if(!invitation)return <> no invitation</>
       startTimer();
       toast.success("OTP sent to your email");
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Registration failed");
+      toast.error(err.message || "Registration failed");
     }
   };
 
@@ -173,9 +196,25 @@ if(!invitation)return <> no invitation</>
               {!passwordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-          {errors.password && (
-            <p className="text-red-500 text-sm">{errors.password}</p>
-              )}
+         <label className="block mb-1">Confirm Password</label>
+                       <div className="relative">
+                         <input
+                           type={passwordVisible ? "text" : "password"}
+                           className="w-full p-2 border mb-2 rounded"
+                           value={confirmPassword}
+                           onChange={(e) => setConfirmPassword(e.target.value)}
+                         />
+                         <button
+                           type="button"
+                           onClick={() => setPasswordVisible(!passwordVisible)}
+                           className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                         >
+                           {!passwordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
+                         </button>
+                       </div>
+                       {errors.password && (
+                         <p className="text-red-500 text-sm">{errors.password}</p>
+                       )}
               
       {/* <label className="block mb-1">Organization</label>
               <OrganizationSelector
@@ -190,9 +229,10 @@ if(!invitation)return <> no invitation</>
 )} */}
           <button
             type="submit"
-            className="w-full bg-black text-white py-2 rounded mt-3"
+                className="w-full bg-black text-white py-2 rounded mt-3"
+                disabled={signUpLoading}
           >
-            Register
+          {signUpLoading ? "Registering..." : "Register"}
               </button>
 
         </form>

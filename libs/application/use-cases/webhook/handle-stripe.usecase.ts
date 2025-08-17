@@ -36,13 +36,13 @@ export class HandleStripeWebhookUseCase {
       }
 
       case 'invoice.payment_succeeded': {
-        console.log(event.data.object)
+        // console.log(event.data.object)
         //todo :
         // await this.stripeService.handleInvoice(event.data.object);
         break;
       }
       case 'customer.subscription.updated': {
-        console.log("updated = ",event)
+        // console.log("updated = ",event)
         break;
         }
 

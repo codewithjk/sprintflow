@@ -41,48 +41,64 @@ const NewMeetingModal = ({
     });
   };
 
-  const validate = () => {
-    const newErrors = {
-      name: "",
-      subject: "",
-      startDate: "",
-      endDate: "",
-    };
-
-    const trimmedName = name.trim();
-    const trimmedSubject = subject.trim();
-    const now = new Date();
-
-    if (!trimmedName) {
-      newErrors.name = "Meeting name is required.";
-    }
-
-    if (!trimmedSubject) {
-      newErrors.subject = "Subject is required.";
-    }
-
-    if (!startDate) {
-      newErrors.startDate = "Start date and time is required.";
-    } else {
-      const start = parseISO(startDate);
-      if (isBefore(start, now)) {
-        newErrors.startDate = "Start time must be in the future.";
-      }
-    }
-
-    if (!endDate) {
-      newErrors.endDate = "End date and time is required.";
-    } else if (startDate) {
-      const start = parseISO(startDate);
-      const end = parseISO(endDate);
-      if (!isBefore(start, end)) {
-        newErrors.endDate = "End time must be after start time.";
-      }
-    }
-
-    setErrors(newErrors);
-    return Object.values(newErrors).every((e) => e === "");
+ const validate = () => {
+  const newErrors = {
+    name: "",
+    subject: "",
+    startDate: "",
+    endDate: "",
   };
+
+  const trimmedName = name.trim();
+  const trimmedSubject = subject.trim();
+  const now = new Date();
+
+  if (!trimmedName) {
+    newErrors.name = "Meeting name is required.";
+  }
+   if (trimmedName.length > 30) {
+     newErrors.name = "Meeting name should be less than 30 character."
+   }
+
+  if (!trimmedSubject) {
+    newErrors.subject = "Subject is required.";
+  }
+    if (trimmedName.length > 250) {
+     newErrors.subject = "Meeting name should be less than 250 character."
+   }
+
+  if (!startDate) {
+    newErrors.startDate = "Start date and time is required.";
+  }
+
+  if (!endDate) {
+    newErrors.endDate = "End date and time is required.";
+  }
+
+  if (startDate && endDate) {
+    const start = parseISO(startDate);
+    const end = parseISO(endDate);
+
+    if (isBefore(start, now)) {
+      newErrors.startDate = "Start time must be in the future.";
+    }
+
+    if (!isBefore(start, end)) {
+      newErrors.endDate = "End time must be after start time.";
+    }
+
+    const diffInMs = end.getTime() - start.getTime();
+    const diffInHours = diffInMs / (1000 * 60 * 60);
+
+    if (diffInHours >= 24) {
+      newErrors.endDate = "Meeting duration must be less than 24 hours.";
+    }
+  }
+
+  setErrors(newErrors);
+  return Object.values(newErrors).every((e) => e === "");
+};
+
 
   const handleSubmit = () => {
     if (!validate()) return;

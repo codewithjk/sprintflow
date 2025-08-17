@@ -34,7 +34,6 @@ export const updateUserStatusController = async (req: Request, res: Response, ne
     const { status } = req.body;
     const userRepo = new PrismaUserRepository();
     const useCase = new UpdateUserUseCase(userRepo);
-    console.log(req.body)
     const user = await useCase.execute({id, data:{status}} );
     
     res.status(HttpStatus.OK).json({ message: Messages.USER_UPDATED, user });

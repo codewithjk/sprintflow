@@ -1,8 +1,9 @@
 import {  useState } from "react";
-import { formatISO, isBefore, parseISO, startOfDay } from "date-fns";
+import { formatISO } from "date-fns";
 import Modal from "./Modal";
 import { useProject } from "../../../features/project/useProject";
 import { toast } from "react-toastify";
+import { getProjectSchema } from "../../../validations/projectSchema";
 
 type Props = {
   isOpen: boolean;
@@ -10,64 +11,44 @@ type Props = {
 };
 
 const NewProjectModal = ({ isOpen, onClose }: Props) => {
-  const { createProject, isLoading } = useProject();
+  const { createProject, createLoading } = useProject();
 
   const [projectName, setProjectName] = useState("");
   const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  const [errors, setErrors] = useState({
+
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+
+  const validate = async () => {
+  try {
+    const schema = getProjectSchema(false);
+    await schema.validate( {
+     projectName,
+    description,
+    startDate,
+    endDate,
+  }, { abortEarly: false });
+    setErrors({
     projectName: "",
     description: "",
     startDate: "",
     endDate: "",
   });
-
-  const validate = () => {
-    const newErrors: typeof errors = {
-      projectName: "",
-      description: "",
-      startDate: "",
-      endDate: "",
-    };
-
-    if (!projectName.trim()) {
-      newErrors.projectName = "Project name is required.";
-    }
-
-    if (!description.trim()) {
-      newErrors.description = "Description is required.";
-    }
-
-    const today = startOfDay(new Date());
-
-    if (!startDate) {
-      newErrors.startDate = "Start date is required.";
-    } else {
-      const start = startOfDay(parseISO(startDate));
-      if (isBefore(start, today)) {
-        newErrors.startDate = "Start date cannot be in the past.";
-      }
-    }
-
-    if (!endDate) {
-      newErrors.endDate = "End date is required.";
-    } else if (startDate) {
-      const start = startOfDay(parseISO(startDate));
-      const end = startOfDay(parseISO(endDate));
-      if (!isBefore(start, end)) {
-        newErrors.endDate = "End date must be after the start date.";
-      }
-    }
-
+    return true;
+  } catch (err: any) {
+    const newErrors: Record<string, string> = {};
+    err.inner.forEach((e: any) => {
+      if (e.path) newErrors[e.path] = e.message;
+    });
     setErrors(newErrors);
-
-    return Object.values(newErrors).every((error) => error === "");
-  };
-
+    return false;
+  }
+};
   const handleSubmit = async () => {
-    if (!validate()) return;
+    if (! await validate()) return;
 
     try {
       const formattedStartDate = formatISO(new Date(startDate));
@@ -84,7 +65,7 @@ const NewProjectModal = ({ isOpen, onClose }: Props) => {
       onClose();
       resetForm();
     } catch (err: any) {
-      toast.error(err?.message || "Failed to create project.");
+      toast.error(err || "Failed to create project.");
     }
   };
 
@@ -141,6 +122,7 @@ const NewProjectModal = ({ isOpen, onClose }: Props) => {
           <div>
             <input
               type="date"
+              min={new Date().toISOString().split("T")[0]} 
               className={inputStyles}
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
@@ -162,11 +144,11 @@ const NewProjectModal = ({ isOpen, onClose }: Props) => {
         <button
           type="submit"
           className={`focus-offset-2 mt-4 flex w-full justify-center rounded-md border border-transparent bg-blue-primary px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
-            isLoading ? "cursor-not-allowed opacity-50" : ""
+            createLoading ? "cursor-not-allowed opacity-50" : ""
           }`}
-          disabled={isLoading}
+          disabled={createLoading}
         >
-          {isLoading ? "Creating..." : "Create Project"}
+          {createLoading ? "Creating..." : "Create Project"}
         </button>
       </form>
     </Modal>
