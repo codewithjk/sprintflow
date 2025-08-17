@@ -3,14 +3,8 @@ import { ValidationError } from "../../../../libs/shared/errors/app-error";
 import { Messages } from "../../../../libs/shared/constants/messages";
 import { HttpStatus } from "../../../../libs/shared/constants/http-status.enum";
 import { CreateProjectDTO } from "../../../../libs/shared/types/src";
-import { PrismaProjectRepository } from "../../../../libs/infrastructure/prisma/project.repository";
-import { CreateProjectUseCase } from "../../../../libs/application/use-cases/project/create-project.usecase";
 import { Project } from "../../../../libs/domain/entities/project.entity";
-import { UpdateProjectUseCase } from "../../../../libs/application/use-cases/project/update-project.usecase";
-import { DeleteProjectUseCase } from "../../../../libs/application/use-cases/project/delete-project.usecase";
-import { GetProjectUseCase } from "../../../../libs/application/use-cases/project/get-project.usecase";
-import { SearchProjectsUseCase } from "../../../../libs/application/use-cases/project/search-project.usecase";
-import { GetAllProjectsUseCase } from "../../../../libs/application/use-cases/project/get-all-project.usecase";
+import { createProjectUseCase, deleteProjectUseCase, getAllProjectsUseCase, getProjectUseCase, searchProjectsUseCase, updateProjectUseCase } from "../di";
 
 export const createProjectController = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -25,9 +19,7 @@ export const createProjectController = async (req: Request, res: Response, next:
             endDate,
             description,
         }
-        const projectRepo = new PrismaProjectRepository();
-        const useCase = new CreateProjectUseCase(projectRepo);
-        const newProject = await useCase.execute(data);
+        const newProject = await createProjectUseCase.execute(data);
         res.status(HttpStatus.CREATED).json({ message: Messages.PROJECT_CREATED, project: newProject })
     } catch (error) {
         next(error);
@@ -49,9 +41,7 @@ export const updateProjectController = async (req: Request, res: Response, next:
         }
         const data: Partial<Project> = body;
         const id: string = idParam;
-        const projectRepo = new PrismaProjectRepository();
-        const useCase = new UpdateProjectUseCase(projectRepo);
-        const project = await useCase.execute({ id, data, orgId })
+        const project = await updateProjectUseCase.execute({ id, data, orgId })
         res.status(HttpStatus.OK).json({ message: Messages.PROJECT_UPDATED, project })
     } catch (error) {
         next(error)
@@ -67,9 +57,7 @@ export const deleteProjectController = async (req: Request, res: Response, next:
         }
         const id: string = idParam;
         const orgId = req.organization.id;
-        const projectRepo = new PrismaProjectRepository();
-        const useCase = new DeleteProjectUseCase(projectRepo)
-        await useCase.execute({ id, orgId });
+        await deleteProjectUseCase.execute({ id, orgId });
         res.status(HttpStatus.OK).json({ message: Messages.PROJECT_DELETED })
     } catch (error) {
         next(error)
@@ -82,9 +70,7 @@ export const getProjectController = async (req: Request, res: Response, next: Ne
             throw new ValidationError(Messages.INVALID_PARAMS);
         }
         const id: string = idParam;
-        const projectRepo = new PrismaProjectRepository();
-        const useCase = new GetProjectUseCase(projectRepo);
-        const project = await useCase.execute(id);
+        const project = await getProjectUseCase.execute(id);
         res.status(HttpStatus.OK).json({ message: Messages.PROJECT_FOUND, project })
     } catch (error) {
         next(error)
@@ -102,10 +88,8 @@ export const searchProjectsController = async (
             throw new ValidationError(Messages.INVALID_PARAMS);
         }
         const orgId = req.organization.id;
-        const projectRepo = new PrismaProjectRepository();
-        const useCase = new SearchProjectsUseCase(projectRepo);
 
-        const result = await useCase.execute({
+        const result = await searchProjectsUseCase.execute({
             search: String(search),
             orgId,
             page: Number(page),
@@ -121,17 +105,15 @@ export const searchProjectsController = async (
 
 export const getAllProjectController = async (req: Request, res: Response, next: NextFunction) => {
     try {
-          const { page = 1, limit = 10 ,...rawFilters} = req.query;
-     const projectRepo = new PrismaProjectRepository();
-          const useCase = new GetAllProjectsUseCase(projectRepo);
-          const result = await useCase.execute(
+        const { page = 1, limit = 10, ...rawFilters } = req.query;
+        const result = await getAllProjectsUseCase.execute(
             rawFilters,
             Number(page),
             Number(limit)
-          );
-          res.status(HttpStatus.OK).json(result)
-    
-        } catch (err) {
-          next(err);
-        }
+        );
+        res.status(HttpStatus.OK).json(result)
+
+    } catch (err) {
+        next(err);
+    }
 }

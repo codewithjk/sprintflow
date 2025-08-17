@@ -9,7 +9,7 @@ import { IUserRepository } from "../../interfaces/user-repository.interface";
 
 
 
-export class LoginUseCase {
+export class UserLoginUseCase {
     constructor(private readonly userRepo: IUserRepository,
         private readonly passwordService: IPasswordService,
         private readonly jwtService: IJwtService) { };

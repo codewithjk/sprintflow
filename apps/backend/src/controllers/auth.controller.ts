@@ -1,23 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
-import { PrismaUserRepository } from '../../../../libs/infrastructure/prisma/user.repository';
-
 import { HttpStatus } from '../../../../libs/shared/constants/http-status.enum';
 import { Messages } from '../../../../libs/shared/constants/messages';
-import { SignupUseCase } from '../../../../libs/application/use-cases/auth/signup.usecase';
-import { OtpService } from '../../../../libs/infrastructure/redis/otp.service';
-import { EmailService } from '../../../../libs/infrastructure/email/email.service';
-import path from 'path';
-import { VerifyUserUseCase } from '../../../../libs/application/use-cases/auth/verify-user.usecase';
-import { BcryptPasswordService } from '../../../../libs/infrastructure/bcrypt';
 import { UnauthorizedError, ValidationError } from '../../../../libs/shared/errors/app-error';
-import { LoginUseCase } from '../../../../libs/application/use-cases/auth/login.usecase';
-import { JwtService } from '../../../../libs/infrastructure/jwt/jwt.service';
-import { JWT_TOKEN_SECRET } from '../../../../libs/shared/constants/env-constants';
 import { clearCookie, setCookie } from '../utils/cookies/setCookie';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { ACCESS_TOKEN_EXPIRATION, TokenNames, TokenType } from '../../../../libs/shared/constants/jwt-token-constants';
-import { PrismaOrganizationRepository } from '../../../../libs/infrastructure/prisma/org.repository';
 import { AppUserRole } from '../../../../libs/shared/types/src';
+import { jwtService, orgRepo, signupUseCase, userLoginUseCase, userRepo, verifyUserUseCase } from '../di';
 
 
 export const signupController = async (req: Request, res: Response, next: NextFunction) => {
@@ -26,13 +15,7 @@ export const signupController = async (req: Request, res: Response, next: NextFu
     if (!email || !name) {
       return next(new ValidationError("Missing required fields!"));
     }
-    const userRepository = new PrismaUserRepository();
-    const otpService = new OtpService()
-    const templatePath = path.join(process.cwd(), 'apps', 'backend', 'src', 'utils', 'email-templates');
-    const emailService = new EmailService(templatePath)
-
-    const useCase = new SignupUseCase(userRepository, otpService, emailService);
-    await useCase.execute({ email, name });
+    await signupUseCase.execute({ email, name });
     res.status(HttpStatus.OK).json({ message: Messages.OTP_SENT });
   } catch (error: any) {
     next(error)
@@ -47,11 +30,7 @@ export const verifyUserController = async (req: Request, res: Response, next: Ne
       return next(new ValidationError("Missing required fields!"));
     }
     const data = { email, otp, password, name, orgId }
-    const userRepository = new PrismaUserRepository();
-    const otpService = new OtpService()
-    const passwordService = new BcryptPasswordService()
-    const useCase = new VerifyUserUseCase(userRepository, otpService, passwordService);
-    const newUser = await useCase.execute(data)
+    const newUser = await verifyUserUseCase.execute(data)
     res.status(HttpStatus.CREATED).json({
       message: Messages.USER_VERIFIED,
       user: newUser,
@@ -70,12 +49,7 @@ export const loginUserController = async (req: Request, res: Response, next: Nex
     if (!email || !password) {
       return next(new ValidationError(Messages.EMAIL_AND_PASSWORD_REQUIRED));
     }
-    const userRepository = new PrismaUserRepository();
-    const passwordService = new BcryptPasswordService()
-    const jwtService = new JwtService(JWT_TOKEN_SECRET)
-
-    const useCase = new LoginUseCase(userRepository, passwordService, jwtService);
-    const data = await useCase.execute({ email, password }, AppUserRole.USER)
+    const data = await userLoginUseCase.execute({ email, password }, AppUserRole.USER)
 
     setCookie(res, data.refreshToken, AppUserRole.USER, TokenType.REFRESH_TOKEN);
     setCookie(res, data.accessToken, AppUserRole.USER, TokenType.ACCESS_TOKEN);
@@ -91,44 +65,29 @@ export const loginUserController = async (req: Request, res: Response, next: Nex
 
 // refresh token
 export const refreshTokenController = async (req: Request, res: Response, next: NextFunction) => {
-
-
   try {
-    // const role = req.role as AppUserRole;
 
-    // if (!role) {
-    //   throw new ValidationError(Messages.JWT_TOKEN_MISSING);
-    // }
+    // Check for possible access token names in cookies
+    const possibleRefreshTokens = [
+      TokenNames.USER_REFRESH_TOKEN,
+      TokenNames.ORG_REFRESH_TOKEN,
+      TokenNames.SUPER_ADMIN_REFRESH_TOKEN,
+    ];
 
-    // const refreshTokenName = getTokenName(role, TokenType.REFRESH_TOKEN);
-    // console.log(refreshTokenName)
-    // const refreshToken = req.cookies[refreshTokenName];
+    let refreshToken: string | undefined;
 
-     // Check for possible access token names in cookies
-            const possibleRefreshTokens = [
-                TokenNames.USER_REFRESH_TOKEN,
-                TokenNames.ORG_REFRESH_TOKEN,
-                TokenNames.SUPER_ADMIN_REFRESH_TOKEN,
-            ];
-    
-            let refreshToken: string | undefined;
-    
-            // Search for token in known access token cookies
-            for (const name of possibleRefreshTokens) {
-                if (req.cookies[name]) {
-                    refreshToken = req.cookies[name];
-                    break;
-                }
-            }
+    // Search for token in known access token cookies
+    for (const name of possibleRefreshTokens) {
+      if (req.cookies[name]) {
+        refreshToken = req.cookies[name];
+        break;
+      }
+    }
 
     if (!refreshToken || refreshToken === undefined) {
 
       throw new ValidationError(Messages.JWT_TOKEN_MISSING)
     }
-    const jwtService = new JwtService(JWT_TOKEN_SECRET);
-    const userRepository = new PrismaUserRepository();
-    const orgRepository = new PrismaOrganizationRepository();
-
     const decoded = jwtService.verify(refreshToken);
 
     if (!decoded || !decoded.id || !decoded.role) {
@@ -136,19 +95,15 @@ export const refreshTokenController = async (req: Request, res: Response, next: 
     }
     let account;
     if (decoded.role === "user") {
-      account = await userRepository.findById(decoded.id);
+      account = await userRepo.findById(decoded.id);
     }
     if (decoded.role === "organization") {
-      account = await orgRepository.findById(decoded.id);
+      account = await orgRepo.findById(decoded.id);
     }
     if (decoded.role === "super_admin") {
-      account = await userRepository.findById(decoded.id);
+      account = await userRepo.findById(decoded.id);
       if (!account?.isAdmin()) return new UnauthorizedError(Messages.USER_NOT_FOUND);
-
-
     }
-
-
     if (!account) {
       return new UnauthorizedError(Messages.USER_NOT_FOUND);
     }
@@ -191,23 +146,15 @@ export const logoutController = async (
   }
 };
 
-
-
-
-///admin
-
+//admin
 export const loginAdminController = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
       return next(new ValidationError(Messages.EMAIL_AND_PASSWORD_REQUIRED));
     }
-    const userRepository = new PrismaUserRepository();
-    const passwordService = new BcryptPasswordService()
-    const jwtService = new JwtService(JWT_TOKEN_SECRET)
 
-    const useCase = new LoginUseCase(userRepository, passwordService, jwtService);
-    const data = await useCase.execute({ email, password }, AppUserRole.SUPER_ADMIN)
+    const data = await userLoginUseCase.execute({ email, password }, AppUserRole.SUPER_ADMIN)
 
     setCookie(res, data.refreshToken, AppUserRole.SUPER_ADMIN, TokenType.REFRESH_TOKEN);
     setCookie(res, data.accessToken, AppUserRole.SUPER_ADMIN, TokenType.ACCESS_TOKEN);

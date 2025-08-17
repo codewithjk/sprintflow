@@ -1,27 +1,17 @@
 import { Server, Socket } from "socket.io";
-import { PrismaChatRepository } from "../../../../libs/infrastructure/prisma/chat.repository";
 import { SendMessageUseCase } from "../../../../libs/application/use-cases/chat/send-message.usecase";
 import { LoadMessagesUseCase } from "../../../../libs/application/use-cases/chat/load-message.usecase";
 import { OnlineUsersService } from "../../../../libs/infrastructure/redis/online-user.service";
 import { NotFoundError } from "../../../../libs/shared/errors/app-error";
 import { GetUserByIdUseCase } from "../../../../libs/application/use-cases/user/get-user-by-id.usecase";
-import { PrismaUserRepository } from "../../../../libs/infrastructure/prisma/user.repository";
 import { GetOrganizationUseCase } from "../../../../libs/application/use-cases/organization/get-organization.usecase";
-import { PrismaOrganizationRepository } from "../../../../libs/infrastructure/prisma/org.repository";
+import { getOrganizationUseCase, getUserByIdUseCase, loadMessagesUseCase, sendMessageUseCase } from "../di";
 
 
 
 export class ChatSocketHandler {
     constructor(private io: Server) {
-        const repo = new PrismaChatRepository();
-        const userRepo = new PrismaUserRepository();
-        const orgRepo = new PrismaOrganizationRepository();
-        const sendUC = new SendMessageUseCase(repo);
-        const loadUC = new LoadMessagesUseCase(repo);
-        const getUserUC = new GetUserByIdUseCase(userRepo);
-        const getOrgUC = new GetOrganizationUseCase(orgRepo)
-
-        this.io.on("connection", (socket: Socket) => this.handleConnection(socket, loadUC, sendUC,getUserUC,getOrgUC));
+        this.io.on("connection", (socket: Socket) => this.handleConnection(socket, loadMessagesUseCase, sendMessageUseCase, getUserByIdUseCase, getOrganizationUseCase));
     }
 
     private async handleConnection(
@@ -29,9 +19,9 @@ export class ChatSocketHandler {
         loadUC: LoadMessagesUseCase,
         sendUC: SendMessageUseCase,
         getUserUC: GetUserByIdUseCase,
-        getOrgUC:GetOrganizationUseCase,
+        getOrgUC: GetOrganizationUseCase,
     ) {
-        const { orgId, userId ,role} = socket.handshake.auth;
+        const { orgId, userId, role } = socket.handshake.auth;
         const onlineUserService = new OnlineUsersService()
 
         if (!orgId || !userId || !role) {
@@ -44,7 +34,7 @@ export class ChatSocketHandler {
             if (role === "organization") {
                 user = await getOrgUC.execute(orgId);
             } else if (role === "user") {
-                user =  await getUserUC.execute(userId);
+                user = await getUserUC.execute(userId);
             }
             if (!user) throw new NotFoundError("User not found");
 
