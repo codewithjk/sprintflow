@@ -6,7 +6,8 @@ export class GetMeetingUseCase {
     private meetingRepo: IMeetingRepository,
   ) {}
 
-  async execute(filter: Partial<MeetingDTO>, skip :number,limit:number) {
+  async execute(filter: Partial<MeetingDTO>, page: number, limit: number) {
+    const skip = (page - 1) * limit;
     return await this.meetingRepo.find(filter , skip,limit);
   }
 }

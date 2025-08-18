@@ -46,7 +46,7 @@ export const MeetingPage = () => {
   const { user } = useAuth();
 
   const [paginationModel, setPaginationModel] = useState({
-  page: 0, // 0-based for DataGrid
+  page: 0, 
   pageSize: 10,
 });
 

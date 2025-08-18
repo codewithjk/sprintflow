@@ -24,8 +24,12 @@ export class PrismaMeetingRepository implements IMeetingRepository {
         const [meetings, total] = await Promise.all([
             prisma.meeting.findMany({
                 where: filter,
+                     orderBy: {
+                createdAt: 'desc', // 🆕 ensure latest meetings come first
+            },
                 skip,
                 take,
+            
             }),
             prisma.meeting.count({
                 where: filter,

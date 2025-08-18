@@ -57,6 +57,7 @@ const columns: GridColDef[] = [
 
 export const MembersPage = () => {
   const {
+    total,
     members,
     loading: isLoading,
     error: isError,
@@ -64,9 +65,19 @@ export const MembersPage = () => {
   } = useMember();
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
   const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
+  const [paginationModel, setPaginationModel] = useState({
+  page: 0,       
+  pageSize: 10,  
+});
+
+  
  useEffect(() => {
-    getAllMembers({ page: 1, limit: 10 });
- }, []);
+  const page = paginationModel.page + 1; 
+  const limit = paginationModel.pageSize;
+
+  getAllMembers({ page, limit });
+}, [paginationModel]);
+
   
   if (isLoading) return <div>Loading...</div>;
   if (isError || !members) return <div className="text-white">Error fetching members</div>;
@@ -95,6 +106,12 @@ export const MembersPage = () => {
           columns={columns}
           getRowId={(row) => row.id}
           pagination
+          paginationMode="server"
+          rowCount={total}
+          pageSizeOptions={[5, 10, 25, 50]}
+           paginationModel={paginationModel}
+  onPaginationModelChange={setPaginationModel}
+  loading={isLoading}
           slots={{
             toolbar: CustomToolbar,
           }}
