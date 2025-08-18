@@ -31,15 +31,19 @@ export const OrgSettingsPage = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
-    const { files, loading: fileUploadLoading, error: fileUploadError, uploadFile } = useFileUpload();
-    
+  const {
+    files,
+    loading: fileUploadLoading,
+    error: fileUploadError,
+    uploadFile,
+  } = useFileUpload();
 
- useEffect(() => {
-  if (files.length > 0) {
-    setPreviewImage(files[0].previewLink);
-    profileData.profileUrl = files[0].previewLink;
-  }
-  },[files])
+  useEffect(() => {
+    if (files.length > 0) {
+      setPreviewImage(files[0].previewLink);
+      profileData.profileUrl = files[0].previewLink;
+    }
+  }, [files]);
 
   // Pre-fill user data
   useEffect(() => {
@@ -84,7 +88,15 @@ export const OrgSettingsPage = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-await uploadFile([file]);
+    const maxSizeInMB = 5;
+    const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
+
+    if (file.size > maxSizeInBytes) {
+      toast.error(`File size must be less than ${maxSizeInMB}MB`);
+      return;
+    }
+
+    await uploadFile([file]);
   };
 
   const handleThemeToggle = () => {
@@ -148,7 +160,9 @@ await uploadFile([file]);
               disabled={fileUploadLoading}
               hidden
             />
-            {fileUploadLoading && <p className="text-xs text-gray-500">Uploading...</p>}
+            {fileUploadLoading && (
+              <p className="text-xs text-gray-500">Uploading...</p>
+            )}
             {fileUploadError && (
               <p className="text-xs text-red-500">{fileUploadError}</p>
             )}

@@ -24,22 +24,26 @@ export const UserSettingsPage = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const { updateProfile } = useOrganizations();
-  const { files, loading: fileUploadLoading, error: fileUploadError, uploadFile } = useFileUpload();
-  
-  
+  const {
+    files,
+    loading: fileUploadLoading,
+    error: fileUploadError,
+    uploadFile,
+  } = useFileUpload();
+
   useEffect(() => {
-  if (files.length > 0) {
-    setPreviewImage(files[0].previewLink);
-    profileData.profileUrl = files[0].previewLink;
-  }
-  },[files])
+    if (files.length > 0) {
+      setPreviewImage(files[0].previewLink);
+      profileData.profileUrl = files[0].previewLink;
+    }
+  }, [files]);
 
   useEffect(() => {
     if (user) {
       setProfileData((prev) => ({
         ...prev,
         name: user.name || "",
-        email:user.email,
+        email: user.email,
         profileUrl: user.profileUrl || "",
         phoneNumber: user.phoneNumber || "",
       }));
@@ -68,13 +72,17 @@ export const UserSettingsPage = () => {
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  const handleImageChange = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const maxSizeInMB = 5;
+    const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
+
+    if (file.size > maxSizeInBytes) {
+      toast.error(`File size must be less than ${maxSizeInMB}MB`);
+      return;
+    }
     await uploadFile([file]);
-    
   };
 
   const handleThemeToggle = () => {
@@ -84,13 +92,13 @@ export const UserSettingsPage = () => {
   const handleProfileSave = () => {
     if (!validate()) return;
     try {
-          if (user)  updateProfile({id:user?.id, data:profileData, role:"user"});
-          toast.success("Profile updated successfully")
-        } catch (error: any) {
-          console.error(error)
-          toast.error(error)
-        }
-
+      if (user)
+        updateProfile({ id: user?.id, data: profileData, role: "user" });
+      toast.success("Profile updated successfully");
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error);
+    }
   };
 
   return (
@@ -157,15 +165,19 @@ export const UserSettingsPage = () => {
               <p className="text-xs text-red-500">{errors.name}</p>
             )}
           </div>
-          <div >
-            <label className="block text-sm font-medium mb-1">phone number</label>
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              phone number
+            </label>
             <input
               name="phoneNumber"
               value={profileData.phoneNumber}
               onChange={handleInputChange}
               className="w-full border px-3 py-2 rounded dark:bg-gray-800 dark:border-gray-600"
             />
-            {errors.phoneNumber && <p className="text-xs text-red-500">{errors.phoneNumber}</p>}
+            {errors.phoneNumber && (
+              <p className="text-xs text-red-500">{errors.phoneNumber}</p>
+            )}
           </div>
         </div>
 
