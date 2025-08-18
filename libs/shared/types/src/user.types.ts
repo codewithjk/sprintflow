@@ -38,6 +38,14 @@ export interface CreateUserDTO {
   status: UserStatus;
 }
 
+export interface UpdateUserDTO {
+  name?: string;
+  phoneNumber?: string;
+  profileUrl?: string;
+  isBlocked?: boolean;
+  status?: UserStatus;
+}
+
 export interface User{
   id:string
   name:string
@@ -46,6 +54,21 @@ export interface User{
   role: string
   profileUrl?: string | null
   phoneNumber?: string | null
+}
+
+// Response
+export interface UserDTO {
+  id: string;
+  name: string;
+  email: string;
+  role: "user" | "super_admin";
+  orgId: string;
+  profileUrl?: string | null;
+  phoneNumber?: string | null;
+  status: "blocked" | "active" | "inactive";
+  authProvider: "local" | "google" | "github" |null;
+  isOwner: boolean;
+  isBlocked: boolean;
 }
 
 

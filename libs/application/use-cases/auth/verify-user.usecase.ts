@@ -1,4 +1,5 @@
 
+import { User } from '../../../domain/entities/user.entity';
 import { UserStatus } from '../../../domain/enums/user.enums';
 import { Messages } from '../../../shared/constants/messages';
 import { ConflictError } from '../../../shared/errors/app-error';
@@ -22,7 +23,7 @@ export class VerifyUserUseCase {
         if (existing) throw new ConflictError(Messages.USER_ALREADY_EXISTS);
         await this.otpService.verifyOtp(data.email, data.otp);
         const hash = await this.passwordService.hash(data.password);
-        const user = await this.userRepo.create({
+        const userDTO = await this.userRepo.create({
             name: data.name,
             email: data.email,
             password: hash,
@@ -32,6 +33,7 @@ export class VerifyUserUseCase {
             orgId: data.orgId,
             status:UserStatus.ACTIVE,
         });
+        const user = new User(userDTO);
         return user.toDTO();
     }
 }

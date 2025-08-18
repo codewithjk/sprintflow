@@ -5,6 +5,7 @@ import { AppUserRole, LoginDTO } from "../../../shared/types/src";
 import { IJwtService } from "../../interfaces/jwt-service.interface";
 import { IPasswordService } from "../../interfaces/password-service.interface";
 import { IUserRepository } from "../../interfaces/user-repository.interface";
+import { User } from "../../../domain/entities/user.entity";
 
 
 
@@ -16,8 +17,9 @@ export class UserLoginUseCase {
     
     async execute(data: LoginDTO,role:AppUserRole) {
         const { email, password } = data;
-        const user = await this.userRepo.findByEmail(email);
-        if (!user) throw new NotFoundError(Messages.USER_NOT_FOUND);
+        const userDTO = await this.userRepo.findByEmail(email);
+        if (!userDTO) throw new NotFoundError(Messages.USER_NOT_FOUND);
+        const user = new User(userDTO);
         const authProvider = user.getAuthProvider();
         // throw error for Oauth users
         if (authProvider && authProvider !== "local") throw new UnauthorizedError(Messages.OAUTH_USER_CANNOT_LOGIN_WITH_PASSWORD);

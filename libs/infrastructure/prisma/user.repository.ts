@@ -2,30 +2,29 @@
 
 import { Prisma } from '@prisma/client';
 import { IUserRepository } from '../../application/interfaces/user-repository.interface';
-import { User, } from '../../domain/entities/user.entity';
-import { CreateUserDTO } from '../../shared/types/src';
+import { CreateUserDTO, UpdateUserDTO, UserDTO } from '../../shared/types/src';
 import prisma from './client';
 
 
 export class PrismaUserRepository implements IUserRepository {
-  async create(data: CreateUserDTO): Promise<User> {
+  async create(data: CreateUserDTO): Promise<UserDTO> {
     const user = await prisma.user.create({ data });
-    return new User(user);
+    return user;
   }
-  async update(id: string, data: Partial<User>) {
+  async update(id: string, data: UpdateUserDTO): Promise<UserDTO>{
       const user = await prisma.user.update({ where: { id }, data });
-      return new User(user);
+      return user;
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async findByEmail(email: string): Promise<UserDTO | null> {
     const user = await prisma.user.findUnique({ where: { email } });
-    return user ? new User(user) : null;
+    return user ? user : null;
   }
-  async findById(id: string): Promise<User | null>{
+  async findById(id: string): Promise<UserDTO | null>{
     const user = await prisma.user.findUnique({ where: { id } });
-    return user? new User(user) : null;
+    return user? user : null;
   }
-  async find(filter: Partial<User>, skip: number, take: number) {
+  async find(filter: Partial<UserDTO>, skip: number, take: number) {
         const { name, ...rest } = filter;
 
         const where: Prisma.UserWhereInput = {
@@ -51,7 +50,7 @@ export class PrismaUserRepository implements IUserRepository {
         ]);
 
         return {
-            users: users.map(user => new User(user).toDTO()),
+            users,
             total,
             page: Math.floor(skip / take) + 1,
             pageSize: take,

@@ -93,8 +93,6 @@ export const UserSettingsPage = () => {
 
   };
 
-  console.log(previewImage)
-
   return (
     <div className="flex w-full flex-col p-8 space-y-6 max-w-3xl text-gray-900 dark:text-gray-100 transition-colors">
       <Header name="Settings" />

@@ -2,7 +2,7 @@ export interface OrgProps {
   id: string;
   name: string;
   email: string;
-  password: string;
+  password?: string |null;
   role: string; 
   description?: string | null;
   profileUrl?: string | null;
@@ -86,6 +86,9 @@ export class Organization {
   }
 
   getPassword() {
+     if (!this.props.password) {
+      return null
+    }
     return this.props.password;
   }
   // === Public-safe DTO ===

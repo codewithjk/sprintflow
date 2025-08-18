@@ -102,7 +102,6 @@ export const refreshTokenController = async (req: Request, res: Response, next: 
     }
     if (decoded.role === "super_admin") {
       account = await userRepo.findById(decoded.id);
-      if (!account?.isAdmin()) return new UnauthorizedError(Messages.USER_NOT_FOUND);
     }
     if (!account) {
       return new UnauthorizedError(Messages.USER_NOT_FOUND);

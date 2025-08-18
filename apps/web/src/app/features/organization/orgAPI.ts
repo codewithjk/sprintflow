@@ -1,5 +1,4 @@
-import { OrgProps } from '../../../../../../libs/domain/entities/organization.entity';
-import { UserProps } from '../../../../../../libs/domain/entities/user.entity';
+import { OrganizationDTO, UserDTO } from '../../../../../../libs/shared/types/src';
 import axios from '../../../utils/axiosInstance';
 
 export const orgAPI = {
@@ -12,8 +11,8 @@ export const orgAPI = {
     getAllMembers: (params: { page: number, limit: number }) => 
         axios.get('/org/members', { params }),
     getOrgById: (id:string) => axios.get(`/org/${id}`),
-    updateOrg: (id:string, data :Partial<OrgProps>) => axios.put(`/org/${id}`, data),
-    updateMember: (id: string, data: Partial<UserProps>) => axios.put(`/org/members/${id}`, data),
+    updateOrg: (id:string, data :Partial<OrganizationDTO>) => axios.put(`/org/${id}`, data),
+    updateMember: (id: string, data: Partial<UserDTO>) => axios.put(`/org/members/${id}`, data),
     
     fileUpload:(formData:FormData) => axios.post(`/upload`,formData,{headers:{"Content-Type": "multipart/form-data",}})
 };

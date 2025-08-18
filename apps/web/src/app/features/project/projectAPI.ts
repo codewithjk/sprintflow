@@ -1,14 +1,14 @@
-import { Project } from '../../../../../../libs/domain/entities/project.entity';
+import { CreateProjectDTO, ProjectDTO, UpdateProjectDTO } from '../../../../../../libs/shared/types/src';
 import axios from '../../../utils/axiosInstance';
 
 export const projectAPI = {
-    create: (data : Partial<Project>) => axios.post('/project/',data),
+    create: (data : Partial<CreateProjectDTO>) => axios.post('/project/',data),
 
-    getAllProjects: (params: Partial<Project> & {limit:number,page:number} ) =>
+    getAllProjects: (params: Partial<ProjectDTO> & {limit:number,page:number} ) =>
         axios.get('/project/', { params }),
     getProjectById: (id: string) =>
         axios.get(`/project/${id}`),
-    updateProject: (id: string,data:Partial<Project>) =>
+    updateProject: (id: string,data:UpdateProjectDTO) =>
         axios.put(`/project/${id}`, data),
     deleteProject: (id: string) =>
         axios.delete(`/project/${id}`),

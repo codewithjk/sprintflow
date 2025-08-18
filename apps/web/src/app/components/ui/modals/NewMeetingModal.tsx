@@ -1,12 +1,12 @@
 import { useState } from "react";
 import Modal from "./Modal";
-import { MeetingProps } from "../../../../../../../libs/domain/entities/meeting.entity";
 import { isBefore, parseISO } from "date-fns";
+import { CreateMeetingDTO } from "../../../../../../../libs/shared/types/src";
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: Partial<MeetingProps>) => void;
+  onSubmit: (data: Partial<CreateMeetingDTO>) => void;
   isLoading?: boolean;
 };
 
@@ -103,7 +103,7 @@ const NewMeetingModal = ({
   const handleSubmit = () => {
     if (!validate()) return;
 
-    const meeting: Partial<MeetingProps> = {
+    const meeting: Partial<CreateMeetingDTO> = {
       name: name.trim(),
       subject: subject.trim(),
       startTime: new Date(startDate),

@@ -3,8 +3,8 @@ import { Request, Response, NextFunction } from 'express';
 import { Messages } from '../../../../libs/shared/constants/messages';
 import { ValidationError } from '../../../../libs/shared/errors/app-error';
 import { HttpStatus } from '../../../../libs/shared/constants/http-status.enum';
-import { TaskProps } from '../../../../libs/domain/entities/task.entity';
 import { createTaskUseCase, deleteTaskUseCase, getAllTasksUseCase, getTaskUseCase, searchTaskUseCase, updateTaskUseCase } from '../di';
+import { UpdateTaskDTO } from '../../../../libs/shared/types/src';
 
 
 export const createTaskController = async (req: Request, res: Response, next: NextFunction) => {
@@ -13,7 +13,7 @@ export const createTaskController = async (req: Request, res: Response, next: Ne
     if (!title || !description || !startDate || !endDate || !assignedUserId) throw new ValidationError(Messages.MISSING_FIELDS);
     const orgId = req.organization.id;
     const task = await createTaskUseCase.execute({ ...req.body, orgId, createdAt: new Date(), updatedAt: new Date() });
-    res.status(HttpStatus.CREATED).json({ task: task.toDTO() });
+    res.status(HttpStatus.CREATED).json({ task});
   } catch (err) {
     next(err);
   }
@@ -42,7 +42,7 @@ export const updateTaskController = async (req: Request, res: Response, next: Ne
     if ((body && Object.entries(body).length === 0) || !body) {
       throw new ValidationError(Messages.MISSING_FIELDS);
     }
-    const data: Partial<TaskProps> = body;
+    const data: UpdateTaskDTO = body;
     const id: string = idParam;
     const task = await updateTaskUseCase.execute({ id, data, updaterId });
     res.status(HttpStatus.OK).json({ message: Messages.TASK_UPDATED, task });

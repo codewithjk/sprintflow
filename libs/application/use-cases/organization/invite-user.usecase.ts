@@ -28,7 +28,6 @@ export class InviteUserUseCase {
       url,
       orgName: organization?.name
     }
-    //todo : hardcoded email template name is breaks the clean architecture , also in otp,
      await this.emailService.sendEmail(email, "Invitation mail", "invite-user-email", inviteMailData);
     return { message: 'Invitation sent',  };
   }

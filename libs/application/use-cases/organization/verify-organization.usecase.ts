@@ -1,15 +1,11 @@
 
+import { Organization } from '../../../domain/entities/organization.entity';
 import { Messages } from '../../../shared/constants/messages';
 import { ConflictError } from '../../../shared/errors/app-error';
 import {  CreateOrganizationDTO,  } from '../../../shared/types/src';
 import { IOrganizationRepository } from '../../interfaces/org-repository.interface';
-
 import { IOtpService } from '../../interfaces/otp-service.interface';
 import { IPasswordService } from '../../interfaces/password-service.interface';
-
-
-
-
 
 export class VerifyOrganizationUseCase {
     constructor(private readonly orgRepo: IOrganizationRepository,
@@ -23,9 +19,10 @@ export class VerifyOrganizationUseCase {
         if (existing) throw new ConflictError(Messages.ORG_ALREADY_EXISTS);
         await this.otpService.verifyOtp(data.email, otp);
         const hash = await this.passwordService.hash(data.password);
-        const org = await this.orgRepo.create({
+        const orgDTO = await this.orgRepo.create({
            ...data,password : hash
         });
+        const org = new Organization(orgDTO);
         return org.toDTO();
     }
 }

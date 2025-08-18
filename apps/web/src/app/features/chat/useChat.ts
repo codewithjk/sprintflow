@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useAuth } from "../auth/useAuth";
-import { UserProps } from "../../../../../../libs/domain/entities/user.entity";
-import { OrgProps } from "../../../../../../libs/domain/entities/organization.entity";
+import { OrganizationDTO, UserDTO } from "../../../../../../libs/shared/types/src";
 
 export interface ChatMessage {
     id: string;
@@ -14,7 +13,7 @@ export interface ChatMessage {
 export function useChat(orgId: string, userId: string) {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [hasMore, setHasMore] = useState(true);
-    const [onlineMembers, setOnlineMembers] = useState<UserProps[] | OrgProps[]>([]);
+    const [onlineMembers, setOnlineMembers] = useState<UserDTO[] | OrganizationDTO[]>([]);
     const socketRef = useRef<Socket>(null);
     const {user} = useAuth()
 
@@ -41,11 +40,11 @@ export function useChat(orgId: string, userId: string) {
         });
 
         // track joining/leaving
-        socket.on("chat:memberJoined", ({ userId: id }: { userId: string }) => {
-            setOnlineMembers((prev) => [...new Set([...prev, id])]);
+        socket.on("chat:memberJoined", (user) => {
+            setOnlineMembers((prev) => [...new Set([...prev, user])]);
         });
-        socket.on("chat:memberLeft", ({ userId: id }: { userId: string }) => {
-            setOnlineMembers((prev) => prev.filter((u) => u !== id));
+        socket.on("chat:memberLeft", ({userId }) => {
+            setOnlineMembers((prev) => prev.filter((u) => u.id !== userId));
         });
 
         return () => socket.disconnect();
@@ -56,7 +55,6 @@ export function useChat(orgId: string, userId: string) {
     }
 
     const loadMore = () => {
-        console.log("loadMore is triggering")
         const before = messages[0]?.createdAt;
         if (before) socketRef.current?.emit("chat:loadMore", { before });
     };

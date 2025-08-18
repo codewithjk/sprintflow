@@ -1,10 +1,5 @@
-
-import { UserProps } from '../../../../../../libs/domain/entities/user.entity';
 import { CreateOrganizationDTO, LoginDTO, SignupDTO } from '../../../../../../libs/shared/types/src';
 import axios from '../../../utils/axiosInstance';
-
-
-
 
 export const authAPI = {
   signupUser: (data: SignupDTO) => axios.post('/auth/signup', data),
@@ -20,8 +15,5 @@ export const authAPI = {
   verifyInvitation: (data: { token: string }) => axios.post('/auth/verify/invitation', data),
   
   getUser: (id: string) => axios.get(`auth/get-user/${id}`),
-
-  
-
   logout: () => axios.post('/auth/logout'),
 };

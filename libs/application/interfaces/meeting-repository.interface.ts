@@ -1,10 +1,9 @@
-import { Meeting, MeetingProps } from "../../domain/entities/meeting.entity";
-import { CreateMeetingDTO } from "../../shared/types/src";
+import { CreateMeetingDTO, MeetingDTO, UpdateMeetingDTO } from "../../shared/types/src";
 
 export interface IMeetingRepository {
-  create(data :CreateMeetingDTO ): Promise<Meeting>;
-  update(id: string, data: Partial<MeetingProps>): Promise<Meeting>;
+  create(data :CreateMeetingDTO ): Promise<MeetingDTO>;
+  update(id: string, data: UpdateMeetingDTO): Promise<MeetingDTO>;
   delete(id: string): Promise<void>;
-  findById(id: string): Promise<Meeting | null>;
-  find(filter : Partial<MeetingProps>, skip: number, take: number) : Promise<{ meetings: Partial<Meeting>[]; total: number; page: number; pageSize: number; }>;
+  findById(id: string): Promise<MeetingDTO | null>;
+  find(filter : Partial<MeetingDTO>, skip: number, take: number) : Promise<{ meetings: Partial<MeetingDTO>[]; total: number; page: number; pageSize: number; }>;
 }

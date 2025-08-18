@@ -1,8 +1,17 @@
 
-
+// Request
 export interface CreateChatDTO {
-  orgId: string;
-  userId: string;
   content: string;
+  userId: string;
+  orgId: string;
+   createdAt: Date;
+}
+
+// Response
+export interface ChatDTO {
+  id: string;
+  content: string;
+  userId: string;
+  orgId: string;
   createdAt: Date;
 }

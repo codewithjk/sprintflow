@@ -12,7 +12,6 @@ export class DeleteOrganizationUseCase {
       if (!org) {
         throw new NotFoundError(Messages.ORG_NOT_FOUND);
       }
-      //todo : delete projects, members and tasks under that organization.
       await this.orgRepo.delete(id);
   }
 }

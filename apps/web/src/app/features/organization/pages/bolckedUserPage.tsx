@@ -2,7 +2,6 @@ import Navbar from "../../../components/ui/navbar";
 
 export const BlockedPage = () => {
   const adminEmail = import.meta.env.VITE_ADMIN_EMAIL
-console.log(adminEmail)
   return (
     <>
       <Navbar />

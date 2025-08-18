@@ -41,7 +41,6 @@ export const AdminLogin = () => {
       toast.success("Logged in as admin");
       navigate("/admin/dashboard");
     } catch (err: any) {
-      console.log(err)
       toast.error(err || "Login failed");
     }
   };

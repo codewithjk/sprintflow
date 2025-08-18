@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ProjectState } from "../../types/state.type";
 import { projectAPI } from "./projectAPI";
-import { ProjectProps } from "../../../../../../libs/domain/entities/project.entity";
+import { CreateProjectDTO, UpdateProjectDTO } from "../../../../../../libs/shared/types/src";
 
 
 
@@ -25,7 +25,7 @@ export const fetchProjectsThunk = createAsyncThunk("project/fetch", async (filte
     return thunkAPI.rejectWithValue(error.response.data.message)
   }
 });
-export const createProjectThunk = createAsyncThunk("project/create", async (data: Partial<ProjectProps>, thunkAPI) => {
+export const createProjectThunk = createAsyncThunk("project/create", async (data: CreateProjectDTO, thunkAPI) => {
   try {
     const res = await projectAPI.create(data);
     return res.data.project;
@@ -36,7 +36,7 @@ export const createProjectThunk = createAsyncThunk("project/create", async (data
 
 export const updateProjectThunk = createAsyncThunk(
   "project/update",
-  async ({ id, data }: { id: string; data: Partial<ProjectProps> }, thunkAPI) => {
+  async ({ id, data }: { id: string; data: UpdateProjectDTO }, thunkAPI) => {
     try {
       const res = await projectAPI.updateProject(id, data);
       return res.data.project;

@@ -2,8 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { ValidationError } from "../../../../libs/shared/errors/app-error";
 import { Messages } from "../../../../libs/shared/constants/messages";
 import { HttpStatus } from "../../../../libs/shared/constants/http-status.enum";
-import { CreateProjectDTO } from "../../../../libs/shared/types/src";
-import { Project } from "../../../../libs/domain/entities/project.entity";
+import { CreateProjectDTO, UpdateProjectDTO } from "../../../../libs/shared/types/src";
 import { createProjectUseCase, deleteProjectUseCase, getAllProjectsUseCase, getProjectUseCase, searchProjectsUseCase, updateProjectUseCase } from "../di";
 
 export const createProjectController = async (req: Request, res: Response, next: NextFunction) => {
@@ -39,7 +38,7 @@ export const updateProjectController = async (req: Request, res: Response, next:
         if ((body && Object.entries(body).length === 0) || !body) {
             throw new ValidationError(Messages.MISSING_FIELDS);
         }
-        const data: Partial<Project> = body;
+        const data: UpdateProjectDTO = body;
         const id: string = idParam;
         const project = await updateProjectUseCase.execute({ id, data, orgId })
         res.status(HttpStatus.OK).json({ message: Messages.PROJECT_UPDATED, project })

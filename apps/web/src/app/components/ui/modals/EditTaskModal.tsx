@@ -1,4 +1,4 @@
-import { formatISO, isBefore, parseISO, startOfDay } from "date-fns";
+import { formatISO } from "date-fns";
 import Modal from "./Modal";
 import { useEffect, useState } from "react";
 import { useTasks } from "../../../features/task/useTask";
@@ -17,7 +17,7 @@ type Props = {
 };
 
 const EditTaskModal = ({ isOpen, onClose, initialData }: Props) => {
-  const { updateTask, updateLoading  } = useTasks();
+  const { updateTask, updateLoading } = useTasks();
   const { members, getAllMembers } = useMember();
   const { user } = useAuth();
 
@@ -31,10 +31,7 @@ const EditTaskModal = ({ isOpen, onClose, initialData }: Props) => {
   const [assignedUserId, setAssignedUserId] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  console.log("edit task");
-
   useEffect(() => {
-    console.log(user?.id, initialData);
     if (user?.role === "organization") {
       getAllMembers({ page: 1, limit: 10 });
     }
@@ -52,78 +49,40 @@ const EditTaskModal = ({ isOpen, onClose, initialData }: Props) => {
       setAssignedUserId(initialData.assignee?.id || "");
     }
   }, [initialData]);
-   const originalStartDate = initialData?.startDate?.split("T")[0];
+  const originalStartDate = initialData?.startDate?.split("T")[0];
 
-  // const validate = () => {
-  //   const errs: { [key: string]: string } = {};
-  //   const now = startOfDay(new Date());
-
-  //   if (!title.trim()) errs.title = "Title is required.";
-  //   if (!description.trim()) errs.description = "Description is required.";
-  //   if (!priority) errs.priority = "Priority is required.";
-  //   if (!status) errs.status = "Status is required.";
-  //   if (!assignedUserId) errs.assignedUserId = "Assignee is required.";
-
-  //   // const originalStartDate = initialData?.startDate?.split("T")[0];
-
-
-  //   const start = startDate ? startOfDay(parseISO(startDate)) : null;
-  //   const end = dueDate ? startOfDay(parseISO(dueDate)) : null;
-
-  //   // Start Date validation
-  //   if (!startDate) {
-  //     errs.startDate = "Start date is required.";
-  //   } else if (
-  //     startDate !== originalStartDate &&
-  //     start &&
-  //     isBefore(start, now)
-  //   ) {
-  //     errs.startDate = "Start date cannot be in the past.";
-  //   }
-
-  //   // Due Date validation
-  //   if (!dueDate) {
-  //     errs.dueDate = "Due date is required.";
-  //   } else if (start && end && !isBefore(start, end)) {
-  //     errs.dueDate = "Due date must be after start date.";
-  //   }
-  //   setErrors(errs);
-  //   return Object.keys(errs).length === 0;
-  // };
-
-
-
-const validate = async (
-  
-) => {
-  try {
-    const schema = getTaskSchema(true, originalStartDate);
-    await schema.validate({
-    title,
-    description,
-    status,
-    priority,
-    tags,
-    assignedUserId,
-    startDate,
-    dueDate,
-  }, { abortEarly: false });
-    setErrors({});
-    return true;
-  } catch (err: any) {
-    const validationErrors: Record<string, string> = {};
-    if (err.inner) {
-      err.inner.forEach((e: any) => {
-        if (e.path) validationErrors[e.path] = e.message;
-      });
+  const validate = async () => {
+    try {
+      const schema = getTaskSchema(true, originalStartDate);
+      await schema.validate(
+        {
+          title,
+          description,
+          status,
+          priority,
+          tags,
+          assignedUserId,
+          startDate,
+          dueDate,
+        },
+        { abortEarly: false }
+      );
+      setErrors({});
+      return true;
+    } catch (err: any) {
+      const validationErrors: Record<string, string> = {};
+      if (err.inner) {
+        err.inner.forEach((e: any) => {
+          if (e.path) validationErrors[e.path] = e.message;
+        });
+      }
+      setErrors(validationErrors);
+      return false;
     }
-    setErrors(validationErrors);
-    return false;
-  }
-};
+  };
 
   const handleSubmit = async () => {
-    if (! await validate()) return;
+    if (!(await validate())) return;
 
     try {
       await updateTask(initialData.id, {

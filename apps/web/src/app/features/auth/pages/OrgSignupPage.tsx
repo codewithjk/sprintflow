@@ -49,7 +49,6 @@ export const OrganizationSignup = () => {
         newErrors[validationError.path as keyof typeof errors] = validationError.message;
       }
     });
-    console.log(newErrors)
     setErrors(newErrors);
     return false;
   }

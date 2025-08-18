@@ -1,12 +1,11 @@
-import { Task, TaskProps } from "../../domain/entities/task.entity";
-
+import { CreateTaskDTO, TaskDTO, UpdateTaskDTO } from "../../shared/types/src";
 
 export interface ITaskRepository {
-  create(task: Partial<TaskProps>): Promise<Task>;
-  findById(id: string): Promise<Task | null>;
-  update(id : string,task: Partial<TaskProps>): Promise<Task>;
+  create(task: CreateTaskDTO): Promise<TaskDTO>;
+  findById(id: string): Promise<TaskDTO | null>;
+  update(id : string,task: UpdateTaskDTO): Promise<TaskDTO>;
   delete(id: string): Promise<void>;
-  search(search: string, authorId: string, skip: number, take: number): Promise<{ tasks: Partial<Task>[]; total: number; page: number; pageSize: number; }>;
-  findExistingTask(name: string, orgId: string): Promise<Task | null>;
-  find(filter : Partial<Task>, skip: number, take: number) : Promise<{ tasks: Partial<Task>[]; total: number; page: number; pageSize: number; }>;
+  search(search: string, authorId: string, skip: number, take: number): Promise<{ tasks: Partial<TaskDTO>[]; total: number; page: number; pageSize: number; }>;
+  findExistingTask(name: string, orgId: string): Promise<TaskDTO | null>;
+  find(filter : Partial<TaskDTO>, skip: number, take: number) : Promise<{ tasks: Partial<TaskDTO>[]; total: number; page: number; pageSize: number; }>;
 }

@@ -1,17 +1,16 @@
-
-import { MeetingProps } from "../../../../../../libs/domain/entities/meeting.entity";
+import { CreateMeetingDTO, MeetingDTO, UpdateMeetingDTO } from "../../../../../../libs/shared/types/src";
 import axios from "../../../utils/axiosInstance";
 
 
 
 export const meetingAPI = {
-  create: (data:Partial<MeetingProps>) => {
+  create: (data:Partial<CreateMeetingDTO>) => {
     return axios.post('/meeting', data);
    },
-  getMeetings: (filters: Partial<MeetingProps> & {page:number,limit:number} ) => {
+  getMeetings: (filters: Partial<MeetingDTO> & {page:number,limit:number} ) => {
   return axios.get('/meeting', { params: filters });
   },
-  update: (meetingId:string,data:Partial<MeetingProps>) => {
+  update: (meetingId:string,data:Partial<UpdateMeetingDTO>) => {
     return axios.put(`/meeting/${meetingId}`, data);
   },
   delete: (meetingId: string)=>{

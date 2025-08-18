@@ -6,15 +6,7 @@ import { IOrganizationRepository } from "../../interfaces/org-repository.interfa
 import { IOtpService } from "../../interfaces/otp-service.interface";
 
 export class CreateOrganizationUseCase {
-  // constructor(
-  //   private readonly orgRepo: IOrganizationRepository,
-  // ) {}
 
-  // async execute(data : CreateOrganizationDTO) {
-  //   const org = await this.orgRepo.create(data);
-  //   return org.toDTO();
-    
-  // }
   constructor(private readonly orgRepo: IOrganizationRepository,
       private readonly otpService: IOtpService,
       private readonly emailService: IEmailService) { }

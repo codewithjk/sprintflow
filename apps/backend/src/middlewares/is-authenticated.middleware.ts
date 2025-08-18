@@ -67,7 +67,7 @@ const isAuthenticated = async (req: any, res: Response, next: NextFunction) => {
                         .status(HttpStatus.UNAUTHORIZED)
                         .json({ message: Messages.USER_NOT_FOUND });
                 }
-                req.user = user.toDTO();
+                req.user = user
                 break;
             }
 
@@ -78,7 +78,7 @@ const isAuthenticated = async (req: any, res: Response, next: NextFunction) => {
                         .status(HttpStatus.UNAUTHORIZED)
                         .json({ message: Messages.USER_NOT_FOUND });
                 }
-                req.super_admin = admin.toDTO();
+                req.super_admin = admin;
                 break;
             }
 

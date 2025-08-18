@@ -1,10 +1,6 @@
 import { IChatRepository } from "../../application/interfaces/chat-repository.interface";
-import { Chat } from "../../domain/entities/chat.entity";
 import { CreateChatDTO } from "../../shared/types/src";
 import prisma from "./client";
-
-
-
 
 export class PrismaChatRepository implements IChatRepository {
   async create(msg: CreateChatDTO) {
@@ -26,7 +22,7 @@ export class PrismaChatRepository implements IChatRepository {
         },
       },
     },});
-    return new Chat(newChat);
+    return newChat;
   }
   async loadRecent(orgId: string, limit: number) {
     return prisma.chat.findMany({

@@ -1,13 +1,12 @@
-import { Organization, OrgProps } from "../../domain/entities/organization.entity";
-import { CreateOrganizationDTO } from "../../shared/types/src/org.types";
+import { CreateOrganizationDTO, OrganizationDTO, UpdateOrganizationDTO } from "../../shared/types/src/org.types";
 
 export interface IOrganizationRepository {
-  create(data :CreateOrganizationDTO ): Promise<Organization>;
-  update(id: string, data: Partial<OrgProps>): Promise<Organization>;
+  create(data :CreateOrganizationDTO ): Promise<OrganizationDTO>;
+  update(id: string, data: UpdateOrganizationDTO): Promise<OrganizationDTO>;
   delete(id: string): Promise<void>;
-  findById(id: string): Promise<Organization | null>;
-  findByEmail(email: string): Promise<Organization | null>;
-  searchOrganizations(search: string, skip: number, take: number): Promise<{ orgs: Partial<Organization>[]; total: number; page: number; pageSize: number; }>;
-  findByName(name: string): Promise<Organization | null>;
-  find(filter : Partial<Organization>, skip: number, take: number) : Promise<{ orgs: Partial<Organization>[]; total: number; page: number; pageSize: number; }>;
+  findById(id: string): Promise<OrganizationDTO | null>;
+  findByEmail(email: string): Promise<OrganizationDTO | null>;
+  searchOrganizations(search: string, skip: number, take: number): Promise<{ orgs: OrganizationDTO[]; total: number; page: number; pageSize: number; }>;
+  findByName(name: string): Promise<OrganizationDTO | null>;
+  find(filter : Partial<OrganizationDTO>, skip: number, take: number) : Promise<{ orgs: OrganizationDTO[]; total: number; page: number; pageSize: number; }>;
 }

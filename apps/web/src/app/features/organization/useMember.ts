@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { orgAPI } from "./orgAPI";
-import { UserProps } from "../../../../../../libs/domain/entities/user.entity";
+import { UserDTO } from "../../../../../../libs/shared/types/src";
 
 
 export function useMember() {
-    const [members, setMembers] = useState<UserProps[]>();
+    const [members, setMembers] = useState<UserDTO[]>();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const inviteNewMember = async (data: { name: string, email: string }) => {

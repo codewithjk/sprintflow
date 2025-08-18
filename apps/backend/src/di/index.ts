@@ -1,11 +1,6 @@
 import { UserLoginUseCase, SignupUseCase, VerifyUserUseCase } from "../../../../libs/application/use-cases/auth";
 import { LoadMessagesUseCase, SendMessageUseCase } from "../../../../libs/application/use-cases/chat";
-import {
-    CreateMeetingUseCase,
-    DeleteMeetingUseCase,
-    GetMeetingUseCase,
-    UpdateMeetingUseCase
-} from "../../../../libs/application/use-cases/meeting";
+import { CreateMeetingUseCase, DeleteMeetingUseCase, GetMeetingUseCase, UpdateMeetingUseCase } from "../../../../libs/application/use-cases/meeting";
 import { CreateOrganizationUseCase, DeleteOrganizationUseCase, GetAllOrganizationUseCase, GetInvitationUseCase, GetOrganizationUseCase, InviteUserUseCase, OrgLoginUseCase, SearchOrganizationsUseCase, UpdateOrganizationUseCase, VerifyOrganizationUseCase } from "../../../../libs/application/use-cases/organization";
 import { CreateProjectUseCase, DeleteProjectUseCase, GetAllProjectsUseCase, GetProjectUseCase, SearchProjectsUseCase, UpdateProjectUseCase } from "../../../../libs/application/use-cases/project";
 import { CreateTaskUseCase, DeleteTaskUseCase, GetAllTasksUseCase, GetTaskUseCase, SearchTaskUseCase, UpdateTaskUseCase } from "../../../../libs/application/use-cases/task";
@@ -24,7 +19,7 @@ import { StripeService } from "../../../../libs/infrastructure/stripe/stripe.ser
 
 
 import { environmentConfig } from "../config/environment.config";
-import { emailTemplatePath } from "../config/path.config";
+import { emailTemplatePath } from "../config/path";
 
 
 // services
@@ -103,7 +98,5 @@ export const getAllTasksUseCase = new GetAllTasksUseCase(taskRepo);
 
 //chat use case
 
- export const sendMessageUseCase = new SendMessageUseCase(chatRepo);
-  export const loadMessagesUseCase = new LoadMessagesUseCase(chatRepo);
-//   export const getUserByIdUseCase = new GetUserByIdUseCase(userRepo);
-//   export const getOrganizationUseCase = new GetOrganizationUseCase(orgRepo);
+export const sendMessageUseCase = new SendMessageUseCase(chatRepo);
+export const loadMessagesUseCase = new LoadMessagesUseCase(chatRepo);

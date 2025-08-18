@@ -13,7 +13,7 @@ export interface UserProps {
   oAuthId?: string;
   profileUrl?: string |null;
   phoneNumber?: string |null;
-  authProvider: 'local' | 'google' | 'github' | null;
+  authProvider?: 'local' | 'google' | 'github'| null ;
   status?: "blocked" | "active" | "inactive";
 } 
 

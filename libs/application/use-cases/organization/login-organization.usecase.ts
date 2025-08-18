@@ -5,6 +5,7 @@ import { AppUserRole, LoginDTO } from "../../../shared/types/src";
 import { IJwtService } from "../../interfaces/jwt-service.interface";
 import { IOrganizationRepository } from "../../interfaces/org-repository.interface";
 import { IPasswordService } from "../../interfaces/password-service.interface";
+import { Organization } from "../../../domain/entities/organization.entity";
 
 
 
@@ -15,9 +16,11 @@ export class OrgLoginUseCase {
     
     async execute(data: LoginDTO,role:AppUserRole.ORGANIZATION) {
         const { email, password } = data;
-        const org = await this.orgRepo.findByEmail(email);
-        if (!org) throw new NotFoundError(Messages.ORG_NOT_FOUND);
+        const orgDTO = await this.orgRepo.findByEmail(email);
+        if (!orgDTO) throw new NotFoundError(Messages.ORG_NOT_FOUND);
+        const org = new Organization(orgDTO);
       
+        
 
         const isPasswordValid = await this.passwordService.compare(password, org.getPassword());
         if (!isPasswordValid) throw new ValidationError(Messages.INVALID_PASSWORD);

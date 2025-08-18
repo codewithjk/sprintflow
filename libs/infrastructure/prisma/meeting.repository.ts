@@ -1,31 +1,26 @@
-
-import { Meeting, MeetingProps } from "../../domain/entities/meeting.entity";
 import { IMeetingRepository } from "../../application/interfaces/meeting-repository.interface";
 import prisma from "./client";
-
-
-
+import { CreateMeetingDTO, MeetingDTO, UpdateMeetingDTO } from "../../shared/types/src";
 
 export class PrismaMeetingRepository implements IMeetingRepository {
-    async create(meeting: MeetingProps) {
+    async create(meeting: CreateMeetingDTO & { roomId: string }) {
         const newMeeting = await prisma.meeting.create({
             data: meeting,
         });
-        return new Meeting(newMeeting)
+        return newMeeting;
     }
-
-    async update(id: string, data: Partial<MeetingProps>): Promise<Meeting> {
+    async update(id: string, data: UpdateMeetingDTO): Promise<MeetingDTO> {
         const meeting = await prisma.meeting.update({ where: { id }, data });
-        return new Meeting(meeting);
+        return meeting;
     };
     async delete(id: string): Promise<void> {
         await prisma.meeting.delete({ where: { id } });
     };
-    async findById(id: string): Promise<Meeting | null> {
+    async findById(id: string): Promise<MeetingDTO | null> {
         const meeting = await prisma.meeting.findUnique({ where: { id } });
-        return meeting ? new Meeting(meeting) : null;
+        return meeting ? meeting : null;
     }
-    async find(filter: Partial<MeetingProps>, skip: number, take: number): Promise<{ meetings: Partial<Meeting>[]; total: number; page: number; pageSize: number; }> {
+    async find(filter: Partial<MeetingDTO>, skip: number, take: number): Promise<{ meetings: MeetingDTO[]; total: number; page: number; pageSize: number; }> {
         const [meetings, total] = await Promise.all([
             prisma.meeting.findMany({
                 where: filter,
@@ -38,7 +33,7 @@ export class PrismaMeetingRepository implements IMeetingRepository {
         ]);
 
         return {
-            meetings: meetings.map(meeting => new Meeting(meeting).toDTO()),
+            meetings,
             total,
             page: Math.floor(skip / take) + 1,
             pageSize: take,

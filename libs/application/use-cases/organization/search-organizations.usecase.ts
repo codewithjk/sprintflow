@@ -1,3 +1,4 @@
+import { Organization } from "../../../domain/entities/organization.entity";
 import { IOrganizationRepository } from "../../interfaces/org-repository.interface";
 
 interface SearchOrgsInput {
@@ -11,6 +12,12 @@ export class SearchOrganizationsUseCase {
 
   async execute({ search, page, limit }: SearchOrgsInput) {
     const skip = (page - 1) * limit;
-    return this.orgRepo.searchOrganizations(search, skip, limit);
+
+     const {orgs,...rest} = await this.orgRepo.searchOrganizations(search, skip, limit);
+    
+        return {
+          orgs: orgs.map((org) => new Organization(org).toDTO()),
+          ...rest,
+        }
   }
 }

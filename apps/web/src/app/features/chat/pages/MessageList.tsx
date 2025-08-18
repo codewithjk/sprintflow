@@ -43,9 +43,6 @@ export default function MessageList({
       behavior: scrollBehavior,
     });
   }, [messages]);
-  console.log(hasMore);
-
-  console.log(messages);
   return (
     <div
       id="scrollableDiv"

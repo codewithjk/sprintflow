@@ -1,9 +1,7 @@
 
 import { useState } from "react";
-
-
-import { Meeting, MeetingProps } from "../../../../../../libs/domain/entities/meeting.entity";
 import { meetingAPI } from "./meetingAPI";
+import { CreateMeetingDTO, MeetingDTO } from "../../../../../../libs/shared/types/src";
 
 
 export function useMeeting() {
@@ -12,14 +10,14 @@ export function useMeeting() {
     const [fetchLoading, setFetchLoading] = useState<boolean>(false)
     const [createError, setCreateError] = useState<boolean>(false)
     const [fetchError, setFetchError] = useState<boolean>(false)
-    const [meetings, setMeetings] = useState<Meeting[]>([]);
+    const [meetings, setMeetings] = useState<MeetingDTO[]>([]);
 
      const [total, setTotal] = useState(0);
      const [page, setPage] = useState(1); 
      const [pageSize, setPageSize] = useState(10); 
 
 
-    const createMeeting = async (data: Partial<MeetingProps>) => {
+    const createMeeting = async (data: Partial<CreateMeetingDTO>) => {
         setCreateLoading(true);
         try {
             const res = await meetingAPI.create(data);
@@ -30,7 +28,7 @@ export function useMeeting() {
             setCreateLoading(false)
         }
     }
-    const fetchMeetings = async (filter: Partial<Meeting> & { limit: number, page: number }) => {
+    const fetchMeetings = async (filter: Partial<MeetingDTO> & { limit: number, page: number }) => {
         setFetchLoading(true);
         try {
             const res = await meetingAPI.getMeetings(filter);

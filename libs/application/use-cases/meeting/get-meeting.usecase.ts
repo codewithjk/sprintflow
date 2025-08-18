@@ -1,14 +1,12 @@
-import { MeetingProps } from "../../../domain/entities/meeting.entity";
+import { MeetingDTO } from "../../../shared/types/src";
 import { IMeetingRepository } from "../../interfaces/meeting-repository.interface";
-
-//dto
 
 export class GetMeetingUseCase {
   constructor(
     private meetingRepo: IMeetingRepository,
   ) {}
 
-  async execute(filter: Partial<MeetingProps>, skip :number,limit:number) {
+  async execute(filter: Partial<MeetingDTO>, skip :number,limit:number) {
     return await this.meetingRepo.find(filter , skip,limit);
   }
 }

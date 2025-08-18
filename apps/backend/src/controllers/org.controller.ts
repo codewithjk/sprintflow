@@ -2,10 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { ValidationError } from "../../../../libs/shared/errors/app-error";
 import { Messages } from "../../../../libs/shared/constants/messages";
 import { HttpStatus } from "../../../../libs/shared/constants/http-status.enum";
-import { Organization } from "../../../../libs/domain/entities/organization.entity";
-import { AppUserRole, CreateOrganizationDTO } from "../../../../libs/shared/types/src";
+import { AppUserRole, CreateOrganizationDTO, UpdateOrganizationDTO, UpdateUserDTO } from "../../../../libs/shared/types/src";
 import { setCookie } from "../utils/cookies/setCookie";
-import { UserProps } from "../../../../libs/domain/entities/user.entity";
 import { TokenType } from "../../../../libs/shared/constants/jwt-token-constants";
 import { createOrganizationUseCase, deleteOrganizationUseCase, getAllUsersUseCase, getInvitationUseCase, getOrganizationUseCase, inviteUserUseCase, orgLoginUseCase, searchOrganizationsUseCase, updateOrganizationUseCase, updateUserUseCase, verifyOrganizationUseCase } from "../di";
 
@@ -79,7 +77,7 @@ export const updateOrganizationController = async (req: Request, res: Response, 
     if ((body && Object.entries(body).length === 0) || !body) {
       throw new ValidationError(Messages.MISSING_FIELDS);
     }
-    const data: Partial<Organization> = body;
+    const data: UpdateOrganizationDTO = body;
     const id: string = idParam;
     const org = await updateOrganizationUseCase.execute({ id, data })
     res.status(HttpStatus.OK).json({ message: Messages.ORG_UPDATED, org })
@@ -99,7 +97,7 @@ export const updateMemberController = async (req: Request, res: Response, next: 
     if ((body && Object.entries(body).length === 0) || !body) {
       throw new ValidationError(Messages.MISSING_FIELDS);
     }
-    const data: Partial<UserProps> = body;
+    const data:UpdateUserDTO = body;
     const id: string = idParam;
     const user = await updateUserUseCase.execute({ id, data });
     res.status(HttpStatus.OK).json({ message: Messages.USER_UPDATED, user });

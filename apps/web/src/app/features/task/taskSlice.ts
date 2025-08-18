@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 import { taskAPI } from "./taskAPI";
-import { TaskProps } from "../../../../../../libs/domain/entities/task.entity";
 import { TaskState } from "../../types/state.type";
+import { CreateTaskDTO, TaskDTO, UpdateTaskDTO } from "../../../../../../libs/shared/types/src";
 
 
 
@@ -18,7 +18,7 @@ const initialState: TaskState = {
     deleteLoading: false,
 }
 
-export const fetchTasksThunk = createAsyncThunk("task/fetch", async (filter: Partial<TaskProps> & { page: number, limit: number }, thunkAPI) => {
+export const fetchTasksThunk = createAsyncThunk("task/fetch", async (filter: Partial<TaskDTO> & { page: number, limit: number }, thunkAPI) => {
     try {
         const res = await taskAPI.searchTasks(filter);
         return res.data.tasks;
@@ -26,7 +26,7 @@ export const fetchTasksThunk = createAsyncThunk("task/fetch", async (filter: Par
         return thunkAPI.rejectWithValue(error.response.data.message)
     }
 });
-export const createTaskThunk = createAsyncThunk("task/create", async (data: Partial<TaskProps>, thunkAPI) => {
+export const createTaskThunk = createAsyncThunk("task/create", async (data: CreateTaskDTO, thunkAPI) => {
     try {
         const res = await taskAPI.create(data);
         return res.data.task;
@@ -35,7 +35,7 @@ export const createTaskThunk = createAsyncThunk("task/create", async (data: Part
     }
 });
 
-export const updateTaskThunk = createAsyncThunk("task/update", async ({ taskId, data }: { taskId: string, data: Partial<TaskProps> }, thunkAPI) => {
+export const updateTaskThunk = createAsyncThunk("task/update", async ({ taskId, data }: { taskId: string, data: UpdateTaskDTO }, thunkAPI) => {
     try {
         const res = await taskAPI.update(taskId, data);
         return res.data.task;

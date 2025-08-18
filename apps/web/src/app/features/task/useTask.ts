@@ -1,27 +1,20 @@
-
-
-import {  TaskProps } from '../../../../../../libs/domain/entities/task.entity';
+import { CreateTaskDTO, TaskDTO, UpdateTaskDTO } from '../../../../../../libs/shared/types/src';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { createTaskThunk, deleteTaskThunk, fetchTasksThunk, updateTaskThunk } from './taskSlice';
-
-
-
-
-
 
 export function useTasks() {
 
   const {tasks,fetchError,createError,updateError, deleteError,fetchLoading,createLoading,updateLoading,deleteLoading}  = useAppSelector((state)=>state.task)
   const dispatch = useAppDispatch();
 
-  const fetchTasks = async (filters: Partial<TaskProps> & { page: number, limit: number }) => {
+  const fetchTasks = async (filters: Partial<TaskDTO> & { page: number, limit: number }) => {
     await dispatch(fetchTasksThunk(filters));
   };
-  const createTask = async (data: Partial<TaskProps>) => {
+  const createTask = async (data: CreateTaskDTO) => {
    return await dispatch(createTaskThunk(data)).unwrap();
   };
 
-  const updateTask = async (taskId: string, data: Partial<TaskProps>) => {
+  const updateTask = async (taskId: string, data: UpdateTaskDTO) => {
     return dispatch(updateTaskThunk({ taskId, data })).unwrap();
   };
 

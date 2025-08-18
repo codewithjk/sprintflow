@@ -17,11 +17,11 @@ import {
   dataGridSxStyles,
 } from "../../../../utils/dataGridStyles";
 import { format } from "date-fns";
-import { MeetingProps } from "../../../../../../../libs/domain/entities/meeting.entity";
 import { useAuth } from "../../auth/useAuth";
 import moment from "moment/moment";
 import { toast } from "react-toastify";
 import ConfirmationDialog from "../../../components/ui/popup/ConformationDialog";
+import { CreateMeetingDTO } from "../../../../../../../libs/shared/types/src";
 
 const MeetingScreen = React.lazy(() => import("./MeetingScreen"));
 
@@ -66,7 +66,7 @@ useEffect(() => {
   if (fetchError)
     return <div className="text-white">Error fetching meetings</div>;
 
-  const handleNewMeetingCreation = async (data: Partial<MeetingProps>) => {
+  const handleNewMeetingCreation = async (data: Partial<CreateMeetingDTO>) => {
     await createMeeting(data);
   };
 

@@ -1,11 +1,10 @@
-import { UserProps } from "../../../../../../../libs/domain/entities/user.entity";
-
 import { UserIcon } from "lucide-react";
 import Image from "../../../components/ui/images";
 import { useAuth } from "../../auth/useAuth";
+import { UserDTO } from "../../../../../../../libs/shared/types/src";
 
 type Props = {
-  members: UserProps[];
+  members: UserDTO[];
 };
 
 export default function OnlineMembers({ members }: Props) {

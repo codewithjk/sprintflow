@@ -1,11 +1,10 @@
 //authSlice.ts
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { authAPI } from './authAPI';
-import { LoginDTO } from '../../../../../../libs/shared/types/src';
+import { LoginDTO, OrganizationDTO, UpdateUserDTO } from '../../../../../../libs/shared/types/src';
 import { AuthState } from '../../types/state.type';
 import { orgAPI } from '../organization/orgAPI';
-import { UserProps } from '../../../../../../libs/domain/entities/user.entity';
-import { OrgProps } from '../../../../../../libs/domain/entities/organization.entity';
+
 
 const initialState: AuthState = {
   user: null,
@@ -78,7 +77,7 @@ export const refreshAuthThunk = createAsyncThunk(
 
   export const profileUpdateThunk = createAsyncThunk(
   'profile/update',
-  async ({ id, role ,data}: { id: string, role: 'user' | 'super_admin' | 'organization',data:Partial<UserProps> | Partial<OrgProps> }, thunkAPI) => {
+  async ({ id, role ,data}: { id: string, role: 'user' | 'super_admin' | 'organization',data:Partial<UpdateUserDTO> | Partial<OrganizationDTO> }, thunkAPI) => {
 
     try {
       let res;

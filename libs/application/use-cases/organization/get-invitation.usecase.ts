@@ -27,8 +27,6 @@ export class GetInvitationUseCase {
         await this.invitationService.markUsed(token);
         await this.invitationService.removeInvitation(token);
         const orgId = invite.orgId;
-        //todo : clear this shit
-
         this.orgRepo.findById(orgId);
         return invite;
     }

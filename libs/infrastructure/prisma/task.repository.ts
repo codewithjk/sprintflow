@@ -1,13 +1,10 @@
-
-
 import prisma from './client';
-import { Task, TaskProps } from '../../domain/entities/task.entity';
 import { ITaskRepository } from '../../application/interfaces/task-repository.interface';
 import { Prisma } from '@prisma/client';
-
+import { CreateTaskDTO, TaskDTO, UpdateTaskDTO } from '../../shared/types/src';
 
 export class PrismaTaskRepository implements ITaskRepository {
-    private mapTaskInput(input: TaskProps): Prisma.TaskCreateInput {
+    private mapTaskInput(input: CreateTaskDTO): Prisma.TaskCreateInput {
         return {
             title: input.title,
             description: input.description,
@@ -22,23 +19,23 @@ export class PrismaTaskRepository implements ITaskRepository {
         };
     }
 
-    async create(task: TaskProps): Promise<Task> {
+    async create(task: CreateTaskDTO): Promise<TaskDTO> {
         const mappedTaskInput = this.mapTaskInput(task);
         const created = await prisma.task.create({ data: mappedTaskInput });
-        return new Task({ ...created });
+        return  created;
     }
 
-    async findById(id: string): Promise<Task | null> {
+    async findById(id: string): Promise<TaskDTO | null> {
         const task = await prisma.task.findUnique({ where: { id } });
-        return task ? new Task({ ...task }) : null;
+        return task ? task : null;
     }
 
-    async update(id: string, task: Partial<TaskProps>): Promise<Task> {
+    async update(id: string, task: UpdateTaskDTO): Promise<TaskDTO> {
         const updated = await prisma.task.update({
             where: { id: id },
             data: task,
         });
-        return new Task({ ...updated });
+        return updated;
     }
 
     async delete(id: string): Promise<void> {
@@ -47,7 +44,7 @@ export class PrismaTaskRepository implements ITaskRepository {
 
     async findExistingTask(name: string, orgId: string) {
         const task = await prisma.task.findFirst({ where: { title: name, orgId: orgId } });
-        return task ? new Task(task) : null;
+        return task ? task : null;
     }
 
     async search(search: string, orgId: string, skip: number, take: number) {
@@ -81,7 +78,7 @@ export class PrismaTaskRepository implements ITaskRepository {
             pageSize: take,
         };
     }
-    async find(filter: Partial<TaskProps>, skip: number, take: number) {
+    async find(filter: Partial<TaskDTO>, skip: number, take: number) {
         const { title, ...rest } = filter;
 
         const where: Prisma.TaskWhereInput = {

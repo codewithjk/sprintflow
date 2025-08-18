@@ -1,19 +1,14 @@
-
-
-
 import { useState } from 'react';
-import { Organization, OrgProps } from '../../../../../../libs/domain/entities/organization.entity';
-import { UserProps } from '../../../../../../libs/domain/entities/user.entity';
 import { adminAPI } from './adminAPI';
-import { StripeCharge, StripeSubscription } from '../../../../../../libs/shared/types/src';
+import { OrganizationDTO, StripeCharge, StripeSubscription, UserDTO } from '../../../../../../libs/shared/types/src';
 import { UserStatus } from '../../../../../../libs/domain/enums/user.enums';
 
 
 
 export function useAdmin() {
 
-    const [users, setUsers] = useState<UserProps[]>([]);
-    const [organizations, setOrganizations] = useState<Organization[]>([]);
+    const [users, setUsers] = useState<UserDTO[]>([]);
+    const [organizations, setOrganizations] = useState<OrganizationDTO[]>([]);
     const [fetchUsersLoading, setFetchUsersLoading] = useState<boolean>(false);
 
     const [fetchOrganizationsLoading, setFetchOrganizationLoading] = useState<boolean>(false);
@@ -33,11 +28,11 @@ export function useAdmin() {
     const [fetchChargesError, setFetchChargesError] = useState<string | null>(null);
 
 
-    const fetchUsers = async (filters: Partial<UserProps> & { page: number; limit: number }) => {
+    const fetchUsers = async (filters: Partial<UserDTO> & { page: number; limit: number }) => {
         setFetchUsersLoading(true);
         setFetchUsersError(null)
         try {
-            const res = await adminAPI.getAllUsers(filters); // replace with your actual API method
+            const res = await adminAPI.getAllUsers(filters); 
             setUsers(res.data.users);
         } catch (error: any) {
             setFetchUsersError(error?.response?.data?.message || "Failed to fetch users.");
@@ -64,11 +59,11 @@ export function useAdmin() {
         }
     }
 
-    const fetchOrganizations = async (filters: Partial<OrgProps> & { page: number; limit: number }) => {
+    const fetchOrganizations = async (filters: Partial<OrganizationDTO> & { page: number; limit: number }) => {
         setFetchOrganizationLoading(true);
         setFetchOrganizationError(null);
         try {
-            const res = await adminAPI.getAllOrganization(filters); // replace with your actual API method
+            const res = await adminAPI.getAllOrganization(filters); 
             setOrganizations(res.data.orgs);
         } catch (error: any) {
             setFetchOrganizationError(error?.response?.data?.message || "Failed to fetch organization users.");

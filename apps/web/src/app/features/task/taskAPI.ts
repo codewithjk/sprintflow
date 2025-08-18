@@ -1,16 +1,16 @@
-import { Task, TaskProps } from "../../../../../../libs/domain/entities/task.entity";
+import { CreateTaskDTO, TaskDTO, UpdateTaskDTO } from "../../../../../../libs/shared/types/src";
 import axios from "../../../utils/axiosInstance";
 
 
 
 export const taskAPI = {
-  create: (data:Partial<TaskProps>) => {
+  create: (data:CreateTaskDTO) => {
     return axios.post('/task', data);
    },
-  searchTasks: (filters: Partial<Task> & {page:number,limit:number} ) => {
+  searchTasks: (filters: Partial<TaskDTO> & {page:number,limit:number} ) => {
   return axios.get('/task', { params: filters });
   },
-  update: (taskId:string,data:Partial<TaskProps>) => {
+  update: (taskId:string,data:UpdateTaskDTO) => {
     return axios.put(`/task/${taskId}`, data);
   },
   delete: (taskId: string)=>{

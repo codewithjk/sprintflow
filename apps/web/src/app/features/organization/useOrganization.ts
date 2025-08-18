@@ -1,12 +1,10 @@
 
 import { useEffect, useState } from 'react';
-
 import debounce from 'lodash.debounce';
 import { orgAPI } from './orgAPI';
 import { setUser } from '../auth/authSlice';
-import { UserProps } from '../../../../../../libs/domain/entities/user.entity';
-import { OrgProps } from '../../../../../../libs/domain/entities/organization.entity';
 import { useDispatch } from 'react-redux';
+import { UpdateOrganizationDTO, UpdateUserDTO } from '../../../../../../libs/shared/types/src';
 
 export function useOrganizations() {
   const [search, setSearch] = useState('');
@@ -27,7 +25,7 @@ export function useOrganizations() {
     }
   };
 
-  const updateProfile = async ({ id, role ,data}: { id: string, role: 'user' | 'super_admin' | 'organization',data:Partial<UserProps> | Partial<OrgProps> }) => {
+  const updateProfile = async ({ id, role ,data}: { id: string, role: 'user' | 'super_admin' | 'organization',data:Partial<UpdateOrganizationDTO> | Partial<UpdateUserDTO> }) => {
   
       try {
         let res;
